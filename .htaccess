@@ -1,0 +1,13 @@
+<IfModule !mod_rewrite.c>
+ErrorDocument 404 MVC_URL/html/no_mod_rewrite.html
+</IfModule>
+
+<IfModule mod_rewrite.c>
+RewriteEngine	on
+
+RewriteCond		%{HTTPS}	^off$
+RewriteRule		^.*$		https://MVC_DOMAIN%{REQUEST_URI} [L,R=301]
+
+RewriteBase		MVC_PATH
+RewriteRule		^(.*)$		public/$1 [L]
+</IfModule>
