@@ -1,23 +1,14 @@
-CHECK - Make database handle a global.
-
-
-
-
-CONFIGURATION MANAGEMENT - should not require a global variable.
-Well, now it requires a global class object.  Is that any better?
-
-Session handling.
 
 IP - Some more functions to handle paging easier.
 
 IP - Urgent - need access to current route.
 
-Test with PHP Unit.
 
 
 
+CHECK - Make database handle a global.
+CHECK - Session handling.
 CHECK - Generic query function.
-
-CHECK - Update Criteria class so that you can select a function call, instead of just a column.
-
+CHECK - Update Criteria class so that you can select a function call, instead
+of just a column.
 CHECK - Database->save should set created_at when saving.
