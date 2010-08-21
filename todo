@@ -1,3 +1,8 @@
+Check all classes for singletons, and make the appropriate changes.
+See classes Dispatch and Session as examples.
+
+
+
 Create a git hook that automatically sets the version in the source code.
 
 
