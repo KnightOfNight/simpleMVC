@@ -22,7 +22,7 @@ class Pager {
 		$criteria->clearOrderBy();
 
 		# Set the column to be selected to count(<primary key>).
-		$model = $criteria->getModel()->getName();
+		$model = $criteria->getModel()->name;
 		$column = $model . ".id";
 		$criteria->addSelect("count(" . $column . ")", "row_count");
 

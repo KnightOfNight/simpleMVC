@@ -1,11 +1,33 @@
-<?PHP
+<?php
 
+
+/**
+*
+* @author >X @ MCS 'Net Productions
+* @package MVCAPI
+* @version v0.0.0
+*
+*/
+
+
+/**
+*
+* Singleton class to help with filesystem I/O.
+*
+* @package MVCAPI
+*
+*/
 class File {
-	static function ready ($file = NULL, $mode = "r") {
-		if ($file === NULL) {
-			Error::fatal ("no file name specified");
-		}
+	private function __construct () {}
 
+	/**
+	* Verify the accessibility of a file.
+	*
+	* @param string file name
+	* @param string access mode: "r" or "w"
+	* @return bool file is accessible
+	*/
+	static function ready ($file, $mode = "r") {
 		if ($mode === "r") {
 			return ( file_exists ($file) AND is_readable ($file) );
 		} elseif ($mode === "w") {

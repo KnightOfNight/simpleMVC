@@ -23,6 +23,8 @@
 <?php if ($trace_info): ?>
 <br />
 <div class="header">Program trace...</div>
+
+<br />
 <div class="trace">
 <?php foreach ($trace_info as $trace): ?>
 <div><?php if (isset ($trace["class"])): ?><?php echo $trace["class"] ?>-&gt;<?php endif ?><?php echo $trace["function"] ?>()<?php if (isset ($trace["file"])): ?> called at <?php echo $trace["file"] ?>:<?php echo $trace["line"] ?><?php endif ?></div>
@@ -31,7 +33,7 @@
 <?php endif ?>
 
 <br />
-<div class="copy"><?php echo $app_version ?> - <?php echo $app_copyright ?></div>
+<div class="copy"><?php echo $app_version ?> <?php echo $app_copyright ?></div>
 
 </body>
 

@@ -9,9 +9,7 @@
 
 /**
 *
-* Manage all of the criteria for a database select: which columns get selected,
-* what sort order to use, where clause, etc.
-* In this class, all column names are expected to be fully qualified, e.g. <model>.<column>
+* CLASS DESCRIPTION
 *
 * @package MVCAPI
 *

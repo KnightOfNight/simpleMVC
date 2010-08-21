@@ -1,0 +1,9 @@
+A route consists of 3 basic parts: controller, action, and query string.
+
+It is formatted as a string as follows...
+
+/<controller>/<action>/?????????
+
+The controller handles all interaction between the model and the view.  The
+action is a specific request for a given conroller, and the query string
+contains ???????

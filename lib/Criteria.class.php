@@ -140,7 +140,7 @@ class Criteria {
 		array_push ($this->_models, $model);
 
 		if ($this->_checkColumn ($colA) AND $this->_checkColumn ($colB)) {
-			array_push ($this->_left_joins, array ($model->getTable(), $model->getName(), $colA, $colB));
+			array_push ($this->_left_joins, array ($model->table, $model->name, $colA, $colB));
 		} else {
 			Error::fatal (sprintf ("either column '%s' or column '%s' is not valid", $colA, $colB));
 		}
@@ -301,7 +301,7 @@ class Criteria {
 		}
 
 		array_push ($this->_where, array ($andor, $parsed_clause));
-#		my_var_dump ("_where", $this->_where);
+#		Debug::var_dump ("_where", $this->_where);
 	}
 
 
@@ -491,8 +491,8 @@ class Criteria {
 		$col_name = $col_parts[1];
 
 		foreach ($this->_models as $model) {
-			if ($model_name == $model->getName()) {
-				if (in_array ($col_name, $model->getColNames())) {
+			if ($model_name == $model->name) {
+				if (in_array ($col_name, $model->columns)) {
 					return (TRUE);
 				}
 			}

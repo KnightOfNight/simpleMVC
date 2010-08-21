@@ -98,8 +98,8 @@ class Database {
 
 		# FROM
 		$model = $criteria->getModel();
-		$table = $model->getTable();
-		$query .= " FROM " . $table . " AS " . $model->getName();
+		$table = $model->table;
+		$query .= " FROM " . $table . " AS " . $model->name;
 
 
 		# LEFT JOIN
@@ -239,7 +239,7 @@ class Database {
 
 		$this->_last_query = $query;
 
-#		my_var_dump ("query", $query);
+#		Debug::var_dump ("query", $query);
 
 #		return (NULL);
 
@@ -270,8 +270,8 @@ class Database {
 			Error::fatal ("passed model is not an instance of BaseModel");
 		}
 
-		$table = $model->getTable();
-		$values = $model->getColVals();
+		$table = $model->table;
+		$values = $model->values;
 
 		if (isset ($values["id"])) {
 			$query = "UPDATE " . $table . " SET ";
@@ -321,8 +321,8 @@ class Database {
 			Error::fatal ("passed model is not an instance of BaseModel");
 		}
 
-		$table = $model->getTable();
-		$values = $model->getColVals();
+		$table = $model->table;
+		$values = $model->values;
 
 		if (! isset ($values["id"])) {
 			Error::fatal ("no value set for column 'id'");

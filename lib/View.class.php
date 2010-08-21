@@ -47,7 +47,6 @@ class View {
 	* $this->view = new View($this->controller, __FUNCTION__, $query);
 	* </code>
 	* ...from within an action method in a Controller object.
-	*
 	* @param string name of the controller
 	* @param string name of the action
 	* @param string passed query

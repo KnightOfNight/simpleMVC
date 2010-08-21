@@ -15,107 +15,43 @@
 * @package MVCAPI
 */
 class BaseModel {
-	# Database object.
-	private $_db;
+	/**
+	* @var string name of the instantiated model
+	*/
+	public $name;
 
-	# Name of this model.
-	private $_name;
+	/**
+	* @var string name of the model's associated table
+	*/
+	public $table;
 
-	# Database table associated with this model.
-	private $_table;
+	/**
+	* @var array list of all columns in the table
+	*/
+	public $columns;
 
-	# List of columns in the table.
-	private $_columns;
-
-	# Values assigned to columns.
-	private $_values;
+	/**
+	* @var hash all columns and their associated values
+	*/
+	public $values;
 
 
 	/**
 	* Create a new BaseModel object.
 	* <code>
-	* class DatabaseModel extends BaseModel {
+	* class ItemModel extends BaseModel {
 	* }
 	* </code>
+	*
 	* @param Database an instance of a Database object
-	* @return BaseModel
+	* @return BaseModel a new BaseModel object
 	*/
-	function __construct (Database $db) {
-		$this->_db = $db;
+	function __construct () {
+		global $DB;
 
-		$this->_name = strtolower (str_replace ("Model", "", get_class ($this)));
-
-		$this->_table = Inflection::pluralize ($this->_name);
-
-		$this->_columns = $this->_db->describe ($this->_table);
-	}
-
-
-	/**
-	* Get the list of column names in this model.
-	* @return array
-	*/
-	function getColNames () {
-		return ($this->_columns);
-	}
-
-
-	/**
-	* Get the value for a particular column.
-	* @param string name of the column
-	* @return string the value of the column
-	*/
-	function getColVal ($column = NULL) {
-		if (is_null ($column)) {
-			Error::fatal ("column must be specified");
-		} elseif (! in_array ($column, $this->_columns)) {
-			Error::fatal (sprintf ("invalid column '%s'", $column));
-		}
-
-		return ($this->_values[$column]);
-	}
-
-
-	/**
-	* Get the values for all columns.
-	* @return hash list of all columns and their associated values
-	*/
-	function getColVals () {
-		return ($this->_values);
-	}
-
-
-	/**
-	* Get the name of this model.
-	* @return string model name
-	*/
-	function getName () {
-		return ($this->_name);
-	}
-
-
-	/**
-	* Get the name of the database table associated with this model.
-	* @return string table name
-	*/
-	function getTable () {
-		return ($this->_table);
-	}
-
-
-	/**
-	* Set the value for a column.
-	* @param string fully qualified column name
-	* @param string value to assign to the column
-	*/
-	function setColVal ($column = NULL, $value = NULL) {
-		if (is_null ($column) OR is_null ($value)) {
-			Error::fatal ("column and value must both be specified");
-		} elseif (! in_array ($column, $this->_columns)) {
-			Error::fatal (sprintf ("invalid column '%s'", $column));
-		}
-
-		$this->_values[$column] = $value;
+		$this->name = strtolower (str_replace ("Model", "", get_class ($this)));
+		$this->table = Inflection::pluralize ($this->name);
+		$this->columns = $DB->describe ($this->table);
 	}
 
 

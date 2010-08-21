@@ -6,7 +6,7 @@
 * the session, setup logging, etc., and finally, engage the controller for the
 * requested route.
 *
-* This code is loaded by index.php in the public folder.
+* This code is loaded by index.php from the public folder.
 *
 * @author >X @ MCS 'Net Productions
 * @package MVCAPI
@@ -42,7 +42,7 @@ require_once (ROOT.DS."lib".DS."__autoload.php");
 
 
 # Load any libraries or configuration files othat the autoloader won't catch
-require_once (ROOT.DS."lib".DS."debug.php");
+# require_once (ROOT.DS."lib".DS."debug.php");
 require_once (ROOT.DS."cfg".DS."inflection.php");
 
 
@@ -60,6 +60,8 @@ $CONFIG = new Config;
 
 
 Session::start();
+
+
 /**
 * Global variable: current session ID
 * @global string $SESSION_ID
@@ -88,7 +90,7 @@ if ($CONFIG->getVal("application.development")) {
 
 
 /**
-* Global variable: database connection handler
+* Global variable: database connection
 * @global Database $DB
 */
 $DB = new Database;

@@ -39,11 +39,11 @@ class Log {
 
 	/**
 	* Create a new Log object.
-	* @return Log a new Log object
 	* @param integer log level
+	* @return Log a new Log object
 	*/
 	function __construct ($level) {
-		if (is_null ($level) OR ($level < Log::MINLVL) OR ($level > Log::MAXLVL) ) {
+		if ( ($level < Log::MINLVL) OR ($level > Log::MAXLVL) ) {
 			$this->_log_level = Log::NONE;
 		} else {
 			$this->_log_level = $level;
@@ -78,9 +78,10 @@ class Log {
 
 
 	/**
-	* Write out a log message if the current log level allows it.
-	* @param int message log level
-	* @param string message to log
+	* Write out a log message if the message level is if the current log level allows it.
+	*
+	* @param int the level of the message being logged
+	* @param string the message to log
 	*/
 	function msg ($level, $message) {
 		if ($this->_log_level === Log::NONE) {

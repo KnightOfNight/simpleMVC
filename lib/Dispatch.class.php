@@ -2,32 +2,24 @@
 
 
 /**
-*
 * @author >X @ MCS 'Net Productions
 * @package MVCAPI
 * @version 0.1.0
-*
 */
 
 
 /**
-*
-* Handle dispatching requests to the appropriate controller.
+* Singleton that handles dispatching requests to the appropriate controller.
 *
 * @package MVCAPI
-*
 */
 class Dispatch {
-	# By making this private, we are preventing this class from being
-	# instantiated.
 	private function __construct () {}
 
 
 	/**
-	*
 	* Dispatch a route.  If the route comes from a web browser, it is an
-	* external route, otherwise it is an internal route.  Both should be
-	* configured correctly in the application's configuration settings.
+	* external route, otherwise it is an internal route.
 	*
 	* @param string route
 	* @param bool TRUE => external route
@@ -56,6 +48,7 @@ class Dispatch {
 
 		# create a new controller object
 		$controller_class = ucfirst ($controller) . "Controller";
+
 		$dispatcher = new $controller_class ();
 
 		# call the three main parts of the controller
@@ -78,9 +71,7 @@ class Dispatch {
 	* within a view, e.g. to allow reuse of code that gets a list of records,
 	* said code could be called from multiple pages.
 	*
-	* @param string controller
-	* @param string action
-	* @param string query
+	* @param string route
 	*/
 	static function show ($route) {
 		Dispatch::go ($route, FALSE);

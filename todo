@@ -1,4 +1,4 @@
-
+When logging out, don't clear session.  Just unauthorize it.
 
 
 

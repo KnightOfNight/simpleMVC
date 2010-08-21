@@ -1,9 +1,26 @@
 <?php
 
+
+/**
+* @author >X @ MCS 'Net Productions
+* @package MVCAPI
+* @version 0.1.0
+*/
+
+
+/**
+* Provide access to the application's configuration.
+*
+* @package MVCAPI
+*/
 class Config {
 	private $_values;
 
 
+	/**
+	* Create a new Config object by loading in the application's configuration.
+	* @return Config a new Config object
+	*/
 	function __construct () {
 		$cfg_file = ROOT.DS."cfg".DS."config.json";
 
@@ -17,11 +34,12 @@ class Config {
 	}
 
 
-	function getVal ($path = NULL) {
-		if (is_null ($path)) {
-			return ($this->_values);
-		}
-
+	/**
+	* Get a particular configuration setting.
+	* @param string path to configuration variable in the configuration tree
+	* @return mixed value of the variable
+	*/
+	function getVal ($path) {
 		$levels = explode (".", $path);
 
 		$values = $this->_values;

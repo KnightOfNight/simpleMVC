@@ -25,7 +25,7 @@ lib		- application framework library files
 public	- Internet facing files
 	css			- all CSS files
 	js			- all JavaScript files
-	img			- all image files (optional)
+	img			- all image files
 
 tmp		- temporary files
 	cache		- cache files
