@@ -78,7 +78,8 @@ class Log {
 
 
 	/**
-	* Write out a log message if the message level is if the current log level allows it.
+	* Write out a log message if the message level is allowed by the selected
+	* log level.
 	*
 	* @param int the level of the message being logged
 	* @param string the message to log
@@ -95,6 +96,7 @@ class Log {
 
     function __destruct () {
 		$this->_log_level = Log::INFO;
+
 		$this->msg (Log::INFO, sprintf ("finishing, %.6fs elapsed", microtime(TRUE) - $GLOBALS["START_TIME"]));
 
 		if (! fclose ($this->_log_fp)) {

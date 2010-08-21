@@ -20,6 +20,7 @@
 class File {
 	private function __construct () {}
 
+
 	/**
 	* Verify the accessibility of a file.
 	*
@@ -36,4 +37,7 @@ class File {
 			Error::fatal (sprintf ("invalid mode '%s'", $mode));
 		}
 	}
+
+
+	private function __destruct () {}
 }

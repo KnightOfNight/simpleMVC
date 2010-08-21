@@ -12,7 +12,7 @@
 
 /**
 *
-* Handle application routes.
+* Singleton class that handles application routes.
 *
 * @package MCS_MVC_API
 *
@@ -21,8 +21,11 @@
 class Route {
 	private function __construct () {}
 
+
 	/**
-	* Validate route and fill in any missing pieces with default values.  Perform any reroutes needed.  Parse it into its component parts and return it as an array.
+	* Validate route and fill in any missing pieces with default values.
+	* Perform any reroutes needed.  Parse it into its component parts and
+	* return it as an array.
 	*
 	* @param string application route
 	* @return array broken down application route
@@ -147,7 +150,7 @@ class Route {
 
 	/**
 	* Redirect the browser to the URL for the specified application route.
-
+	*
 	* @param string controller
 	* @param string action
 	* @param string query
@@ -172,4 +175,7 @@ class Route {
 
 		return ($route);
 	}
+
+
+	private function __destruct () {}
 }

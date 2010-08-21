@@ -9,7 +9,7 @@
 
 
 /**
-* Singleton class for help with debugging.
+* Singleton class that provides acess to debugging tools.
 *
 * @package MCS_MVC_API
 */
@@ -20,6 +20,7 @@ class Debug {
 	/**
 	* Dump the contents and structure of a variable to the screen inside pre
 	* tags.
+	*
 	* @param string variable name
 	* @param mixed variable contents
 	*/
@@ -29,4 +30,7 @@ class Debug {
 		var_dump ($var_contents);
 		printf ("</pre>\n");
 	}
+
+
+	function __destruct () {}
 }

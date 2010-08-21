@@ -22,13 +22,7 @@ class BaseController {
 
 
 	/**
-	* @var string name of the controller
-	*/
-	protected $controller;
-
-
-	/**
-	* @var string name of the vuew
+	* @var string name of the associated view, if any
 	*/
 	protected $view;
 
@@ -39,7 +33,7 @@ class BaseController {
 	* @return BaseController a new BaseController object
 	*/
 	function __construct () {
-		$this->controller = strtolower (str_replace ("Controller", "", get_class ($this)));
+		$this->name = strtolower (str_replace ("Controller", "", get_class ($this)));
 	}
 
 

@@ -9,7 +9,7 @@
 
 
 /**
-* Singleon class that provides access to filesystem-based cache.
+* Singleton class that provides access to filesystem-based cache.
 *
 * @package MCS_MVC_API
 */
@@ -58,4 +58,7 @@ class Cache {
 			Error::fatal (sprintf ("cache directory '%s' is not writable", $cache_dir));
 		}
 	}
+
+
+	function __destruct () {}
 }

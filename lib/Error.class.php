@@ -46,4 +46,7 @@ class Error {
 
 		exit (0);
 	}
+
+
+	private function __destruct () {}
 }

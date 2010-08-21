@@ -9,7 +9,8 @@
 
 
 /**
-* Singleton that handles dispatching requests to the appropriate controller.
+* Singleton class that handles dispatching requests to the appropriate
+* controller.
 *
 * @package MCS_MVC_API
 */
@@ -83,4 +84,7 @@ class Dispatch {
 #	function return_action_results ($controller, $action, $query) {
 #		return (dispatch (Route::makeRoute($controller, $action, $query), FALSE));
 #	}
+
+
+	function __destruct () {}
 }
