@@ -1,15 +1,4 @@
-README for MCS MVC
-
-
-
-Files...
-
-README		- this file
-VERSION		- the version of the application framework
-
-
-
-Directories...
+The application framework uses the following directories...
 
 app		- application specific files
 	controllers			- class definitions for all controllers
