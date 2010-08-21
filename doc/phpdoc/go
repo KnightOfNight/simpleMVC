@@ -1,0 +1,38 @@
+#!/bin/bash
+
+
+#  HTML:frames:* - output is HTML with frames.
+#  HTML:frames:default - JavaDoc-like template, very plain, minimal formatting
+#  HTML:frames:earthli - BEAUTIFUL template written by Marco von Ballmoos
+#  HTML:frames:l0l33t - Stylish template
+#  HTML:frames:phpdoc.de - Similar to phpdoc.de's PHPDoc output
+#  HTML:frames:phphtmllib - Very nice user-contributed template
+#  
+#  all of the templates listed above are also available with javascripted
+#  expandable indexes, as HTML:frames:DOM/name where name is default, l0l33t,
+#  phpdoc.de, etcetera
+
+# HTML:frames:phpedit - Based on output from PHPEdit Help Generator
+#  
+#  HTML:Smarty:* - output is HTML with no frames.
+#        HTML:Smarty:default - Bold template design using css to control layout
+#        HTML:Smarty:HandS - Layout is based on PHP, but more refined, with logo image
+#        HTML:Smarty:PHP - Layout is identical to the PHP website
+#  
+#  CHM:default:* - output is CHM, compiled help file format (Windows help).
+#        CHM:default:default - Windows help file, based on HTML:frames:l0l33t
+#  
+#  PDF:default:* - output is PDF, Adobe Acrobat format
+#        PDF:default:default - standard, plain PDF formatting
+#  
+#  XML:DocBook:* - output is XML, in DocBook format
+#        XML:DocBook/peardoc2:default - documentation ready for compiling into
+#        peardoc for online pear.php.net documentation, 2nd revision
+
+umask 022
+
+find -type f -name "*.html" -exec rm {} \;
+
+find -mindepth 1 -maxdepth 1 -type d -exec rm -fr {} \;
+
+/usr/local/src/phpdoc/phpdoc --directory ../../lib --target . --title "MCS 'Net Productions MVC API" -dn MVCAPI -o HTML:frames:earthli

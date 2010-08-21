@@ -19,14 +19,17 @@ class Database {
 
 	/**
 	* Connect to a database.
+	*
 	* @param string host
-	* @param string port number
+	* @param integer port number
 	* @param string database name
 	* @param string username
 	* @param string password
 	*/
 	function connect ($host, $port, $name, $user, $pass) {
-		$dsn = sprintf ("%s:host=%s;port=%s;dbname=%s", "mysql", $host, $port, $name);
+		$dsn = sprintf ("%s:host=%s;port=%d;dbname=%s", "mysql", $host, $port, $name);
+
+#		Debug::var_dump("dsn", $dsn);
 
 		try {
 			$this->_dbh = new PDO ($dsn, $user, $pass);
@@ -38,6 +41,7 @@ class Database {
 
 	/**
 	* Describe a table and return the list of column names.
+	*
 	* @param string table name
 	* @return array list of column names
 	*/
@@ -68,6 +72,7 @@ class Database {
 
 	/**
 	* Perform a database select, building the query from the passed criteria.
+	*
 	* @param Criteria
 	* @return mixed query results
 	*/
@@ -170,33 +175,6 @@ class Database {
 		}
 
 
-#			$clause_operator = $clause["operator"];
-#			$sub_clauses = $clause["sub_clauses"];
-#
-#			if ($where_str) {
-#				$where_str .= " " . $clause_operator;
-#			} else {
-#				$where_str = " WHERE";
-#			}
-
-#			$sub_clause_str = "";
-#			foreach ($sub_clauses as $sub_clause) {
-#				$sub_clause_operator = $sub_clause["operator"];
-#				$sub_clause_parts = $sub_clause["sub_clause"];
-#
-#				if ($sub_clause_str) {
-#					$sub_clause_str .= " " . $sub_clause_operator . " ";
-#				} else {
-#					$sub_clause_str = " (";
-#				}
-#
-#				$sub_clause_str .= $sub_clause_parts["column"] . " " . $sub_clause_parts["operator"] . " ?";
-#
-#				array_push ($values, $sub_clause_parts["value"]);
-#			}
-#			$sub_clause_str .= ")";
-
-
 		# ORDER BY
 		$orderby_str = "";
 		if ($orderbys = $criteria->getOrderBy()) {
@@ -214,15 +192,7 @@ class Database {
 			}
 					
 			$query .= $orderby_str;
-
-#			$orderby_cols = $orderby[0];
-#			$orderby_order = $orderby[1];
-#			$query .= " ORDER BY " . $orderby_cols . " " . $orderby_order;
 		}
-#		if ($orderby = $criteria->getOrderBy()) {
-#			$order = $criteria->getOrder();
-#			$query .= " ORDER BY " . $orderby . " " . $order;
-#		}
 
 
 		# LIMIT
