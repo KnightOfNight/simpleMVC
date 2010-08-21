@@ -4,7 +4,7 @@
 /**
 *
 * @author >X @ MCS 'Net Productions
-* @package MVCAPI
+* @package MCS_MVC_API
 * @version 0.1.0
 *
 */
@@ -16,7 +16,7 @@
 * what sort order to use, where clause, etc.
 * In this class, all column names are expected to be fully qualified, e.g. <model>.<column>
 *
-* @package MVCAPI
+* @package MCS_MVC_API
 *
 */
 class Criteria {

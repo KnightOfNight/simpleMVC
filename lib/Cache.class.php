@@ -3,7 +3,7 @@
 
 /**
 * @author >X @ MCS 'Net Productions
-* @package MVCAPI
+* @package MCS_MVC_API
 * @version 0.1.0
 */
 
@@ -11,7 +11,7 @@
 /**
 * Singleon class that provides access to filesystem-based cache.
 *
-* @package MVCAPI
+* @package MCS_MVC_API
 */
 class Cache {
 	private function __construct () {}

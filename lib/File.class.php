@@ -4,8 +4,8 @@
 /**
 *
 * @author >X @ MCS 'Net Productions
-* @package MVCAPI
-* @version v0.0.0
+* @package MCS_MVC_API
+* @version 0.1.0
 *
 */
 
@@ -14,7 +14,7 @@
 *
 * Singleton class to help with filesystem I/O.
 *
-* @package MVCAPI
+* @package MCS_MVC_API
 *
 */
 class File {

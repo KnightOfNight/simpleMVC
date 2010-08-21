@@ -3,7 +3,7 @@
 
 /**
 * @author >X @ MCS 'Net Productions
-* @package MVCAPI
+* @package MCS_MVC_API
 * @version 0.1.0
 */
 
@@ -11,7 +11,7 @@
 /**
 * Provide access to the application's configuration.
 *
-* @package MVCAPI
+* @package MCS_MVC_API
 */
 class Config {
 	private $_values;

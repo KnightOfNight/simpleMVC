@@ -9,7 +9,7 @@
 * This code is loaded by index.php from the public folder.
 *
 * @author >X @ MCS 'Net Productions
-* @package MVCAPI
+* @package MCS_MVC_API
 * @version 0.1.0
 */
 

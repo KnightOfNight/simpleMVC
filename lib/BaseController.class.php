@@ -3,7 +3,7 @@
 
 /**
 * @author >X @ MCS 'Net Productions
-* @package MVCAPI
+* @package MCS_MVC_API
 * @version 0.1.0
 */
 
@@ -12,7 +12,7 @@
 * Base Controller class - handle the lowest level functions of a controller
 * object.
 *
-* @package MVCAPI
+* @package MCS_MVC_API
 */
 class BaseController {
 	/**

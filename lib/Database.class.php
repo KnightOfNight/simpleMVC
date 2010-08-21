@@ -3,14 +3,14 @@
 
 /**
 * @author >X @ MCS 'Net Productions
-* @package MVCAPI
+* @package MCS_MVC_API
 * @version 0.1.0
 */
 
 
 /**
 * Manage a database connection.
-* @package MVCAPI
+* @package MCS_MVC_API
 */
 class Database {
 	private $_dbh;
