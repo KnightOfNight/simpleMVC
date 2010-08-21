@@ -16,7 +16,7 @@ while true; do
 		echo -n "Enter path: "; read MVC_PATH
 	done
 
-	MVC_URL="http://$MVC_DOMAIN$MVC_PATH"
+	MVC_URL="https://$MVC_DOMAIN$MVC_PATH"
 	
 	echo
 	echo "Domain name: $MVC_DOMAIN"
@@ -46,7 +46,7 @@ for dir in controllers lib models views; do
 	mkdir app/$dir && chmod 755 app/$dir
 done
 
-for dir in js img css; do
+for dir in js img css html views; do
 	mkdir public/$dir && chmod 755 public/$dir
 done
 

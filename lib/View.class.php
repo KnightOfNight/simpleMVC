@@ -5,7 +5,7 @@
 *
 * @author >X @ MCS 'Net Productions
 * @package MVCAPI
-* @version v0.0.0
+* @version 0.1.0
 *
 */
 

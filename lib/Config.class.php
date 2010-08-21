@@ -1,4 +1,4 @@
-<?PHP
+<?php
 
 class Config {
 	private $_values;

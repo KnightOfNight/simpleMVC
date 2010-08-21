@@ -1,15 +1,47 @@
-<?PHP
+<?php
 
 
-$start_time = microtime (TRUE);
+/**
+* Bootstrap the application framework.  Setup the database connection, start
+* the session, setup logging, etc., and finally, engage the controller for the
+* requested route.
+*
+* This code is loaded by index.php in the public folder.
+*
+* @author >X @ MCS 'Net Productions
+* @package MVCAPI
+* @version 0.1.0
+*/
+
+
+/**
+* Global variable: script start time in decimal seconds.
+* @global float $START_TIME
+*/
 $START_TIME = microtime (TRUE);
 
 
-# setup autoloader
-require_once (ROOT.DS."lib".DS."autoload.php");
+define ( "LIBDIR",
+		# General application framework.
+		ROOT.DS."lib" . ":" . 
+
+		# Application-specific controllers.
+		ROOT.DS."app/controllers" . ":" . 
+
+		# Application-specific models.
+		ROOT.DS."app/models" . ":" . 
+
+		# Application-specific misc. classes, addon libraries, etc.
+		ROOT.DS."app/lib" );
+
+define ( "VIEWDIR", ROOT.DS."app/views" );
 
 
-# load any libraries or configuration files othat the autoloader won't catch
+# Setup the autoloader
+require_once (ROOT.DS."lib".DS."__autoload.php");
+
+
+# Load any libraries or configuration files othat the autoloader won't catch
 require_once (ROOT.DS."lib".DS."debug.php");
 require_once (ROOT.DS."cfg".DS."inflection.php");
 
@@ -20,19 +52,25 @@ require_once (ROOT.DS."cfg".DS."inflection.php");
 ob_start ("ob_gzhandler");
 
 
-# Load the program's configuration
-#
+/**
+* Global variable: current application configuration
+* @global array $CONFIG
+*/
 $CONFIG = new Config;
 
 
-# Start a session
-#
 Session::start();
+/**
+* Global variable: current session ID
+* @global string $SESSION_ID
+*/
 $SESSION_ID = session_id ();
 
 
-# Turn on logging
-#
+/**
+* Global variable: log file handler
+* @global Log $LOG
+*/
 $LOG = new Log ((int) $CONFIG->getVal("framework.loglevel"));
 
 
@@ -49,11 +87,13 @@ if ($CONFIG->getVal("application.development")) {
 }
 
 
-# Connect to the database
-#
-$db_cfg = $CONFIG->getVal("database");
+/**
+* Global variable: database connection handler
+* @global Database $DB
+*/
 $DB = new Database;
-$DB->connect ($db_cfg["host"], $db_cfg["port"], $db_cfg["name"], $db_cfg["user"], $db_cfg["pass"]);
+$cfg = $CONFIG->getVal("database");
+$DB->connect ($cfg["host"], $cfg["port"], $cfg["name"], $cfg["user"], $cfg["pass"]);
 
 
 # Get the route
@@ -68,5 +108,6 @@ Dispatch::go ($route);
 
 
 # Close up.
+#
 unset ($DB);
 unset ($LOG);

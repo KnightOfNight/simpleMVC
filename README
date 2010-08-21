@@ -1,0 +1,33 @@
+README for MCS MVC
+
+
+
+Files...
+
+README		- this file
+VERSION		- the version of the application framework
+
+
+
+Directories...
+
+app		- application specific files
+	controllers			- class definitions for all controllers
+	lib					- application-specific libraries
+	models				- class definitions for all database models
+	views				- all application views
+	views/<controller>	- controller specific views
+
+cfg		- configuration files
+
+lib		- application framework library files
+
+public	- Internet facing files
+	css			- all CSS files
+	js			- all JavaScript files
+	img			- all image files (optional)
+
+tmp		- temporary files
+	cache		- cache files
+	logs		- log files
+	sessions	- session data files

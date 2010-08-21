@@ -1,13 +1,17 @@
 <?php
 
+
 /**
 * @author >X @ MCS 'Net Productions
 * @package MVCAPI
-* @version v0.0.0
+* @version 0.1.0
 */
 
+
 /**
-* Database model base class.
+* Base Model class - handle the lowest level functions of a database model
+* object.
+*
 * @package MVCAPI
 */
 class BaseModel {

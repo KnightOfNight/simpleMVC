@@ -5,14 +5,15 @@
 *
 * @author >X @ MCS 'Net Productions
 * @package MVCAPI
-* @version v0.0.0
+* @version 0.1.0
 *
 */
 
 
 /**
-* Setup an __autoload function to handle automatically loading all required
-* classes.
+* Overwrite the builtin auto-loader, handle automatically loading any required
+* classes.  Classes can be found in the colon-separated list of paths in
+* "LIBDIR"  WTF IS LIBDIR!!!.
 * @param string name of the class to load
 */
 function __autoload ($class) {
