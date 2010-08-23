@@ -59,8 +59,16 @@ ob_start ("ob_gzhandler");
 $CONFIG = new Config;
 
 
-Session::start();
+/**
+* Global variable: database connection
+* @global Database $DB
+*/
+$DB = new Database;
+$cfg = $CONFIG->getVal("database");
+$DB->connect ($cfg["host"], $cfg["port"], $cfg["name"], $cfg["user"], $cfg["pass"]);
 
+
+Session::start();
 
 /**
 * Global variable: current session ID
@@ -71,9 +79,9 @@ $SESSION_ID = session_id ();
 
 /**
 * Global variable: log file handler
-* @global Log $LOG
+* @global Lg $L
 */
-$LOG = new Log ((int) $CONFIG->getVal("framework.loglevel"));
+$L = new Lg ((int) $CONFIG->getVal("framework.loglevel"));
 
 
 # Setup error reporting
@@ -89,19 +97,10 @@ if ($CONFIG->getVal("application.development")) {
 }
 
 
-/**
-* Global variable: database connection
-* @global Database $DB
-*/
-$DB = new Database;
-$cfg = $CONFIG->getVal("database");
-$DB->connect ($cfg["host"], $cfg["port"], $cfg["name"], $cfg["user"], $cfg["pass"]);
-
-
 # Get the route
 #
 $route = isset ($_GET["route"]) ? $_GET["route"] : NULL;
-$LOG->msg(Log::INFO, "initial route = '" . $route . "'");
+$L->msg(Lg::INFO, "initial route = '" . $route . "'");
 
 
 # Dispatch the route.
@@ -111,5 +110,5 @@ Dispatch::go ($route);
 
 # Close up.
 #
+$L->close();
 unset ($DB);
-unset ($LOG);

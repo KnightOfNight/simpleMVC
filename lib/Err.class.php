@@ -13,7 +13,7 @@
 *
 * @package MCS_MVC_API
 */
-class Error {
+class Err {
 	private function __construct () {}
 
 

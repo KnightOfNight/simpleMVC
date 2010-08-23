@@ -68,19 +68,22 @@ class Route {
 				$action = $CONFIG->getVal("dispatcher.controller." . $controller . ".default_action");
 			} else {
 				$action = strtolower ($route_parts[0]);
-
-				# Check the action to make sure it is configured and implemented.
-				$actions = array();
-				$actions = array_merge ($actions, $CONFIG->getVal("dispatcher.controller." . $controller . ".external_actions"));
-				$actions = array_merge ($actions, $CONFIG->getVal("dispatcher.controller." . $controller . ".internal_actions"));
-				if (! method_exists ($controller_class, $action)) {
-					Error::fatal (sprintf ("route is invalid, '%s' is not a valid action for controller '%s', method not found", $action, $controller));
-				} elseif (! in_array ($action, $actions)) {
-					Error::fatal (sprintf ("route is invalid, action '%s' not found in configuration for controller '%s'", $action, $controller));
-				}
-
-				array_shift ($route_parts);
 			}
+
+			# Check the action to make sure it is configured and implemented.
+			$actions = array();
+
+			$actions = array_merge ($actions, $CONFIG->getVal("dispatcher.controller." . $controller . ".external_actions"));
+
+			$actions = array_merge ($actions, $CONFIG->getVal("dispatcher.controller." . $controller . ".internal_actions"));
+
+			if (! method_exists ($controller_class, $action)) {
+				Error::fatal (sprintf ("route is invalid, '%s' is not a valid action for controller '%s', method not found", $action, $controller));
+			} elseif (! in_array ($action, $actions)) {
+				Error::fatal (sprintf ("route is invalid, action '%s' not found in configuration for controller '%s'", $action, $controller));
+			}
+
+			array_shift ($route_parts);
 
 			# Get the query, if any.
 			foreach ($route_parts as $route_part) {

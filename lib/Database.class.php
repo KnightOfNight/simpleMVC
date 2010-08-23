@@ -29,7 +29,7 @@ class Database {
 	function connect ($host, $port, $name, $user, $pass) {
 		$dsn = sprintf ("%s:host=%s;port=%d;dbname=%s", "mysql", $host, $port, $name);
 
-#		Debug::var_dump("dsn", $dsn);
+#Debug::var_dump("dsn", $dsn);
 
 		try {
 			$this->_dbh = new PDO ($dsn, $user, $pass);
@@ -77,7 +77,7 @@ class Database {
 	* @return mixed query results
 	*/
 	function select (Criteria $criteria) {
-		global $LOG;
+		global $L;
 
 		$query = "SELECT ";
 
@@ -126,8 +126,8 @@ class Database {
 			$operator = $where[0];
 			$clauses = $where[1];
 
-			$LOG->msg(Log::DEBUG, "operator = '" . $operator . "'");
-			$LOG->msg(Log::DEBUG, "clauses = '" . $clauses . "'");
+			$L->msg(Log::DEBUG, "operator = '" . $operator . "'");
+			$L->msg(Log::DEBUG, "clauses = '" . $clauses . "'");
 
 			if ($where_str) {
 				$where_str .= " " . $operator;
@@ -136,31 +136,31 @@ class Database {
 			}
 
 			$clause_str = "";
-			$LOG->msg(Log::DEBUG, "clause_str = '" . $clause_str . "'");
+			$L->msg(Log::DEBUG, "clause_str = '" . $clause_str . "'");
 
 			foreach ($clauses as $clause) {
-				$LOG->msg(Log::DEBUG, "found clause");
+				$L->msg(Log::DEBUG, "found clause");
 
 				if (! $clause_str) {
 					$clause_str = " (";
 				}
 
 				if (is_array ($clause)) {
-					$LOG->msg(Log::DEBUG, "clause is an array");
+					$L->msg(Log::DEBUG, "clause is an array");
 
 					$col = $clause[0];
 					$op = $clause[1];
 					$val = $clause[2];
 
-					$LOG->msg(Log::DEBUG, "col = '" . $col . "'");
-					$LOG->msg(Log::DEBUG, "op = '" . $op . "'");
-					$LOG->msg(Log::DEBUG, "val = '" . $val . "'");
+					$L->msg(Log::DEBUG, "col = '" . $col . "'");
+					$L->msg(Log::DEBUG, "op = '" . $op . "'");
+					$L->msg(Log::DEBUG, "val = '" . $val . "'");
 
 					$clause_str .= $col . " " . $op . " ?";
 
 					array_push ($values, $val);
 				} else {
-					$LOG->msg(Log::DEBUG, "clause is an operator");
+					$L->msg(Log::DEBUG, "clause is an operator");
 
 					$clause_str .= " " . $clause . " ";
 				}
@@ -209,9 +209,7 @@ class Database {
 
 		$this->_last_query = $query;
 
-#		Debug::var_dump ("query", $query);
-
-#		return (NULL);
+#Debug::var_dump ("query", $query);
 
 		$stmnt = $this->_dbh->prepare($query);
 
@@ -223,7 +221,7 @@ class Database {
 			$index++;
 		}
 
-		$LOG->msg(Log::INFO, "database query = '" . $query . "'");
+		$L->msg(Log::DEBUG, "database query = '" . $query . "'");
 
 		if ($stmnt->execute() === FALSE) {
 			Error::fatal ($this->_pdoError());
@@ -233,46 +231,60 @@ class Database {
 	}
 
 
-	# Save or update a database record for the passed model.
-	#
-	function save ($model) {
-		if (! ($model instanceof BaseModel)) {
-			Error::fatal ("passed model is not an instance of BaseModel");
+	/**
+	* Save a database record.
+
+* from the passed model.  If the 'id' column has a
+	* value, then the record will updated.  Otherwise a new record will be
+	* created.
+	*
+	* @param string table name
+	* @param array list of column names
+	* @param hash column name => value
+	* @return integer current value of the 'id' column or new value on create
+	*/
+	function save ($table, $columns, $values) {
+		if (empty ($values)) {
+			Error::fatal("No column values set.  Cannot update or create record.");
 		}
 
-		$table = $model->table;
-		$values = $model->values;
+		$query = "";
+		$set = "";
+		$where = "";
+		$params = array();
 
 		if (isset ($values["id"])) {
 			$query = "UPDATE " . $table . " SET ";
-			$set_str = "";
+			$where .= "WHERE id = :id";
 		} else {
 			$query = "INSERT INTO " . $table . " SET ";
-			$set_str = "created_at=NULL";
-		}
 
-		foreach ($values as $col => $val) {
-			if ($set_str) {
-				$set_str .= " , ";
+			if (in_array ("created_at", $columns)) {
+				$set = "created_at = NULL";
 			}
-			$set_str .= $col . "=:" . $col;
 		}
 
-		$query .= $set_str;
+		foreach ($values as $col_name => $col_val) {
+			$param_name = ":" . $col_name;
 
-		if (isset ($values["id"])) {
-			$query .= " WHERE id=:id";
+			$params[$param_name] = $col_val;
+
+			$set .= $set ? " , " : "";
+			$set .= $col_name . " = " . $param_name;
 		}
+
+		$query .= $set;
+
+		$query .= $where ? " " . $where : "";
+
+Debug::var_dump("params", $params);
+Debug::var_dump("query", $query);
 
 		$stmnt = $this->_dbh->prepare($query);
 
-		foreach ($values as $col => $val) {
-			if ($stmnt->bindValue(":" . $col, $val) === FALSE) {
-				Error::fatal (sprintf ("unable to bind value '%s' to ':%s'", $val, $col));
-			}
-		}
+#Debug::var_dump("stmnt", $stmnt);
 
-		if ($stmnt->execute() === FALSE) {
+		if ($stmnt->execute($params) === FALSE) {
 			Error::fatal ($this->_pdoError());
 		}
 
@@ -341,6 +353,8 @@ class Database {
 	#
 	private function _pdoError () {
 		$results_error = $this->_dbh->errorInfo();
+
+#Debug::var_dump("results_error", $results_error);
 
 		return ("database query failed: SQLSTATE[" . $results_error[0] . "] [" . $results_error[1] . "] " . $results_error[2]);
 	}

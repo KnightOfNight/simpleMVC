@@ -20,6 +20,7 @@
 class Session {
 	private function __construct () {}
 
+
 	/**
 	* Start a new session.
 	*/
@@ -52,8 +53,8 @@ class Session {
 			setcookie (session_name (), session_id (), $timeout, $CONFIG->getVal("application.base_path"),
 				$CONFIG->getVal("application.domain"), TRUE, TRUE);
 
-#			Debug::var_dump ("application.base_path", $CONFIG->getVal("application.base_path"));
-#			Debug::var_dump ("application.domain", $CONFIG->getVal("application.domain"));
+#Debug::var_dump ("application.base_path", $CONFIG->getVal("application.base_path"));
+#Debug::var_dump ("application.domain", $CONFIG->getVal("application.domain"));
 		}
 	}
 

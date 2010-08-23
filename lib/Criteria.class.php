@@ -227,7 +227,7 @@ class Criteria {
 	* @param array clause to add to the query
 	*/
 	function addWhere ($andor, $clause = NULL) {
-		global $LOG;
+		global $L;
 
 		if (is_null ($andor)) {
 			$andor = Criteria::op_and;
@@ -245,7 +245,7 @@ class Criteria {
 		for ($idx = 0; isset ($clause[$idx]); $idx++) {
 			$item = $clause[$idx];
 
-			$LOG->msg(Log::DEBUG, "item = '" . $item . "'");
+			$L->msg(Log::DEBUG, "item = '" . $item . "'");
 
 			if (is_array ($item)) {
 				# $item is a clause
@@ -301,7 +301,7 @@ class Criteria {
 		}
 
 		array_push ($this->_where, array ($andor, $parsed_clause));
-#		Debug::var_dump ("_where", $this->_where);
+#Debug::var_dump ("_where", $this->_where);
 	}
 
 
@@ -491,7 +491,7 @@ class Criteria {
 		$col_name = $col_parts[1];
 
 		foreach ($this->_models as $model) {
-			if ($model_name == $model->name) {
+			if ($model_name == $model->name()) {
 				if (in_array ($col_name, $model->columns)) {
 					return (TRUE);
 				}
