@@ -17,7 +17,7 @@
 * @package MCS_MVC_API
 *
 */
-class Lg {
+class Log {
 	const NONE = 0;
 	const ERROR = 1;
 	const WARN = 2;
@@ -25,26 +25,26 @@ class Lg {
 	const DEBUG = 8;
 
 	private $_level = 0;
-	private $_log_levels = array (	Lg::NONE => "NONE",
-									Lg::ERROR => "ERROR",
-									Lg::WARN => "WARN",
-									Lg::INFO => "INFO",
-									Lg::DEBUG => "DEBUG");
+	private $_log_levels = array (	Log::NONE => "NONE",
+									Log::ERROR => "ERROR",
+									Log::WARN => "WARN",
+									Log::INFO => "INFO",
+									Log::DEBUG => "DEBUG");
 	private $_max_level = 0;
 
 
 	/**
-	* Create a new Lg object.
+	* Create a new Log object.
 	*
 	* @param integer log level
-	* @return Lg a new Lg object
+	* @return Log a new Log object
 	*/
 	function __construct ($level) {
 		$max_level = array_sum (array_keys($this->_log_levels));
 
-		$this->_level = ($level < 0) ? Lg::NONE : ($level > $max_level) ? $max_level : $level;
+		$this->_level = ($level < 0) ? Log::NONE : ($level > $max_level) ? $max_level : $level;
 
-		$this->msg (Lg::INFO, "starting");
+		$this->msg(Log::INFO, "MCSMVC starting");
 	}
 
 
@@ -56,21 +56,13 @@ class Lg {
 	* @param string the message to log
 	*/
 	function msg ($level, $message) {
-		if ( ($this->_level === Lg::NONE) || (! ($level & $this->_level)) ) {
+		if ( ($this->_level === Log::NONE) || (! ($level & $this->_level)) ) {
 			return;
 		}
 
-#Debug::var_dump("level", $level);
-
-		global $DB;
-
-		if (! isset ($DB)) {
-			Error::fatal("Database connection is not open, unable to log message...\n\n" . $message);
-		}
+		$time = explode (" ", microtime ());
 
 		$log = new LogModel();
-
-		$time = explode (" ", microtime ());
 
 		$log->value("session", $GLOBALS["SESSION_ID"]);
 		$log->value("unixtime", $time[1]);
@@ -78,10 +70,7 @@ class Lg {
 		$log->value("level", $level);
 		$log->value("message", $message);
 
-#Debug::var_dump("time", $time);
-#Debug::var_dump("log", $log);
-
-		$log->save();
+		$log->create(FALSE);
 	}
 
 
@@ -89,7 +78,7 @@ class Lg {
 	* Write a final message to the log and close it.
 	*/
 	function close () {
-		$this->msg (Lg::INFO, sprintf ("finishing, %.6fs elapsed", microtime(TRUE) - $GLOBALS["START_TIME"]));
+		$this->msg (Log::INFO, sprintf ("MCSMVC finishing, %.6fs elapsed", microtime(TRUE) - $GLOBALS["START_TIME"]));
 	}
 
 

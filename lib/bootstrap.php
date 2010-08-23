@@ -79,9 +79,9 @@ $SESSION_ID = session_id ();
 
 /**
 * Global variable: log file handler
-* @global Lg $L
+* @global Log $L
 */
-$L = new Lg ((int) $CONFIG->getVal("framework.loglevel"));
+$L = new Log ((int) $CONFIG->getVal("framework.loglevel"));
 
 
 # Setup error reporting
@@ -100,7 +100,7 @@ if ($CONFIG->getVal("application.development")) {
 # Get the route
 #
 $route = isset ($_GET["route"]) ? $_GET["route"] : NULL;
-$L->msg(Lg::INFO, "initial route = '" . $route . "'");
+$L->msg(Log::INFO, "initial route = '" . $route . "'");
 
 
 # Dispatch the route.

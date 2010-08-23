@@ -69,7 +69,7 @@ class View {
 	*/
 	function renderHF ($value = TRUE) {
 		if (! is_bool ($value)) {
-			Error::fatal ("passed value must be a boolean (TRUE or FALSE)");
+			Err::fatal ("passed value must be a boolean (TRUE or FALSE)");
 		}
 
 		$this->_render_hf = $value;
@@ -210,7 +210,7 @@ class View {
 		extract ($this->_variables);
 
 		if (! File::ready ($body = VIEWDIR.DS.$this->_controller.DS.$this->_action.".php")) {
-			Error::fatal (sprintf ("unable to read page body '%s'", $body));
+			Err::fatal (sprintf ("unable to read page body '%s'", $body));
 		}
 
 		ob_start ();
@@ -222,7 +222,7 @@ class View {
 					File::ready ($header = VIEWDIR.DS."header.php")) {
 				include ($header);
 			} else {
-				Error::fatal (sprintf ("unable to load any page header"));
+				Err::fatal (sprintf ("unable to load any page header"));
 			}
 		}
 
@@ -233,7 +233,7 @@ class View {
 					File::ready ($footer = VIEWDIR.DS."footer.php")) {
 				include ($footer);
 			} else {
-				Error::fatal (sprintf ("unable to load any page footer"));
+				Err::fatal (sprintf ("unable to load any page footer"));
 			}
 		}
     }

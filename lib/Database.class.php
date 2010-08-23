@@ -14,6 +14,7 @@
 */
 class Database {
 	private $_dbh;
+	private $_log_queries;
 	private $_last_query;
 
 
@@ -29,12 +30,12 @@ class Database {
 	function connect ($host, $port, $name, $user, $pass) {
 		$dsn = sprintf ("%s:host=%s;port=%d;dbname=%s", "mysql", $host, $port, $name);
 
-#Debug::var_dump("dsn", $dsn);
+#Dbg::var_dump("dsn", $dsn);
 
 		try {
 			$this->_dbh = new PDO ($dsn, $user, $pass);
 		} catch (PDOException $e) {
-			Error::fatal ($e->getMessage());
+			Err::fatal ($e->getMessage());
 		}
 	}
 
@@ -45,25 +46,21 @@ class Database {
 	* @param string table name
 	* @return array list of column names
 	*/
-	function describe ($table = NULL) {
-		if (is_null ($table)) {
-			Error::fatal ("no table name specified");
-		}
-
+	function describe ($table) {
 		if (! $columns = Cache::get($cache_name = "describe_" . $table)) {
 			$columns = array();
 
 			$query = "describe " . $table;
 
 			if ( ($results = $this->_dbh->query($query)) === FALSE ) {
-				Error::fatal ($this->_pdoError());
+				Err::fatal ($this->_pdoError());
 			}
 
 			while ($result = $results->fetch()) {
 				array_push ($columns, $result["Field"]);
 			}
 
-			Cache::set ($cache_name, $columns);
+			Cache::set($cache_name, $columns);
 		}
 
 		return ($columns);
@@ -209,14 +206,14 @@ class Database {
 
 		$this->_last_query = $query;
 
-#Debug::var_dump ("query", $query);
+#Dbg::var_dump ("query", $query);
 
 		$stmnt = $this->_dbh->prepare($query);
 
 		$index = 0;
 		foreach ($values as $val) {
 			if ($stmnt->bindValue($index + 1, $val) === FALSE) {
-				Error::fatal (sprintf ("unable to bind value '%s' to parameter %d", $val, $index + 1));
+				Err::fatal (sprintf ("unable to bind value '%s' to parameter %d", $val, $index + 1));
 			}
 			$index++;
 		}
@@ -224,10 +221,107 @@ class Database {
 		$L->msg(Log::DEBUG, "database query = '" . $query . "'");
 
 		if ($stmnt->execute() === FALSE) {
-			Error::fatal ($this->_pdoError());
+			Err::fatal ($this->_pdoError());
 		}
 
 		return ($stmnt->fetchAll(PDO::FETCH_BOTH));
+	}
+
+
+	/**
+	* Create a new database record.
+	*
+	* @param string table name
+	* @param array list of column names
+	* @param hash column name => value
+	* @param bool log the query
+	* @return integer new record id
+	*/
+	function create ($table, $columns, $values, $log_query = TRUE) {
+		if (empty ($values)) {
+			Err::fatal("No column values set.  Cannot update or create record.");
+		}
+
+		$query = "INSERT INTO " . $table . " SET " . Database::makeset($values);
+
+		if (in_array ("created_at", $columns)) {
+			$query .= " , " . "created_at = NULL";
+		}
+
+		if ($log_query === TRUE) {
+			global $L;
+			$L->msg(Log::DEBUG, "database query = '" . $query . "'");
+		}
+
+		$stmnt = $this->_dbh->prepare($query);
+
+		if ($stmnt->execute(Database::getparams($values)) === FALSE) {
+			Err::fatal ($this->_pdoError());
+		}
+
+		return ($this->_dbh->lastInsertId());
+	}
+
+
+	/**
+	* Update a database record.
+	*
+	* @param string table name
+	* @param array list of column names
+	* @param hash column name => value
+	*/
+	function update ($table, $columns, $values, $log_query = TRUE) {
+		if (empty ($values)) {
+			Err::fatal("No column values set.  Cannot update or create record.");
+		}
+
+		if (! isset ($values["id"])) {
+			Err::fatal ("Column 'id' has no No value set.");
+		}
+
+		$query = "UPDATE " . $table . " SET " . Database::makeset($values) . " WHERE id = :id";
+
+		if ($log_query === TRUE) {
+			global $L;
+			$L->msg(Log::DEBUG, "database query = '" . $query . "'");
+		}
+
+		$stmnt = $this->_dbh->prepare($query);
+
+		if ($stmnt->execute(Database::getparams($values)) === FALSE) {
+			Err::fatal ($this->_pdoError());
+		}
+
+		return (TRUE);
+	}
+
+
+	static private function makeset ($values) {
+		$set = "";
+
+		foreach ($values as $col_name => $col_val) {
+			$param_name = ":" . $col_name;
+
+			$params[$param_name] = $col_val;
+
+			$set .= $set ? " , " : "";
+			$set .= $col_name . " = " . $param_name;
+		}
+
+		return ($set);
+	}
+
+
+	static private function getparams ($values) {
+		$params = array();
+
+		foreach ($values as $col_name => $col_val) {
+			$param_name = ":" . $col_name;
+
+			$params[$param_name] = $col_val;
+		}
+
+		return ($params);
 	}
 
 
@@ -245,7 +339,7 @@ class Database {
 	*/
 	function save ($table, $columns, $values) {
 		if (empty ($values)) {
-			Error::fatal("No column values set.  Cannot update or create record.");
+			Err::fatal("No column values set.  Cannot update or create record.");
 		}
 
 		$query = "";
@@ -277,15 +371,15 @@ class Database {
 
 		$query .= $where ? " " . $where : "";
 
-Debug::var_dump("params", $params);
-Debug::var_dump("query", $query);
+#Dbg::var_dump("params", $params);
+#Dbg::var_dump("query", $query);
 
 		$stmnt = $this->_dbh->prepare($query);
 
-#Debug::var_dump("stmnt", $stmnt);
+#Dbg::var_dump("stmnt", $stmnt);
 
 		if ($stmnt->execute($params) === FALSE) {
-			Error::fatal ($this->_pdoError());
+			Err::fatal ($this->_pdoError());
 		}
 
 		if (isset ($values["id"])) {
@@ -300,14 +394,14 @@ Debug::var_dump("query", $query);
 	#
 	function delete ($model) {
 		if (! ($model instanceof BaseModel)) {
-			Error::fatal ("passed model is not an instance of BaseModel");
+			Err::fatal ("passed model is not an instance of BaseModel");
 		}
 
 		$table = $model->table;
 		$values = $model->values;
 
 		if (! isset ($values["id"])) {
-			Error::fatal ("no value set for column 'id'");
+			Err::fatal ("no value set for column 'id'");
 		}
 
 		$id = $values["id"];
@@ -317,11 +411,11 @@ Debug::var_dump("query", $query);
 		$stmnt = $this->_dbh->prepare($query);
 
 		if ($stmnt->bindValue(1, $id) === FALSE) {
-			Error::fatal (sprintf ("unable to bind value '%s' to parameter 1", $id));
+			Err::fatal (sprintf ("unable to bind value '%s' to parameter 1", $id));
 		}
 
 		if ($stmnt->execute() === FALSE) {
-			Error::fatal ($this->_pdoError());
+			Err::fatal ($this->_pdoError());
 		}
 	}
 
@@ -333,7 +427,7 @@ Debug::var_dump("query", $query);
 	*/
 	function query ($query) {
 		if ( ($results = $this->_dbh->query($query)) === FALSE ) {
-			Error::fatal ($this->_pdoError());
+			Err::fatal ($this->_pdoError());
 		}
 
 		return ($results->fetchAll());
@@ -354,7 +448,7 @@ Debug::var_dump("query", $query);
 	private function _pdoError () {
 		$results_error = $this->_dbh->errorInfo();
 
-#Debug::var_dump("results_error", $results_error);
+#Dbg::var_dump("results_error", $results_error);
 
 		return ("database query failed: SQLSTATE[" . $results_error[0] . "] [" . $results_error[1] . "] " . $results_error[2]);
 	}

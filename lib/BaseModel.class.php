@@ -21,27 +21,6 @@ class BaseModel {
 	private $_values;
 
 	/**
-	* @var string name of the instantiated model
-	*/
-	public $name;
-
-	/**
-	* @var string name of the model's associated table
-	*/
-	public $table;
-
-	/**
-	* @var array list of all columns in the table
-	*/
-	public $columns;
-
-	/**
-	* @var hash all columns and their associated values
-	*/
-	public $values;
-
-
-	/**
 	* Create a new BaseModel object.
 	* <code>
 	* class ItemModel extends BaseModel {
@@ -66,12 +45,34 @@ class BaseModel {
 	/**
 	* Save a database model object.
 	*
+	* @param bool log the query
 	* @return integer the insert ID or number of records changed
 	*/
-	function save () {
+	function create ($log_query = TRUE) {
 		global $DB;
 
-		return ($DB->save($this));
+		if (! isset ($DB)) {
+			Err::fatal("Unable to create record, no database connection present.");
+		}
+
+		return ( $DB->create($this->_table, $this->_columns, $this->_values, $log_query) );
+	}
+
+
+	/**
+	* Update a database model object.
+	*
+	* @param bool log the query
+	* @return bool true
+	*/
+	function update ($log_query = TRUE) {
+		global $DB;
+
+		if (! isset ($DB)) {
+			Err::fatal("Unable to create record, no database connection present.");
+		}
+
+		return ( $DB->update($this->_table, $this->_columns, $this->_values, $log_query) );
 	}
 
 
@@ -114,11 +115,13 @@ class BaseModel {
 	*/
 	function value ($column, $value = FALSE) {
 		if (! in_array ($column, $this->_columns)) {
-			Error::fatal(sprintf ("Invalid column name '%s'.", $column));
+			Err::fatal(sprintf ("Invalid column name '%s'.", $column));
 		}
 
 		if ($value === FALSE) {
-			if (! isset ($value = $this->_values[$column])) {
+			if (isset ($this->_values[$column])) {
+				$value = $this->_values[$column];
+			} else {
 				$value = NULL;
 			}
 		} elseif ($value === NULL) {

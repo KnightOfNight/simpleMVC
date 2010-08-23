@@ -3,7 +3,7 @@
 class Login {
 	static function authorize ($username = NULL) {
 		if (is_null ($username)) {
-			Error::fatal ("no username specified");
+			Err::fatal ("no username specified");
 		}
 
 		$_SESSION["username"] = $username;

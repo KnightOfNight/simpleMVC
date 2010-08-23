@@ -75,7 +75,7 @@ class Criteria {
 	*/
 	function __construct (BaseModel $model) {
 		if (! ($model instanceof BaseModel)) {
-			Error::fatal ("passed model is not an instance of BaseModel");
+			Err::fatal ("passed model is not an instance of BaseModel");
 		}
 
 		array_push ($this->_models, $model);
@@ -91,16 +91,16 @@ class Criteria {
 	*/
 #	function selectCols ($cols = NULL) {
 #		if (is_null ($cols)) {
-#			Error::fatal ("list of columns must be specified");
+#			Err::fatal ("list of columns must be specified");
 #		} elseif (! is_array ($cols)) {
-#			Error::fatal ("list of columns must be an array of column names");
+#			Err::fatal ("list of columns must be an array of column names");
 #		}
 #
 #		foreach ($cols as $col) {
 #			if ($this->_checkColumn ($col)) {
 #				array_push ($this->_select_cols, $col);
 #			} else {
-#				Error::fatal (sprintf ("invalid column '%s'", $col));
+#				Err::fatal (sprintf ("invalid column '%s'", $col));
 #			}
 #		}
 #	}
@@ -116,7 +116,7 @@ class Criteria {
 	*/
 #	function selectExpression ($expression, $alias) {
 #		if (is_null ($expression) AND is_null ($alias)) {
-#			Error::fatal ("expression and alias must both be specified");
+#			Err::fatal ("expression and alias must both be specified");
 #		}
 #
 #		$this->_select_cols[$expression] = $alias;
@@ -134,7 +134,7 @@ class Criteria {
 	*/
 	function addLeftJoin (BaseModel $model, $colA, $colB) {
 		if (! ($model instanceof BaseModel)) {
-			Error::fatal ("passed model is not an instance of BaseModel");
+			Err::fatal ("passed model is not an instance of BaseModel");
 		}
 
 		array_push ($this->_models, $model);
@@ -142,7 +142,7 @@ class Criteria {
 		if ($this->_checkColumn ($colA) AND $this->_checkColumn ($colB)) {
 			array_push ($this->_left_joins, array ($model->table, $model->name, $colA, $colB));
 		} else {
-			Error::fatal (sprintf ("either column '%s' or column '%s' is not valid", $colA, $colB));
+			Err::fatal (sprintf ("either column '%s' or column '%s' is not valid", $colA, $colB));
 		}
 	}
 
@@ -155,15 +155,15 @@ class Criteria {
 	*/
 	function addOrderBy ($col = NULL , $order = NULL) {
 		if (is_null ($col)) {
-			Error::fatal ("column name must be specified");
+			Err::fatal ("column name must be specified");
 		} elseif (! $this->_checkColumn ($col)) {
-			Error::fatal (sprintf ("invalid column '%s'", $col));
+			Err::fatal (sprintf ("invalid column '%s'", $col));
 		}
 
 		if (is_null ($order)) {
 			$order = Criteria::ord_asc;
 		} elseif ( ($order != Criteria::ord_asc) AND ($order != Criteria::ord_desc) ) {
-			Error::fatal (sprintf ("invalid sort order '%s'", $order));
+			Err::fatal (sprintf ("invalid sort order '%s'", $order));
 		}
 
 		array_push ($this->_order_by, array ($col, $order));
@@ -178,7 +178,7 @@ class Criteria {
 	*/
 	function addSelect ($cols = null, $alias = NULL) {
 		if (is_null ($cols)) {
-			Error::fatal ("column name(s) must be specified");
+			Err::fatal ("column name(s) must be specified");
 		}
 
 		if (is_array ($cols)) { 
@@ -186,7 +186,7 @@ class Criteria {
 				if ($this->_checkColumn ($col)) {
 					$this->_select_cols{$col} = "";
 				} else {
-					Error::fatal (sprintf ("invalid column '%s'", $col));
+					Err::fatal (sprintf ("invalid column '%s'", $col));
 				}
 			}
 		} else {
@@ -234,9 +234,9 @@ class Criteria {
 		}
 
 		if (is_null ($clause)) {
-			Error::fatal ("clause must be specified");
+			Err::fatal ("clause must be specified");
 		} elseif (! is_array ($clause)) {
-			Error::fatal ("claus must be an array");
+			Err::fatal ("claus must be an array");
 		}
 
 		$last_item = "";
@@ -257,7 +257,7 @@ class Criteria {
 
 				if (count ($item) != 3) {
 					# Invalid clause found.
-					Error::fatal ("invalid clause, less than 3 elements found");
+					Err::fatal ("invalid clause, less than 3 elements found");
 				}
 
 				$col = $item[0];
@@ -265,11 +265,11 @@ class Criteria {
 				$val = $item[2];
 
 				if (! $this->_checkColumn ($col)) {
-					Error::fatal (sprintf ("invalid column '%s'", $col));
+					Err::fatal (sprintf ("invalid column '%s'", $col));
 				}
 
 				if (! $this->_checkOperator ($op)) {
-					Error::fatal (sprintf ("invalid operator '%s'", $op));
+					Err::fatal (sprintf ("invalid operator '%s'", $op));
 				}
 			} else {
 				# $item is a operator
@@ -291,7 +291,7 @@ class Criteria {
 
 				# check operator
 				if ( ($item != Criteria::op_and) AND ($item != Criteria::op_or) ) {
-					Error::fatal (sprintf ("clause invalid: found invalid operator '%s'", $item));
+					Err::fatal (sprintf ("clause invalid: found invalid operator '%s'", $item));
 				}
 			}
 
@@ -301,7 +301,7 @@ class Criteria {
 		}
 
 		array_push ($this->_where, array ($andor, $parsed_clause));
-#Debug::var_dump ("_where", $this->_where);
+#Dbg::var_dump ("_where", $this->_where);
 	}
 
 
@@ -424,20 +424,20 @@ class Criteria {
 	*/
 #	function setOrderBy (array $cols, string $order = NULL) {
 #		if (is_null ($cols)) {
-#			Error::fatal ("list of columns must be specified");
+#			Err::fatal ("list of columns must be specified");
 #		} elseif (! is_array ($cols)) {
-#			Error::fatal ("list of columns must be an array");
+#			Err::fatal ("list of columns must be an array");
 #		}
 #
 #		if (is_null ($order)) {
 #			$order = Criteria::ord_asc;
 #		} elseif ( ($order != Criteria::ord_asc) AND ($order != Criteria::ord_desc) ) {
-#			Error::fatal (sprintf ("invalid sort order '%s'", $order));
+#			Err::fatal (sprintf ("invalid sort order '%s'", $order));
 #		}
 #
 #		foreach ($cols as $col) {
 #			if (! $this->_checkColumn ($col)) {
-#				Error::fatal (sprintf ("invalid column '%s'", $col));
+#				Err::fatal (sprintf ("invalid column '%s'", $col));
 #			}
 #		}
 #

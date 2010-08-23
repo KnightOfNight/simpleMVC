@@ -25,11 +25,11 @@ class Config {
 		$cfg_file = ROOT.DS."cfg".DS."config.json";
 
 		if ( (! File::ready ($cfg_file)) OR ( ($cfg_data = file_get_contents ($cfg_file)) === FALSE ) ) {
-			Error::fatal (sprintf ("unable to read configuration file '%s'", $cfg_file));
+			Err::fatal (sprintf ("unable to read configuration file '%s'", $cfg_file));
 		}
 
 		if ( ($this->_values = json_decode ($cfg_data, TRUE)) === NULL ) {
-			Error::fatal ("unable to parse configuration information, invalid json found");
+			Err::fatal ("unable to parse configuration information, invalid json found");
 		}
 	}
 
@@ -46,7 +46,7 @@ class Config {
 
 		foreach ($levels as $level) {
 			if (! isset ($values[$level])) {
-				Error::fatal (sprintf ("attempted to traverse too far into configuration tree, path = '%s', failed on '%s'", $path, $level));
+				Err::fatal (sprintf ("attempted to traverse too far into configuration tree, path = '%s', failed on '%s'", $path, $level));
 			}
 
 			$values = $values[$level];

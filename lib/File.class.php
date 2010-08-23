@@ -34,7 +34,7 @@ class File {
 		} elseif ($mode === "w") {
 			return ( file_exists ($file) AND is_writable ($file) );
 		} else {
-			Error::fatal (sprintf ("invalid mode '%s'", $mode));
+			Err::fatal (sprintf ("invalid mode '%s'", $mode));
 		}
 	}
 

@@ -44,7 +44,7 @@ class Dispatch {
 		}
 
 		if (! in_array ($action, $allowed_actions)) {
-			Error::fatal (sprintf ("action '%s' is not valid when called from an %s source", $action, $external ? "external" : "internal"));
+			Err::fatal (sprintf ("action '%s' is not valid when called from an %s source", $action, $external ? "external" : "internal"));
 		}
 
 		# create a new controller object

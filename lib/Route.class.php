@@ -42,7 +42,7 @@ class Route {
 			$action = $CONFIG->getVal("dispatcher.controller." . $controller . ".default_action");
 
 			if ( (! $controller) OR (! $action) ) {
-				Error::fatal ("no route specified via HTTP and no default controller or action found");
+				Err::fatal ("no route specified via HTTP and no default controller or action found");
 			}
 		} else {
 			# Reroute if the route is an alias.
@@ -54,9 +54,9 @@ class Route {
 
 			# Check the controller name to make sure it is configured and implemented.
 			if (! class_exists ($controller_class = ucfirst ($controller) . "Controller")) {
-				Error::fatal (sprintf ("route is invalid, '%s' is not a valid controller, class '%s' not found", $controller, $controller_class));
+				Err::fatal (sprintf ("route is invalid, '%s' is not a valid controller, class '%s' not found", $controller, $controller_class));
 			} elseif (! array_key_exists ($controller, $CONFIG->getVal("dispatcher.controller"))) {
-				Error::fatal (sprintf ("route is invalid, controller '%s' not found in configuration", $controller));
+				Err::fatal (sprintf ("route is invalid, controller '%s' not found in configuration", $controller));
 			}
 
 			array_shift ($route_parts);
@@ -78,9 +78,9 @@ class Route {
 			$actions = array_merge ($actions, $CONFIG->getVal("dispatcher.controller." . $controller . ".internal_actions"));
 
 			if (! method_exists ($controller_class, $action)) {
-				Error::fatal (sprintf ("route is invalid, '%s' is not a valid action for controller '%s', method not found", $action, $controller));
+				Err::fatal (sprintf ("route is invalid, '%s' is not a valid action for controller '%s', method not found", $action, $controller));
 			} elseif (! in_array ($action, $actions)) {
-				Error::fatal (sprintf ("route is invalid, action '%s' not found in configuration for controller '%s'", $action, $controller));
+				Err::fatal (sprintf ("route is invalid, action '%s' not found in configuration for controller '%s'", $action, $controller));
 			}
 
 			array_shift ($route_parts);

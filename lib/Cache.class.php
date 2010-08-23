@@ -31,12 +31,12 @@ class Cache {
 			return (NULL);
 		} elseif (File::ready ($cache_file)) {
 			if ( ($cache_data = file_get_contents ($cache_file)) === FALSE ) {
-				Error::fatal (sprintf ("unable to read cache file '%s'", $cache_file));
+				Err::fatal (sprintf ("unable to read cache file '%s'", $cache_file));
 			}
 
 			return (unserialize (base64_decode ($cache_data)));
 		} else {
-			Error::fatal (sprintf ("unable to read cache file '%s'", $cache_file));
+			Err::fatal (sprintf ("unable to read cache file '%s'", $cache_file));
 		}
 	}
 
@@ -52,10 +52,10 @@ class Cache {
 
 		if (File::ready ($cache_dir, "w")) {
 			if (file_put_contents ($cache_file, base64_encode (serialize ($cache_data))) === FALSE) {
-				Error::fatal (sprintf ("unable to write cache file '%s'", $cache_file));
+				Err::fatal (sprintf ("unable to write cache file '%s'", $cache_file));
 			}
 		} else {
-			Error::fatal (sprintf ("cache directory '%s' is not writable", $cache_dir));
+			Err::fatal (sprintf ("cache directory '%s' is not writable", $cache_dir));
 		}
 	}
 

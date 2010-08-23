@@ -13,7 +13,7 @@
 *
 * @package MCS_MVC_API
 */
-class Debug {
+class Dbg {
 	private function __construct () {}
 
 
