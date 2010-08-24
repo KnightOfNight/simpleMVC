@@ -18,7 +18,5 @@
 define ("DS", DIRECTORY_SEPARATOR);
 define ("ROOT", dirname (dirname (__FILE__)));
 
-printf ("root:%s\n", ROOT);
-
 require_once (ROOT.DS."lib".DS."bootstrap.php");
 

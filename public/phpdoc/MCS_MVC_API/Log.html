@@ -67,26 +67,6 @@
 				</div>
 								<div class="const-title">
 					<img src="../media/images/Constant.png" alt=" " />
-					<a href="#LOCK_RETRIES" title="details" class="const-name">LOCK_RETRIES</a> = 					<span class="var-type"> 5</span>
-
-				</div>
-								<div class="const-title">
-					<img src="../media/images/Constant.png" alt=" " />
-					<a href="#LOGFILE" title="details" class="const-name">LOGFILE</a> = 					<span class="var-type"> &quot;mcsmvc.log&quot;</span>
-
-				</div>
-								<div class="const-title">
-					<img src="../media/images/Constant.png" alt=" " />
-					<a href="#MAXLVL" title="details" class="const-name">MAXLVL</a> = 					<span class="var-type"> 15</span>
-
-				</div>
-								<div class="const-title">
-					<img src="../media/images/Constant.png" alt=" " />
-					<a href="#MINLVL" title="details" class="const-name">MINLVL</a> = 					<span class="var-type"> 0</span>
-
-				</div>
-								<div class="const-title">
-					<img src="../media/images/Constant.png" alt=" " />
 					<a href="#NONE" title="details" class="const-name">NONE</a> = 					<span class="var-type"> 0</span>
 
 				</div>
@@ -111,13 +91,7 @@
 		</div>
 		<div class="info-box-body">			
 			<div class="method-summary">
-																																								<div class="method-definition">
-					<img src="../media/images/Method.png" alt=" "/>
-											<span class="method-result">void</span>
-										<a href="#msg" title="details" class="method-name">msg</a>
-											(<span class="var-type">int</span>&nbsp;<span class="var-name">$level</span>, <span class="var-type">string</span>&nbsp;<span class="var-name">$message</span>)
-									</div>
-																<div class="method-definition">
+																																																<div class="method-definition">
 					<img src="../media/images/Constructor.png" alt=" "/>
 											<span class="method-result"><a href="../MCS_MVC_API/Log.html">Log</a></span>
 										<a href="#__construct" title="details" class="method-name">__construct</a>
@@ -128,6 +102,18 @@
 											<span class="method-result">void</span>
 										<a href="#__destruct" title="details" class="method-name">__destruct</a>
 										()
+									</div>
+																<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#close" title="details" class="method-name">close</a>
+										()
+									</div>
+																<div class="method-definition">
+					<img src="../media/images/Method.png" alt=" "/>
+											<span class="method-result">void</span>
+										<a href="#msg" title="details" class="method-name">msg</a>
+											(<span class="var-type">int</span>&nbsp;<span class="var-name">$level</span>, <span class="var-type">string</span>&nbsp;<span class="var-name">$message</span>)
 									</div>
 											</div>
 		</div>
@@ -144,42 +130,12 @@
 		</div>
 		<div class="info-box-body">
 			<A NAME='method_detail'></A>
-<a name="methodmsg" id="msg"><!-- --></a>
-<div class="evenrow">
-	
-	<div class="method-header">
-		<img src="../media/images/Method.png" />
-		<span class="method-title">msg</span> (line <span class="line-number">87</span>)
-	</div> 
-	
-	<!-- ========== Info from phpDoc block ========= -->
-<p class="short-description">Write out a log message if the message level is allowed by the selected  log level.</p>
-	
-	<div class="method-signature">
-		<span class="method-result">void</span>
-		<span class="method-name">
-			msg
-		</span>
-					(<span class="var-type">int</span>&nbsp;<span class="var-name">$level</span>, <span class="var-type">string</span>&nbsp;<span class="var-name">$message</span>)
-			</div>
-	
-			<ul class="parameters">
-					<li>
-				<span class="var-type">int</span>
-				<span class="var-name">$level</span><span class="var-description">: the level of the message being logged</span>			</li>
-					<li>
-				<span class="var-type">string</span>
-				<span class="var-name">$message</span><span class="var-description">: the message to log</span>			</li>
-				</ul>
-		
-			
-	</div>
 <a name="method__construct" id="__construct"><!-- --></a>
 <div class="oddrow">
 	
 	<div class="method-header">
 		<img src="../media/images/Constructor.png" />
-		<span class="method-title">Constructor __construct</span> (line <span class="line-number">45</span>)
+		<span class="method-title">Constructor __construct</span> (line <span class="line-number">42</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -209,7 +165,7 @@
 	
 	<div class="method-header">
 		<img src="../media/images/Destructor.png" />
-		<span class="method-title">Destructor __destruct</span> (line <span class="line-number">97</span>)
+		<span class="method-title">Destructor __destruct</span> (line <span class="line-number">85</span>)
 	</div> 
 	
 	<!-- ========== Info from phpDoc block ========= -->
@@ -222,6 +178,58 @@
 				()
 			</div>
 	
+		
+			
+	</div>
+<a name="methodclose" id="close"><!-- --></a>
+<div class="oddrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">close</span> (line <span class="line-number">80</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">Write a final message to the log and close it.</p>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			close
+		</span>
+				()
+			</div>
+	
+		
+			
+	</div>
+<a name="methodmsg" id="msg"><!-- --></a>
+<div class="evenrow">
+	
+	<div class="method-header">
+		<img src="../media/images/Method.png" />
+		<span class="method-title">msg</span> (line <span class="line-number">58</span>)
+	</div> 
+	
+	<!-- ========== Info from phpDoc block ========= -->
+<p class="short-description">Write out a log message if the message level is allowed by the selected  log level.</p>
+	
+	<div class="method-signature">
+		<span class="method-result">void</span>
+		<span class="method-name">
+			msg
+		</span>
+					(<span class="var-type">int</span>&nbsp;<span class="var-name">$level</span>, <span class="var-type">string</span>&nbsp;<span class="var-name">$message</span>)
+			</div>
+	
+			<ul class="parameters">
+					<li>
+				<span class="var-type">int</span>
+				<span class="var-name">$level</span><span class="var-description">: the level of the message being logged</span>			</li>
+					<li>
+				<span class="var-type">string</span>
+				<span class="var-name">$message</span><span class="var-description">: the message to log</span>			</li>
+				</ul>
 		
 			
 	</div>
@@ -250,7 +258,7 @@
 		<span class="const-title">
 			<span class="const-name">DEBUG</span>
 			 = <span class="const-default"> 8</span>
-			(line <span class="line-number">29</span>)
+			(line <span class="line-number">25</span>)
 		</span>
 	</div>
 
@@ -266,7 +274,7 @@
 		<span class="const-title">
 			<span class="const-name">ERROR</span>
 			 = <span class="const-default"> 1</span>
-			(line <span class="line-number">26</span>)
+			(line <span class="line-number">22</span>)
 		</span>
 	</div>
 
@@ -282,71 +290,7 @@
 		<span class="const-title">
 			<span class="const-name">INFO</span>
 			 = <span class="const-default"> 4</span>
-			(line <span class="line-number">28</span>)
-		</span>
-	</div>
-
-	<!-- ========== Info from phpDoc block ========= -->
-	
-	
-</div>
-<a name="constLOCK_RETRIES" id="LOCK_RETRIES"><!-- --></A>
-<div class="evenrow">
-
-	<div class="const-header">
-		<img src="../media/images/Variable.png" />
-		<span class="const-title">
-			<span class="const-name">LOCK_RETRIES</span>
-			 = <span class="const-default"> 5</span>
-			(line <span class="line-number">35</span>)
-		</span>
-	</div>
-
-	<!-- ========== Info from phpDoc block ========= -->
-	
-	
-</div>
-<a name="constLOGFILE" id="LOGFILE"><!-- --></A>
-<div class="oddrow">
-
-	<div class="const-header">
-		<img src="../media/images/Variable.png" />
-		<span class="const-title">
-			<span class="const-name">LOGFILE</span>
-			 = <span class="const-default"> &quot;mcsmvc.log&quot;</span>
-			(line <span class="line-number">34</span>)
-		</span>
-	</div>
-
-	<!-- ========== Info from phpDoc block ========= -->
-	
-	
-</div>
-<a name="constMAXLVL" id="MAXLVL"><!-- --></A>
-<div class="evenrow">
-
-	<div class="const-header">
-		<img src="../media/images/Variable.png" />
-		<span class="const-title">
-			<span class="const-name">MAXLVL</span>
-			 = <span class="const-default"> 15</span>
-			(line <span class="line-number">32</span>)
-		</span>
-	</div>
-
-	<!-- ========== Info from phpDoc block ========= -->
-	
-	
-</div>
-<a name="constMINLVL" id="MINLVL"><!-- --></A>
-<div class="oddrow">
-
-	<div class="const-header">
-		<img src="../media/images/Variable.png" />
-		<span class="const-title">
-			<span class="const-name">MINLVL</span>
-			 = <span class="const-default"> 0</span>
-			(line <span class="line-number">31</span>)
+			(line <span class="line-number">24</span>)
 		</span>
 	</div>
 
@@ -362,7 +306,7 @@
 		<span class="const-title">
 			<span class="const-name">NONE</span>
 			 = <span class="const-default"> 0</span>
-			(line <span class="line-number">25</span>)
+			(line <span class="line-number">21</span>)
 		</span>
 	</div>
 
@@ -378,7 +322,7 @@
 		<span class="const-title">
 			<span class="const-name">WARN</span>
 			 = <span class="const-default"> 2</span>
-			(line <span class="line-number">27</span>)
+			(line <span class="line-number">23</span>)
 		</span>
 	</div>
 
@@ -391,7 +335,7 @@
 	</div>
 	
 	<p class="notes" id="credit">
-		Documentation generated on Sat, 21 Aug 2010 19:38:13 -0400 by <a href="http://www.phpdoc.org" target="_blank">phpDocumentor 1.4.3</a>
+		Documentation generated on Tue, 24 Aug 2010 10:10:22 -0400 by <a href="http://www.phpdoc.org" target="_blank">phpDocumentor 1.4.3</a>
 	</p>
 	</div></body>
 </html>

@@ -8,23 +8,25 @@
 
 <title>MCS MVC: Fatal Error</title>
 
-<link rel="stylesheet" type="text/css" media="screen" href="https://www.magrathea.com/~ctg/dvds/css/mcsmvc/error_fatal.css" />
+<style type="text/css">
+body { font-family: sans-serif; margin: 0px; padding: 0px; }
+.header { text-align: center; font-weight: 900; font-size: 1.10em; }
+.errmsg { margin-left: auto; margin-right: auto; padding: 5px; width: 600px; color: #FFFF00; font-weight: 900; font-size: .75em; background-color: #A0A0A0; }
+.trace { margin-left: auto; margin-right: auto; padding: 5px; width: 600px; color: #FFFF00; font-weight: 900; font-size: .75em; background-color: #A0A0A0; }
+.copy { text-align: center; font-weight: 900; font-size: .75em; }
+</style>
 
 </head>
 
 <body>
 
 <br />
-<div class="header">The program has detected an fatal error.</div>
-
-<br />
+<div class="header">Application Framework Fatal Error</div>
 <div class="errmsg"><?php echo nl2br ($errmsg) ?></div>
 
 <?php if ($trace_info): ?>
 <br />
-<div class="header">Program trace...</div>
-
-<br />
+<div class="header">Script Trace</div>
 <div class="trace">
 <?php foreach ($trace_info as $trace): ?>
 <div><?php if (isset ($trace["class"])): ?><?php echo $trace["class"] ?>-&gt;<?php endif ?><?php echo $trace["function"] ?>()<?php if (isset ($trace["file"])): ?> called at <?php echo $trace["file"] ?>:<?php echo $trace["line"] ?><?php endif ?></div>

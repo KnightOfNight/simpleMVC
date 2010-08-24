@@ -15,16 +15,8 @@
 * @package MCS_MVC_API
 */
 class BaseController {
-	/**
-	* @var string name of the instantiated controller
-	*/
-	protected $name;
-
-
-	/**
-	* @var string name of the associated view, if any
-	*/
-	protected $view;
+	private $_name;
+	private $_view = NULL;
 
 
 	/**
@@ -33,17 +25,43 @@ class BaseController {
 	* @return BaseController a new BaseController object
 	*/
 	function __construct () {
-		$this->name = strtolower (str_replace ("Controller", "", get_class ($this)));
+		$this->_name = strtolower (str_replace ("Controller", "", get_class ($this)));
 	}
 
 
 	/**
-	* NOTE: when this object is destroyed, it then renders the prepared view,
-	* if any.
+	* Return the instantiated controller name.
+	*
+	* @return string controller name
+	*/
+	function name () {
+		return ($this->_name);
+	}
+
+
+	/**
+	* Get or set the current view.
+	*
+	* @param string action name
+	* @param string query string
+	* @return View the current view, if any
+	*/
+	function view ($action = NULL, $query = NULL) {
+		if ($action) {
+			$this->_view = new View($this->_name, $action, $query);
+		}
+
+		return ($this->_view);
+	}
+
+
+	/**
+	* NOTE: when this object is destroyed, it then renders the prepared view if
+	* there is one.
 	*/
 	function __destruct () {
-		if ($this->view instanceof View) {
-			$this->view->render ();
+		if ($this->_view instanceof View) {
+			$this->_view->render ();
 		}
 	}
 }

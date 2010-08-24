@@ -15,10 +15,19 @@
 * @package MCS_MVC_API
 */
 class BaseModel {
+	/**
+	* @var string name of the database table associated with the model
+	*/
+	protected $table;
+	/**
+	* @var string name of the database table associated with the model
+	*/
+	protected $columns;
+
 	private $_name;
-	private $_table;
 	private $_columns;
 	private $_values;
+
 
 	/**
 	* Create a new BaseModel object.
@@ -30,49 +39,34 @@ class BaseModel {
 	* @return BaseModel a new BaseModel object
 	*/
 	function __construct () {
-		global $DB;
+		$this->setup();
 
-		$this->name = strtolower (str_replace ("Model", "", get_class ($this)));
-		$this->table = Inflection::pluralize ($this->name);
-		$this->columns = $DB->describe ($this->table);
-
-		$this->_name = strtolower (str_replace ("Model", "", get_class ($this)));
-		$this->_table = Inflection::pluralize ($this->name);
-		$this->_columns = $DB->describe ($this->table);
+#		global $DB;
+#
+#		$this->_name = strtolower( str_replace("Model", "", get_class ($this)) );
+#
+#		if ( ! isset ($this->table) ) {
+#			$this->table = Inflection::pluralize($this->_name);
+#		}
+#
+#		$this->_columns = $DB->describe($this->table);
 	}
 
 
 	/**
-	* Save a database model object.
-	*
-	* @param bool log the query
-	* @return integer the insert ID or number of records changed
+	* Setup an instance of this class.  Used by __construct so that __construct
+	* can be overridden.
 	*/
-	function create ($log_query = TRUE) {
+	protected function setup () {
 		global $DB;
 
-		if (! isset ($DB)) {
-			Err::fatal("Unable to create record, no database connection present.");
+		$this->_name = strtolower( str_replace("Model", "", get_class ($this)) );
+
+		if ( ! isset ($this->table) ) {
+			$this->table = Inflection::pluralize($this->_name);
 		}
 
-		return ( $DB->create($this->_table, $this->_columns, $this->_values, $log_query) );
-	}
-
-
-	/**
-	* Update a database model object.
-	*
-	* @param bool log the query
-	* @return bool true
-	*/
-	function update ($log_query = TRUE) {
-		global $DB;
-
-		if (! isset ($DB)) {
-			Err::fatal("Unable to create record, no database connection present.");
-		}
-
-		return ( $DB->update($this->_table, $this->_columns, $this->_values, $log_query) );
+		$this->_columns = $DB->describe($this->table);
 	}
 
 
@@ -92,7 +86,7 @@ class BaseModel {
 	* @return string table name
 	*/
 	function table () {
-		return ($this->_table);
+		return ($this->table);
 	}
 
 
@@ -142,6 +136,46 @@ class BaseModel {
 	*/
 	function values () {
 		return ($this->_values);
+	}
+
+
+	/**
+	* Save a database model object.
+	*
+	* @param bool log the query
+	* @return integer the new insert ID
+	*/
+	function create ($log_query = TRUE) {
+		global $DB;
+
+		if ( ! isset ($DB) ) {
+			Err::fatal("Unable to create record, no database connection present.");
+		}
+
+		if ( in_array("created_at", $this->_columns) ) {
+			$this->_values["created_at"] = NULL;
+		}
+
+		return( $DB->create($this->table, $this->_values, $log_query) );
+	}
+
+
+	/**
+	* Update a database model object.
+	*
+	* @param bool log the query
+	* @return bool true or fatal error
+	*/
+	function update ($log_query = TRUE) {
+		global $DB;
+
+		if ( ! isset ($DB) ) {
+			Err::fatal("Unable to update record, no database connection present.");
+		} elseif ( ! isset ($this->_values["id"]) ) {
+			Err::fatal("Unable to update record, primary key (column 'id') not set.");
+		}
+
+		return( $DB->update($this->table, $this->_values, "id", $log_query) );
 	}
 
 

@@ -1,0 +1,24 @@
+No space between function name and first open parenthesis except in function definition.
+
+OK...
+
+function somefunc (params) {}
+var = func(params);
+
+NOT OK...
+
+function somefunc(params) {}
+var = func (params)
+
+
+
+1 space between first open parenthesis and paramater if parameter is a function.
+
+OK...
+
+func(var)
+func( func2(var) )
+func( func2( func3(var) ) )
+
+NOT OK...
+func(func2(var))

@@ -18,13 +18,51 @@ class Cache {
 
 
 	/**
+	* Get or set a cache entry.
+	*
+	* @param string name of the cache entry
+	* @param mixed value to set, if any
+	* @return mixed value of the cache entry
+	*/
+	static function value ($cache_entry, $cache_value = NULL) {
+		$cache_dir = ROOT . DS . "tmp" . DS . "cache";
+		$cache_file = $cache_dir . DS . sha1 ($cache_entry);
+
+		if ( $cache_value === NULL ) {
+			if ( ! file_exists($cache_file) ) {
+				return(NULL);
+			} elseif ( File::ready($cache_file) ) {
+				if ( ($cache_value_enc = file_get_contents($cache_file)) === FALSE ) {
+					Err::fatal( sprintf("unable to read cache file '%s'", $cache_file) );
+				}
+	
+				$cache_value = unserialize(base64_decode($cache_value_enc));
+			} else {
+				Err::fatal( sprintf("Cache file '%s' is not readable.", $cache_file) );
+			}
+		} else {
+			$cache_value_enc = base64_encode(serialize($cache_value));
+
+			if ( File::ready($cache_dir, "w") ) {
+				if ( file_put_contents($cache_file, $cache_value_enc) === FALSE ) {
+					Err::fatal( sprintf("Unable to write cache file '%s'.", $cache_file) );
+				}
+			} else {
+				Err::fatal( sprintf("Cache file '%s' is not writable.", $cache_file) );
+			}
+		}
+
+		return($cache_value);
+	}
+
+
+	/**
 	* Get the value of a particular cache entry.
 	* @param string unique cache entry name
 	* @return mixed value of the entry
 	*/
 	static function get ($cache_entry) {
 		$cache_dir = ROOT . DS . "tmp" . DS . "cache";
-
 		$cache_file = $cache_dir . DS . sha1 ($cache_entry);
 
 		if (! file_exists ($cache_file)) {
@@ -39,6 +77,7 @@ class Cache {
 			Err::fatal (sprintf ("unable to read cache file '%s'", $cache_file));
 		}
 	}
+
 
 	/**
 	* Set the value of a cache entry.

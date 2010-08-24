@@ -18,38 +18,45 @@
 * Global variable: script start time in decimal seconds.
 * @global float $START_TIME
 */
-$START_TIME = microtime (TRUE);
+$START_TIME = microtime(TRUE);
 
 
-define ( "LIBDIR",
-		# General application framework.
-		ROOT.DS."lib" . ":" . 
+$LIBDIR = array(	ROOT.DS."lib",
+					ROOT.DS."lib/mvc/controllers",
+					ROOT.DS."lib/mvc/models",
+					ROOT.DS."lib/mvc/views",
+					ROOT.DS."app/controllers",
+					ROOT.DS."app/models",
+					ROOT.DS."app/views",
+					ROOT.DS."app/lib",
+);
+/**
+* Global variable: library path.
+* @global float $START_TIME
+*/
+$LIBDIR = implode(":", $LIBDIR);
 
-		# Application-specific controllers.
-		ROOT.DS."app/controllers" . ":" . 
-
-		# Application-specific models.
-		ROOT.DS."app/models" . ":" . 
-
-		# Application-specific misc. classes, addon libraries, etc.
-		ROOT.DS."app/lib" );
 
 define ( "VIEWDIR", ROOT.DS."app/views" );
 
 
+set_include_path($LIBDIR);
+
+
 # Setup the autoloader
-require_once (ROOT.DS."lib".DS."__autoload.php");
+# require_once(ROOT.DS."lib".DS."__autoload.php");
+require_once("__autoload.php");
 
 
 # Load any libraries or configuration files othat the autoloader won't catch
 # require_once (ROOT.DS."lib".DS."debug.php");
-require_once (ROOT.DS."cfg".DS."inflection.php");
+require_once(ROOT.DS."cfg".DS."inflection.php");
 
 
 # Turn on output buffering, using gzip to compress output if supported by
 # browser
 #
-ob_start ("ob_gzhandler");
+ob_start("ob_gzhandler");
 
 
 /**
@@ -65,7 +72,7 @@ $CONFIG = new Config;
 */
 $DB = new Database;
 $cfg = $CONFIG->getVal("database");
-$DB->connect ($cfg["host"], $cfg["port"], $cfg["name"], $cfg["user"], $cfg["pass"]);
+$DB->connect($cfg["host"], $cfg["port"], $cfg["name"], $cfg["user"], $cfg["pass"]);
 
 
 Session::start();
@@ -74,41 +81,41 @@ Session::start();
 * Global variable: current session ID
 * @global string $SESSION_ID
 */
-$SESSION_ID = session_id ();
+$SESSION_ID = session_id();
 
 
 /**
 * Global variable: log file handler
 * @global Log $L
 */
-$L = new Log ((int) $CONFIG->getVal("framework.loglevel"));
+$L = new Log((int) $CONFIG->getVal("framework.loglevel"));
 
 
 # Setup error reporting
 #
-error_reporting (E_ALL | E_STRICT);
+error_reporting(E_ALL | E_STRICT);
 
 if ($CONFIG->getVal("application.development")) {
-	ini_set ("display_errors", "ON");
+	ini_set("display_errors", "ON");
 } else {
-	ini_set ("display_errors", "OFF");
-	ini_set ("log_errors", "ON");
-	ini_set ("error_log", ROOT.DS."tmp".DS."logs".DS."error.log");
+	ini_set("display_errors", "OFF");
+	ini_set("log_errors", "ON");
+	ini_set("error_log", ROOT.DS."tmp".DS."logs".DS."error.log");
 }
 
 
 # Get the route
 #
-$route = isset ($_GET["route"]) ? $_GET["route"] : NULL;
+$route = isset($_GET["route"]) ? $_GET["route"] : NULL;
 $L->msg(Log::INFO, "initial route = '" . $route . "'");
 
 
 # Dispatch the route.
 #
-Dispatch::go ($route);
+Dispatch::go($route);
 
 
 # Close up.
 #
 $L->close();
-unset ($DB);
+unset($DB);

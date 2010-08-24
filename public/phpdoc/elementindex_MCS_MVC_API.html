@@ -139,7 +139,7 @@
 			<span class="method-title">__destruct</span>
 					</dt>
 		<dd class="index-item-body">
-			<div class="index-item-details"><a href="MCS_MVC_API/Debug.html#method__destruct">Debug::__destruct()</a> in Debug.class.php</div>
+			<div class="index-item-details"><a href="MCS_MVC_API/Dbg.html#method__destruct">Dbg::__destruct()</a> in Dbg.class.php</div>
 					</dd>
 			<dt class="field">
 						<img src="media/images/Method.png" alt="Method" title="Method" />
@@ -154,7 +154,7 @@
 					</dt>
 		<dd class="index-item-body">
 			<div class="index-item-details"><a href="MCS_MVC_API/BaseController.html#method__destruct">BaseController::__destruct()</a> in BaseController.class.php</div>
-							<div class="index-item-description">NOTE: when this object is destroyed, it then renders the prepared view,  if any.</div>
+							<div class="index-item-description">NOTE: when this object is destroyed, it then renders the prepared view if  there is one.</div>
 					</dd>
 			<dt class="field">
 						<img src="media/images/Method.png" alt="Method" title="Method" />
@@ -292,13 +292,6 @@
 	</div>
 	<dl>
 			<dt class="field">
-						<img src="media/images/Variable.png" alt="Variable" title="Variable" />
-			<span class="var-title">$columns</span>
-					</dt>
-		<dd class="index-item-body">
-			<div class="index-item-details"><a href="MCS_MVC_API/BaseModel.html#var$columns">BaseModel::$columns</a> in BaseModel.class.php</div>
-					</dd>
-			<dt class="field">
 						<img src="media/images/Global.png" alt="Global" title="Global" />
 			<span class="var-title">$CONFIG</span>
 					</dt>
@@ -346,6 +339,22 @@
 							<div class="index-item-description">Clear the list of where clauses.</div>
 					</dd>
 			<dt class="field">
+						<img src="media/images/Method.png" alt="Method" title="Method" />
+			<span class="method-title">close</span>
+					</dt>
+		<dd class="index-item-body">
+			<div class="index-item-details"><a href="MCS_MVC_API/Log.html#methodclose">Log::close()</a> in Log.class.php</div>
+							<div class="index-item-description">Write a final message to the log and close it.</div>
+					</dd>
+			<dt class="field">
+						<img src="media/images/Method.png" alt="Method" title="Method" />
+			<span class="method-title">columns</span>
+					</dt>
+		<dd class="index-item-body">
+			<div class="index-item-details"><a href="MCS_MVC_API/BaseModel.html#methodcolumns">BaseModel::columns()</a> in BaseModel.class.php</div>
+							<div class="index-item-description">Return the list of columns in the model's table.</div>
+					</dd>
+			<dt class="field">
 						<img src="media/images/Class.png" alt="Class" title="Class" />
 			Config
 					</dt>
@@ -367,6 +376,22 @@
 		<dd class="index-item-body">
 			<div class="index-item-details"><a href="MCS_MVC_API/Database.html#methodconnect">Database::connect()</a> in Database.class.php</div>
 							<div class="index-item-description">Connect to a database.</div>
+					</dd>
+			<dt class="field">
+						<img src="media/images/Method.png" alt="Method" title="Method" />
+			<span class="method-title">create</span>
+					</dt>
+		<dd class="index-item-body">
+			<div class="index-item-details"><a href="MCS_MVC_API/Database.html#methodcreate">Database::create()</a> in Database.class.php</div>
+							<div class="index-item-description">Create a new database record.</div>
+					</dd>
+			<dt class="field">
+						<img src="media/images/Method.png" alt="Method" title="Method" />
+			<span class="method-title">create</span>
+					</dt>
+		<dd class="index-item-body">
+			<div class="index-item-details"><a href="MCS_MVC_API/BaseModel.html#methodcreate">BaseModel::create()</a> in BaseModel.class.php</div>
+							<div class="index-item-description">Save a database model object.</div>
 					</dd>
 			<dt class="field">
 						<img src="media/images/Class.png" alt="Class" title="Class" />
@@ -416,11 +441,18 @@
 					</dd>
 			<dt class="field">
 						<img src="media/images/Class.png" alt="Class" title="Class" />
-			Debug
+			Dbg
 					</dt>
 		<dd class="index-item-body">
-			<div class="index-item-details"><a href="MCS_MVC_API/Debug.html">Debug</a> in Debug.class.php</div>
+			<div class="index-item-details"><a href="MCS_MVC_API/Dbg.html">Dbg</a> in Dbg.class.php</div>
 							<div class="index-item-description">Singleton class that provides acess to debugging tools.</div>
+					</dd>
+			<dt class="field">
+						<img src="media/images/Page.png" alt="Page" title="Page" />
+			<span class="include-title">Dbg.class.php</span>
+					</dt>
+		<dd class="index-item-body">
+			<div class="index-item-details"><a href="MCS_MVC_API/_Dbg.class.php.html">Dbg.class.php</a> in Dbg.class.php</div>
 					</dd>
 			<dt class="field">
 						<img src="media/images/Class Constant.png" alt="Class Constant" title="Class Constant" />
@@ -428,13 +460,6 @@
 					</dt>
 		<dd class="index-item-body">
 			<div class="index-item-details"><a href="MCS_MVC_API/Log.html#constDEBUG">Log::DEBUG</a> in Log.class.php</div>
-					</dd>
-			<dt class="field">
-						<img src="media/images/Page.png" alt="Page" title="Page" />
-			<span class="include-title">Debug.class.php</span>
-					</dt>
-		<dd class="index-item-body">
-			<div class="index-item-details"><a href="MCS_MVC_API/_Debug.class.php.html">Debug.class.php</a> in Debug.class.php</div>
 					</dd>
 			<dt class="field">
 						<img src="media/images/Method.png" alt="Method" title="Method" />
@@ -482,6 +507,21 @@
 	</div>
 	<dl>
 			<dt class="field">
+						<img src="media/images/Class.png" alt="Class" title="Class" />
+			Err
+					</dt>
+		<dd class="index-item-body">
+			<div class="index-item-details"><a href="MCS_MVC_API/Err.html">Err</a> in Err.class.php</div>
+							<div class="index-item-description">Singleton class for handling application errors.</div>
+					</dd>
+			<dt class="field">
+						<img src="media/images/Page.png" alt="Page" title="Page" />
+			<span class="include-title">Err.class.php</span>
+					</dt>
+		<dd class="index-item-body">
+			<div class="index-item-details"><a href="MCS_MVC_API/_Err.class.php.html">Err.class.php</a> in Err.class.php</div>
+					</dd>
+			<dt class="field">
 						<img src="media/images/Class Constant.png" alt="Class Constant" title="Class Constant" />
 			ERROR
 					</dt>
@@ -489,19 +529,11 @@
 			<div class="index-item-details"><a href="MCS_MVC_API/Log.html#constERROR">Log::ERROR</a> in Log.class.php</div>
 					</dd>
 			<dt class="field">
-						<img src="media/images/Class.png" alt="Class" title="Class" />
-			Error
-					</dt>
-		<dd class="index-item-body">
-			<div class="index-item-details"><a href="MCS_MVC_API/Error.html">Error</a> in Error.class.php</div>
-							<div class="index-item-description">Singleton class for handling application errors.</div>
-					</dd>
-			<dt class="field">
 						<img src="media/images/Page.png" alt="Page" title="Page" />
-			<span class="include-title">Error.class.php</span>
+			<span class="include-title">err_fatal.php</span>
 					</dt>
 		<dd class="index-item-body">
-			<div class="index-item-details"><a href="MCS_MVC_API/_Error.class.php.html">Error.class.php</a> in Error.class.php</div>
+			<div class="index-item-details"><a href="MCS_MVC_API/_mvc---views---err_fatal.php.html">err_fatal.php</a> in err_fatal.php</div>
 					</dd>
 		</dl>
 	<a name="f"></a>
@@ -516,7 +548,7 @@
 			<span class="method-title">fatal</span>
 					</dt>
 		<dd class="index-item-body">
-			<div class="index-item-details"><a href="MCS_MVC_API/Error.html#methodfatal">Error::fatal()</a> in Error.class.php</div>
+			<div class="index-item-details"><a href="MCS_MVC_API/Err.html#methodfatal">Err::fatal()</a> in Err.class.php</div>
 							<div class="index-item-description">Report a fatal application error to the browser and the log file,  display a stack trace, and exit.</div>
 					</dd>
 			<dt class="field">
@@ -691,10 +723,10 @@
 	<dl>
 			<dt class="field">
 						<img src="media/images/Global.png" alt="Global" title="Global" />
-			<span class="var-title">$LOG</span>
+			<span class="var-title">$L</span>
 					</dt>
 		<dd class="index-item-body">
-			<div class="index-item-details"><a href="MCS_MVC_API/_bootstrap.php.html#global$LOG">$LOG</a> in bootstrap.php</div>
+			<div class="index-item-details"><a href="MCS_MVC_API/_bootstrap.php.html#global$L">$L</a> in bootstrap.php</div>
 							<div class="index-item-description">Global variable: log file handler</div>
 					</dd>
 			<dt class="field">
@@ -703,13 +735,6 @@
 					</dt>
 		<dd class="index-item-body">
 			<div class="index-item-details"><a href="MCS_MVC_API/_bootstrap.php.html#defineLIBDIR">LIBDIR</a> in bootstrap.php</div>
-					</dd>
-			<dt class="field">
-						<img src="media/images/Class Constant.png" alt="Class Constant" title="Class Constant" />
-			LOCK_RETRIES
-					</dt>
-		<dd class="index-item-body">
-			<div class="index-item-details"><a href="MCS_MVC_API/Log.html#constLOCK_RETRIES">Log::LOCK_RETRIES</a> in Log.class.php</div>
 					</dd>
 			<dt class="field">
 						<img src="media/images/Class.png" alt="Class" title="Class" />
@@ -727,13 +752,6 @@
 			<div class="index-item-details"><a href="MCS_MVC_API/_Log.class.php.html">Log.class.php</a> in Log.class.php</div>
 					</dd>
 			<dt class="field">
-						<img src="media/images/Class Constant.png" alt="Class Constant" title="Class Constant" />
-			LOGFILE
-					</dt>
-		<dd class="index-item-body">
-			<div class="index-item-details"><a href="MCS_MVC_API/Log.html#constLOGFILE">Log::LOGFILE</a> in Log.class.php</div>
-					</dd>
-			<dt class="field">
 						<img src="media/images/Class.png" alt="Class" title="Class" />
 			Login
 					</dt>
@@ -746,6 +764,21 @@
 					</dt>
 		<dd class="index-item-body">
 			<div class="index-item-details"><a href="MCS_MVC_API/_Login.class.php.html">Login.class.php</a> in Login.class.php</div>
+					</dd>
+			<dt class="field">
+						<img src="media/images/Class.png" alt="Class" title="Class" />
+			LogModel
+					</dt>
+		<dd class="index-item-body">
+			<div class="index-item-details"><a href="MCS_MVC_API/LogModel.html">LogModel</a> in LogModel.class.php</div>
+							<div class="index-item-description">Base Model class - handle the lowest level functions of a database model  object.</div>
+					</dd>
+			<dt class="field">
+						<img src="media/images/Page.png" alt="Page" title="Page" />
+			<span class="include-title">LogModel.class.php</span>
+					</dt>
+		<dd class="index-item-body">
+			<div class="index-item-details"><a href="MCS_MVC_API/_mvc---models---LogModel.class.php.html">LogModel.class.php</a> in LogModel.class.php</div>
 					</dd>
 		</dl>
 	<a name="m"></a>
@@ -772,20 +805,6 @@
 							<div class="index-item-description">Create a slot in a page that can be filled in with text, HTML, etc.</div>
 					</dd>
 			<dt class="field">
-						<img src="media/images/Class Constant.png" alt="Class Constant" title="Class Constant" />
-			MAXLVL
-					</dt>
-		<dd class="index-item-body">
-			<div class="index-item-details"><a href="MCS_MVC_API/Log.html#constMAXLVL">Log::MAXLVL</a> in Log.class.php</div>
-					</dd>
-			<dt class="field">
-						<img src="media/images/Class Constant.png" alt="Class Constant" title="Class Constant" />
-			MINLVL
-					</dt>
-		<dd class="index-item-body">
-			<div class="index-item-details"><a href="MCS_MVC_API/Log.html#constMINLVL">Log::MINLVL</a> in Log.class.php</div>
-					</dd>
-			<dt class="field">
 						<img src="media/images/Method.png" alt="Method" title="Method" />
 			<span class="method-title">msg</span>
 					</dt>
@@ -802,18 +821,20 @@
 	</div>
 	<dl>
 			<dt class="field">
-						<img src="media/images/Variable.png" alt="Variable" title="Variable" />
-			<span class="var-title">$name</span>
+						<img src="media/images/Method.png" alt="Method" title="Method" />
+			<span class="method-title">name</span>
 					</dt>
 		<dd class="index-item-body">
-			<div class="index-item-details"><a href="MCS_MVC_API/BaseController.html#var$name">BaseController::$name</a> in BaseController.class.php</div>
+			<div class="index-item-details"><a href="MCS_MVC_API/BaseController.html#methodname">BaseController::name()</a> in BaseController.class.php</div>
+							<div class="index-item-description">Return the instantiated controller name.</div>
 					</dd>
 			<dt class="field">
-						<img src="media/images/Variable.png" alt="Variable" title="Variable" />
-			<span class="var-title">$name</span>
+						<img src="media/images/Method.png" alt="Method" title="Method" />
+			<span class="method-title">name</span>
 					</dt>
 		<dd class="index-item-body">
-			<div class="index-item-details"><a href="MCS_MVC_API/BaseModel.html#var$name">BaseModel::$name</a> in BaseModel.class.php</div>
+			<div class="index-item-details"><a href="MCS_MVC_API/BaseModel.html#methodname">BaseModel::name()</a> in BaseModel.class.php</div>
+							<div class="index-item-description">Return the instantiated model name.</div>
 					</dd>
 			<dt class="field">
 						<img src="media/images/Class Constant.png" alt="Class Constant" title="Class Constant" />
@@ -1129,6 +1150,7 @@
 					</dt>
 		<dd class="index-item-body">
 			<div class="index-item-details"><a href="MCS_MVC_API/Database.html#methodsave">Database::save()</a> in Database.class.php</div>
+							<div class="index-item-description">Save a database record.</div>
 					</dd>
 			<dt class="field">
 						<img src="media/images/Method.png" alt="Method" title="Method" />
@@ -1247,6 +1269,14 @@
 		<dd class="index-item-body">
 			<div class="index-item-details"><a href="MCS_MVC_API/BaseModel.html#var$table">BaseModel::$table</a> in BaseModel.class.php</div>
 					</dd>
+			<dt class="field">
+						<img src="media/images/Method.png" alt="Method" title="Method" />
+			<span class="method-title">table</span>
+					</dt>
+		<dd class="index-item-body">
+			<div class="index-item-details"><a href="MCS_MVC_API/BaseModel.html#methodtable">BaseModel::table()</a> in BaseModel.class.php</div>
+							<div class="index-item-description">Return the name of the table used by this model.</div>
+					</dd>
 		</dl>
 	<a name="u"></a>
 	<div class="index-letter-section">
@@ -1261,6 +1291,22 @@
 					</dt>
 		<dd class="index-item-body">
 			<div class="index-item-details"><a href="MCS_MVC_API/Inflection.html#var$uncountable">Inflection::$uncountable</a> in Inflection.class.php</div>
+					</dd>
+			<dt class="field">
+						<img src="media/images/Method.png" alt="Method" title="Method" />
+			<span class="method-title">update</span>
+					</dt>
+		<dd class="index-item-body">
+			<div class="index-item-details"><a href="MCS_MVC_API/BaseModel.html#methodupdate">BaseModel::update()</a> in BaseModel.class.php</div>
+							<div class="index-item-description">Update a database model object.</div>
+					</dd>
+			<dt class="field">
+						<img src="media/images/Method.png" alt="Method" title="Method" />
+			<span class="method-title">update</span>
+					</dt>
+		<dd class="index-item-body">
+			<div class="index-item-details"><a href="MCS_MVC_API/Database.html#methodupdate">Database::update()</a> in Database.class.php</div>
+							<div class="index-item-description">Update a database record.</div>
 					</dd>
 			<dt class="field">
 						<img src="media/images/Method.png" alt="Method" title="Method" />
@@ -1295,26 +1341,44 @@
 	</div>
 	<dl>
 			<dt class="field">
-						<img src="media/images/Variable.png" alt="Variable" title="Variable" />
-			<span class="var-title">$values</span>
+						<img src="media/images/Method.png" alt="Method" title="Method" />
+			<span class="method-title">value</span>
 					</dt>
 		<dd class="index-item-body">
-			<div class="index-item-details"><a href="MCS_MVC_API/BaseModel.html#var$values">BaseModel::$values</a> in BaseModel.class.php</div>
+			<div class="index-item-details"><a href="MCS_MVC_API/Cache.html#methodvalue">Cache::value()</a> in Cache.class.php</div>
+							<div class="index-item-description">Get or set a cache entry.</div>
 					</dd>
 			<dt class="field">
-						<img src="media/images/Variable.png" alt="Variable" title="Variable" />
-			<span class="var-title">$view</span>
+						<img src="media/images/Method.png" alt="Method" title="Method" />
+			<span class="method-title">value</span>
 					</dt>
 		<dd class="index-item-body">
-			<div class="index-item-details"><a href="MCS_MVC_API/BaseController.html#var$view">BaseController::$view</a> in BaseController.class.php</div>
+			<div class="index-item-details"><a href="MCS_MVC_API/BaseModel.html#methodvalue">BaseModel::value()</a> in BaseModel.class.php</div>
+							<div class="index-item-description">Get or set a particular column value.</div>
+					</dd>
+			<dt class="field">
+						<img src="media/images/Method.png" alt="Method" title="Method" />
+			<span class="method-title">values</span>
+					</dt>
+		<dd class="index-item-body">
+			<div class="index-item-details"><a href="MCS_MVC_API/BaseModel.html#methodvalues">BaseModel::values()</a> in BaseModel.class.php</div>
+							<div class="index-item-description">Return a list of columns and their respective values.  Only columns that  have a value set will appear in the list.</div>
 					</dd>
 			<dt class="field">
 						<img src="media/images/Method.png" alt="Method" title="Method" />
 			<span class="method-title">var_dump</span>
 					</dt>
 		<dd class="index-item-body">
-			<div class="index-item-details"><a href="MCS_MVC_API/Debug.html#methodvar_dump">Debug::var_dump()</a> in Debug.class.php</div>
+			<div class="index-item-details"><a href="MCS_MVC_API/Dbg.html#methodvar_dump">Dbg::var_dump()</a> in Dbg.class.php</div>
 							<div class="index-item-description">Dump the contents and structure of a variable to the screen inside pre  tags.</div>
+					</dd>
+			<dt class="field">
+						<img src="media/images/Method.png" alt="Method" title="Method" />
+			<span class="method-title">view</span>
+					</dt>
+		<dd class="index-item-body">
+			<div class="index-item-details"><a href="MCS_MVC_API/BaseController.html#methodview">BaseController::view()</a> in BaseController.class.php</div>
+							<div class="index-item-description">Get or set the current view.</div>
 					</dd>
 			<dt class="field">
 						<img src="media/images/Class.png" alt="Class" title="Class" />

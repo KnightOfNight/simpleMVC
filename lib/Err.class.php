@@ -39,10 +39,7 @@ class Err {
 
 		$trace_info = debug_backtrace ();
 
-		array_shift ($trace_info);
-		array_shift ($trace_info);
-
-		require (ROOT.DS."public".DS."views".DS."error_fatal.php");
+		require ("err_fatal.php");
 
 		exit (0);
 	}

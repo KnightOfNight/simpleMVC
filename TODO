@@ -1,0 +1,34 @@
+/**
+*
+* TODO List
+*
+* Move all framework-specific models, controllers, and views to their own
+* directory structure similar to "app".  Call it "mvc".  Place it under "lib".
+*
+*
+*
+* Give table names a prefix.  Framework-specific tables should be named
+* mvc_<table name>, application-specific tables should be named app_<table
+* name>.
+*
+* The prefix should be automatically prepended to the base table name, which
+* should be the lower-case pluralization of the model class name minus "Model".
+*
+*
+*
+* When logging out, don't clear session.  Just unauthorize it.
+*
+*
+*
+* Check all classes for singletons, and make the appropriate changes.  See
+* classes Dispatch and Session as examples.
+*
+*
+*
+* IP - Some more functions to handle paging easier.
+*
+*
+*
+* IP - Urgent - need access to current route.
+*
+*/

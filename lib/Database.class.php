@@ -30,12 +30,10 @@ class Database {
 	function connect ($host, $port, $name, $user, $pass) {
 		$dsn = sprintf ("%s:host=%s;port=%d;dbname=%s", "mysql", $host, $port, $name);
 
-#Dbg::var_dump("dsn", $dsn);
-
 		try {
 			$this->_dbh = new PDO ($dsn, $user, $pass);
 		} catch (PDOException $e) {
-			Err::fatal ($e->getMessage());
+			Err::fatal($e->getMessage());
 		}
 	}
 
@@ -47,23 +45,23 @@ class Database {
 	* @return array list of column names
 	*/
 	function describe ($table) {
-		if (! $columns = Cache::get($cache_name = "describe_" . $table)) {
+		if ( ! $columns = Cache::value($cache_name = "describe_" . $table) ) {
 			$columns = array();
 
 			$query = "describe " . $table;
 
 			if ( ($results = $this->_dbh->query($query)) === FALSE ) {
-				Err::fatal ($this->_pdoError());
+				Err::fatal($this->_pdoError());
 			}
 
-			while ($result = $results->fetch()) {
-				array_push ($columns, $result["Field"]);
+			while ( $result = $results->fetch() ) {
+				array_push($columns, $result["Field"]);
 			}
 
-			Cache::set($cache_name, $columns);
+			Cache::value($cache_name, $columns);
 		}
 
-		return ($columns);
+		return($columns);
 	}
 
 
@@ -232,34 +230,29 @@ class Database {
 	* Create a new database record.
 	*
 	* @param string table name
-	* @param array list of column names
 	* @param hash column name => value
-	* @param bool log the query
+	* @param bool TRUE => log the query
 	* @return integer new record id
 	*/
-	function create ($table, $columns, $values, $log_query = TRUE) {
-		if (empty ($values)) {
+	function create ($table, $values, $log_query = TRUE) {
+		if ( empty($values) ) {
 			Err::fatal("No column values set.  Cannot update or create record.");
 		}
 
 		$query = "INSERT INTO " . $table . " SET " . Database::makeset($values);
 
-		if (in_array ("created_at", $columns)) {
-			$query .= " , " . "created_at = NULL";
-		}
-
-		if ($log_query === TRUE) {
+		if ( $log_query === TRUE ) {
 			global $L;
 			$L->msg(Log::DEBUG, "database query = '" . $query . "'");
 		}
 
 		$stmnt = $this->_dbh->prepare($query);
 
-		if ($stmnt->execute(Database::getparams($values)) === FALSE) {
-			Err::fatal ($this->_pdoError());
+		if ( $stmnt->execute(Database::getparams($values)) === FALSE ) {
+			Err::fatal($this->_pdoError());
 		}
 
-		return ($this->_dbh->lastInsertId());
+		return( $this->_dbh->lastInsertId() );
 	}
 
 
@@ -267,29 +260,30 @@ class Database {
 	* Update a database record.
 	*
 	* @param string table name
-	* @param array list of column names
 	* @param hash column name => value
+	* @param string primary key column name
+	* @param bool TRUE => log the query
 	*/
-	function update ($table, $columns, $values, $log_query = TRUE) {
-		if (empty ($values)) {
+	function update ($table, $values, $key, $log_query = TRUE) {
+		if ( empty($values) ) {
 			Err::fatal("No column values set.  Cannot update or create record.");
 		}
 
-		if (! isset ($values["id"])) {
-			Err::fatal ("Column 'id' has no No value set.");
+		if ( ! isset ($values[$key]) ) {
+			Err::fatal( sprintf("No value set for primary key column '%s'.", $key) );
 		}
 
 		$query = "UPDATE " . $table . " SET " . Database::makeset($values) . " WHERE id = :id";
 
-		if ($log_query === TRUE) {
+		if ( $log_query === TRUE ) {
 			global $L;
 			$L->msg(Log::DEBUG, "database query = '" . $query . "'");
 		}
 
 		$stmnt = $this->_dbh->prepare($query);
 
-		if ($stmnt->execute(Database::getparams($values)) === FALSE) {
-			Err::fatal ($this->_pdoError());
+		if ( $stmnt->execute(Database::getparams($values)) === FALSE ) {
+			Err::fatal( $this->_pdoError() );
 		}
 
 		return (TRUE);
