@@ -94,13 +94,13 @@ $L = new Log((int) $CONFIG->getVal("framework.loglevel"));
 # Setup error reporting
 #
 error_reporting(E_ALL | E_STRICT);
+ini_set("log_errors", "ON");
+ini_set("error_log", ROOT.DS."tmp".DS."logs".DS."error.log");
 
 if ($CONFIG->getVal("application.development")) {
 	ini_set("display_errors", "ON");
 } else {
 	ini_set("display_errors", "OFF");
-	ini_set("log_errors", "ON");
-	ini_set("error_log", ROOT.DS."tmp".DS."logs".DS."error.log");
 }
 
 

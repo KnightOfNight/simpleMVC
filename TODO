@@ -2,17 +2,13 @@
 *
 * TODO List
 *
-* Move all framework-specific models, controllers, and views to their own
-* directory structure similar to "app".  Call it "mvc".  Place it under "lib".
+* Make configuration handler return NULL if the item is not set.  It should log a warning if
+* it has to return NULL.
 *
 *
 *
-* Give table names a prefix.  Framework-specific tables should be named
-* mvc_<table name>, application-specific tables should be named app_<table
-* name>.
-*
-* The prefix should be automatically prepended to the base table name, which
-* should be the lower-case pluralization of the model class name minus "Model".
+* Make controller class file names match the class name.  If it is upper-case in the application
+* configuration, the file and class should be upper-case.  If lower, the same.
 *
 *
 *

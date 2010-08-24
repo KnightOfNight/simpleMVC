@@ -30,7 +30,7 @@ class Dispatch {
 		global $DB;
 		global $CONFIG;
 
-		$route = Route::parseRoute($route);
+		$route = Route::parse($route);
 
 		$controller = $route["controller"];
 		$action = $route["action"];
@@ -48,9 +48,9 @@ class Dispatch {
 		}
 
 		# create a new controller object
-		$controller_class = ucfirst ($controller) . "Controller";
+		$controller_class = $controller . "_controller";
 
-		$dispatcher = new $controller_class ();
+		$dispatcher = new $controller_class();
 
 		# call the three main parts of the controller
 		if ($external) {

@@ -40,30 +40,22 @@ class BaseModel {
 	*/
 	function __construct () {
 		$this->setup();
-
-#		global $DB;
-#
-#		$this->_name = strtolower( str_replace("Model", "", get_class ($this)) );
-#
-#		if ( ! isset ($this->table) ) {
-#			$this->table = Inflection::pluralize($this->_name);
-#		}
-#
-#		$this->_columns = $DB->describe($this->table);
 	}
 
 
 	/**
 	* Setup an instance of this class.  Used by __construct so that __construct
-	* can be overridden.
+	* can be overridden by the parent class if needed.
 	*/
 	protected function setup () {
 		global $DB;
+		global $CONFIG;
 
-		$this->_name = strtolower( str_replace("Model", "", get_class ($this)) );
+		$this->_name = strtolower( str_replace("Model", "", get_class($this)) );
 
 		if ( ! isset ($this->table) ) {
-			$this->table = Inflection::pluralize($this->_name);
+			$prefix = $CONFIG->getVal("database.prefix");
+			$this->table = $prefix . Inflection::pluralize($this->_name);
 		}
 
 		$this->_columns = $DB->describe($this->table);

@@ -28,21 +28,24 @@ class Route {
 	* return it as an array.
 	*
 	* @param string application route
-	* @return array broken down application route
+	* @return array verified application route
 	*/
-	static function parseRoute ($route) {
+	static function parse ($route) {
 		global $CONFIG;
 
 		$query = array ();
 
+
 		# Parse the URL.  If it's NULL, then go to the default controller/action.
 		if ($route === NULL) {
 			$controller = $CONFIG->getVal("dispatcher.controller.default");
+			if ( ! $controller ) {
+				Err::fatal ("no route specified via HTTP and no default controller found");
+			}
 
 			$action = $CONFIG->getVal("dispatcher.controller." . $controller . ".default_action");
-
-			if ( (! $controller) OR (! $action) ) {
-				Err::fatal ("no route specified via HTTP and no default controller or action found");
+			if ( ! $action ) {
+				Err::fatal("no action specified via HTTP and no default action found");
 			}
 		} else {
 			# Reroute if the route is an alias.
@@ -50,24 +53,27 @@ class Route {
 
 			$route_parts = explode ("/", $route);
 
-			$controller = strtolower ($route_parts[0]);
+			$controller = $route_parts[0];
 
 			# Check the controller name to make sure it is configured and implemented.
-			if (! class_exists ($controller_class = ucfirst ($controller) . "Controller")) {
-				Err::fatal (sprintf ("route is invalid, '%s' is not a valid controller, class '%s' not found", $controller, $controller_class));
-			} elseif (! array_key_exists ($controller, $CONFIG->getVal("dispatcher.controller"))) {
-				Err::fatal (sprintf ("route is invalid, controller '%s' not found in configuration", $controller));
+			if ( ! array_key_exists($controller, $CONFIG->getVal("dispatcher.controller")) ) {
+				Err::fatal( sprintf("route is invalid, controller '%s' not found in configuration", $controller) );
+			} elseif ( ! class_exists($class = BaseController::toclass($controller)) ) {
+				Err::fatal (sprintf ("route is invalid, '%s' is not a valid controller, class '%s' not found", $controller, $class));
 			}
 
 			array_shift ($route_parts);
 
 			# Check the action if set.
-			if ( (! isset ($route_parts[0])) OR empty ($route_parts[0]) ) {
+			if ( (! isset ($route_parts[0])) OR empty($route_parts[0]) ) {
 				# No action specified, get the default action for the specified
 				# controller.
 				$action = $CONFIG->getVal("dispatcher.controller." . $controller . ".default_action");
+				if ( ! $action ) {
+					Err::fatal("no action specified via HTTP and no default action found");
+				}
 			} else {
-				$action = strtolower ($route_parts[0]);
+				$action = $route_parts[0];
 			}
 
 			# Check the action to make sure it is configured and implemented.
@@ -77,7 +83,7 @@ class Route {
 
 			$actions = array_merge ($actions, $CONFIG->getVal("dispatcher.controller." . $controller . ".internal_actions"));
 
-			if (! method_exists ($controller_class, $action)) {
+			if (! method_exists ($class, $action)) {
 				Err::fatal (sprintf ("route is invalid, '%s' is not a valid action for controller '%s', method not found", $action, $controller));
 			} elseif (! in_array ($action, $actions)) {
 				Err::fatal (sprintf ("route is invalid, action '%s' not found in configuration for controller '%s'", $action, $controller));

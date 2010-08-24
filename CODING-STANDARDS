@@ -22,3 +22,11 @@ func( func2( func3(var) ) )
 
 NOT OK...
 func(func2(var))
+
+
+1 space between first open and last closed parenthesis in all conditionals.
+
+OK..
+
+if ( $var ) 
+if ( func($var) ) 

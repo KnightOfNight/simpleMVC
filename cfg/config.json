@@ -34,10 +34,11 @@
 
 	"database" : {
 		"host" : "localhost",
-		"port" : "3600",
+		"port" : "3306",
 		"name" : "dbname",
 		"user" : "username",
-		"pass" : "password"
+		"pass" : "password",
+		"prefix" : "app_"
 	},
 
 	"framework" : {

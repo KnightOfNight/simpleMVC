@@ -25,7 +25,7 @@ class BaseController {
 	* @return BaseController a new BaseController object
 	*/
 	function __construct () {
-		$this->_name = strtolower (str_replace ("Controller", "", get_class ($this)));
+		$this->_name = BaseController::tocontroller( get_class($this) );
 	}
 
 
@@ -61,7 +61,29 @@ class BaseController {
 	*/
 	function __destruct () {
 		if ($this->_view instanceof View) {
-			$this->_view->render ();
+			$this->_view->render();
 		}
+	}
+
+
+	/**
+	* Convert a controller name into the corresponding class name.
+	*
+	* @param string controller name
+	* @return string class name
+	*/
+	static function toclass ($controller) {
+		return( $controller . "_controller" );
+	}
+
+
+	/**
+	* Convert a class name into the corresponding controller name.
+	*
+	* @param string class name
+	* @return string controller name
+	*/
+	static function tocontroller ($class) {
+		return( str_replace("_controller", "", $class) );
 	}
 }

@@ -140,7 +140,7 @@ class Criteria {
 		array_push ($this->_models, $model);
 
 		if ($this->_checkColumn ($colA) AND $this->_checkColumn ($colB)) {
-			array_push ($this->_left_joins, array ($model->table, $model->name, $colA, $colB));
+			array_push ($this->_left_joins, array ($model->table(), $model->name(), $colA, $colB));
 		} else {
 			Err::fatal (sprintf ("either column '%s' or column '%s' is not valid", $colA, $colB));
 		}
@@ -492,7 +492,7 @@ class Criteria {
 
 		foreach ($this->_models as $model) {
 			if ($model_name == $model->name()) {
-				if (in_array ($col_name, $model->columns)) {
+				if (in_array ($col_name, $model->columns())) {
 					return (TRUE);
 				}
 			}

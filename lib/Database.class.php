@@ -98,8 +98,8 @@ class Database {
 
 		# FROM
 		$model = $criteria->getModel();
-		$table = $model->table;
-		$query .= " FROM " . $table . " AS " . $model->name;
+		$table = $model->table();
+		$query .= " FROM " . $table . " AS " . $model->name();
 
 
 		# LEFT JOIN
