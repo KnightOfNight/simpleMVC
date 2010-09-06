@@ -28,6 +28,7 @@ $LIBDIR = array(	ROOT.DS."lib",
 					ROOT.DS."app/controllers",
 					ROOT.DS."app/models",
 					ROOT.DS."app/views",
+					ROOT.DS."app/forms",
 					ROOT.DS."app/lib",
 );
 /**

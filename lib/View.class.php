@@ -172,11 +172,13 @@ class View {
 
 	/**
 	* Create a slot in a page that can be filled in with text, HTML, etc.
+	* Often used to allow the page header to be set by subsequent code.
 	*
-	* Can only be called from the view for a particular action.
+	* Can only be called from within a View.
 	*
-	* Often used to create a slot in a shared page header that can be filled in
-	* with the page title by a particular action.
+	* <code>
+	* <title><?php $this->makeSlot("page_title") ?></title>
+	* </code>
 	*
 	* @param string name of the slot
 	*/
@@ -190,9 +192,11 @@ class View {
 	/**
 	* Fill a slot with its contents.
 	*
-	* Can only be called from the view for a particular action.
+	* Can only be called from within a View.
 	*
-	* Often used to set the title of a page.  See slot() above.
+	* <code>
+	* $this->fillSlot("page_title", "This Page's Title");
+	* </code>
 	*
 	* @param string name of the slot
 	* @param string value of the slot

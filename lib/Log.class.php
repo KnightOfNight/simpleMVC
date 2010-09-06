@@ -52,7 +52,7 @@ class Log {
 	* Write out a log message if the message level is allowed by the selected
 	* log level.
 	*
-	* @param int the level of the message being logged
+	* @param integer the level of the message being logged
 	* @param string the message to log
 	*/
 	function msg ($level, $message) {

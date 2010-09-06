@@ -2,13 +2,42 @@
 *
 * TODO List
 *
-* Make configuration handler return NULL if the item is not set.  It should log a warning if
-* it has to return NULL.
+*
+* Verify ability to save "NULL" into a column.
+*
+*
+* Model class should have a method for each CRUD function.
+*
+*
+* Create new class called "Search".  It will have methods to build a search
+* query.  It store the query information and pass it to the database.
+*
+* Ideas for storage of the criteria...
+* class - use current class Criteria (clean it up)
+* hash
+* JSON
+*
+* The Search class should know *some things* about paging.
+*
+* Search class should be able to return number of results in the entire search.
+* This method will be used by the pager to determine things like whether or not
+* there are previous or following pages.
 *
 *
 *
-* Make controller class file names match the class name.  If it is upper-case in the application
-* configuration, the file and class should be upper-case.  If lower, the same.
+* Standardize fully qualified column names.  Don't change the period to an
+* underscore in results.
+*
+*
+*
+* Make configuration handler return NULL if the item is not set.  It should log
+* a warning if it has to return NULL.
+*
+*
+*
+* Make controller class file names match the class name.  If it is upper-case
+* in the application configuration, the file and class should be upper-case.
+* If lower, the same.
 *
 *
 *
@@ -25,6 +54,5 @@
 *
 *
 *
-* IP - Urgent - need access to current route.
 *
 */
