@@ -40,7 +40,7 @@ class Log {
 	* @return Log a new Log object
 	*/
 	function __construct ($level) {
-		$max_level = array_sum (array_keys($this->_log_levels));
+		$max_level = array_sum( array_keys($this->_log_levels) );
 
 		$this->_level = ($level < 0) ? Log::NONE : ($level > $max_level) ? $max_level : $level;
 
