@@ -20,6 +20,11 @@ while true; do
 	while [ -z "$MVC_PROTOCOL" ]; do
 		echo
 		echo -n "Enter protocol: "; read MVC_PROTOCOL
+
+		if [ "$MVC_PROTOCOL" != "http" -a "$MVC_PROTOCOL" != "https" ]; then
+			echo "Invalid protocol.  Must be 'http' or 'https'."
+			MVC_PROTOCOL=""
+		fi
 	done
 
 	while [ -z "$MVC_DOMAIN" ]; do
@@ -88,5 +93,6 @@ find tmp -mindepth 1 -type d -exec chmod a+rwx {} \;
 
 
 cp -a lib/index.php public/
+
 
 chmod 755 .
