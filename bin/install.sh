@@ -80,3 +80,5 @@ done
 
 chmod 755 tmp
 find tmp -mindepth 1 -type d -exec chmod a+rwx {} \;
+
+cp -a lib/index.php public/
