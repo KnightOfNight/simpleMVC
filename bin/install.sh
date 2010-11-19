@@ -47,13 +47,14 @@ while true; do
 		MVC_PATH=""
 	fi
 done
-
 echo
+
 
 cp /dev/null .config
 echo "MVC_PROTOCOL=\"$MVC_PROTOCOL\"" >> .config
 echo "MVC_DOMAIN=\"$MVC_DOMAIN\"" >> .config
 echo "MVC_PATH=\"$MVC_PATH\"" >> .config
+
 
 tmpfile=$(mktemp /tmp/XXXXX)
 file=".htaccess"
@@ -61,11 +62,13 @@ cat $file | sed -e "s,MVC_URL,$MVC_URL,g" | sed -e "s,MVC_DOMAIN,$MVC_DOMAIN,g" 
 mv $tmpfile $file
 chmod 644 "$file"
 
+
 tmpfile=$(mktemp /tmp/XXXXX)
 file="public/.htaccess"
 cat $file | sed -e "s,MVC_URL,$MVC_URL,g" | sed -e "s,MVC_DOMAIN,$MVC_DOMAIN,g" -e "s,MVC_PATH,$MVC_PATH,g" >  $tmpfile
 mv $tmpfile $file
 chmod 644 "$file"
+
 
 tmpfile=$(mktemp /tmp/XXXXX)
 file="cfg/config.json"
@@ -73,12 +76,17 @@ cat $file | sed -e "s,MVC_URL,$MVC_URL,g" | sed -e "s,MVC_DOMAIN,$MVC_DOMAIN,g" 
 mv $tmpfile $file
 chmod 644 "$file"
 
+
 for dir in app cfg lib public tmp; do 
 	find $dir -type f -exec chmod a+r {} \;
 	find $dir -type d -exec chmod a+rx {} \;
 done
 
+
 chmod 755 tmp
 find tmp -mindepth 1 -type d -exec chmod a+rwx {} \;
 
+
 cp -a lib/index.php public/
+
+chmod 755 .
