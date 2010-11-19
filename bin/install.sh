@@ -1,6 +1,12 @@
 #!/bin/bash
 
 
+if [ -d ".git" ]; then
+	echo "ERROR: this is a git repository.  Remove '.git' if you want to setup a new application."
+	exit -1
+fi
+
+
 MVC_URL=""
 MVC_PROTOCOL=""
 MVC_DOMAIN=""
