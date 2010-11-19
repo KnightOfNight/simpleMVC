@@ -2,10 +2,10 @@ The application framework uses the following directories...
 
 app		- application specific files
 	controllers			- class definitions for all controllers
-	lib					- application-specific libraries
 	models				- class definitions for all database models
 	views				- all application views
 	views/<controller>	- controller specific views
+	lib					- application-specific libraries
 
 cfg		- configuration files
 

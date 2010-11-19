@@ -5,7 +5,7 @@
 *
 * @author >X @ MCS 'Net Productions
 * @package MCS_MVC_API
-* @version 0.1.0
+* @version 0.2.0
 *
 */
 
@@ -21,28 +21,7 @@
 *
 */
 class Search {
-	# Private variables.
-
-	# Array of database model objects.
-	private $_models = array();
-
-	# Columns to be selected.
-	private $_select_cols = array();
-
-	# Left joins.
-	private $_left_joins = array();
-
-	# Order-by.
-	private $_order_by = array();
-
-	# Where clauses.
-	private $_where = array();
-
-	# Limit on the results returned.
-	private $_limit = 0;
-
-	# Page within the results returned.
-	private $_page = 0;
+	private $_criteria = array();
 
 
 	# Operators that can be used when building a where clause.
@@ -68,65 +47,27 @@ class Search {
 	* Create a new Search object.
 	*
 	* <code>
-	* $criteria = new Search(new DatabaseModel($this->db));
+	* $criteria = new Search("ItemModel");
 	* </code>
 	*
-	* @param BaseModel an instance of a BaseModel object
+	* @param string the name of the primary database model used in the search
 	* @return Search instance of the object
 	*/
 	function __construct (BaseModel $model) {
-		if (! ($model instanceof BaseModel)) {
-			Err::fatal ("passed model is not an instance of BaseModel");
-		}
+		$this->_criteria["models"] = array();
+		array_push($this->_criteria["models"], $model);
 
-		array_push ($this->_models, $model);
-	}
+		$this->_criteria["select"] = array();
 
+		$this->_criteria["leftjoins"] = array();
 
-	/**
-	* Add a left join to the query.
-	* <code>
-	* $criteria->addLeftJoin(new CategoryModel($this->db), "category.id", "item.category_id");
-	* </code>
-	* @param BaseModel database model object
-	* @param string column A
-	* @param string column B
-	*/
-	function addLeftJoin (BaseModel $model, $colA, $colB) {
-		if (! ($model instanceof BaseModel)) {
-			Err::fatal ("passed model is not an instance of BaseModel");
-		}
+		$this->_criteria["where"] = array();
 
-		array_push ($this->_models, $model);
+		$this->_criteria["orderby"] = array();
 
-		if ($this->_checkColumn ($colA) AND $this->_checkColumn ($colB)) {
-			array_push ($this->_left_joins, array ($model->table(), $model->name(), $colA, $colB));
-		} else {
-			Err::fatal (sprintf ("either column '%s' or column '%s' is not valid", $colA, $colB));
-		}
-	}
+		$this->_criteria["limit"] = 0;
 
-
-	/**
-	* Add a column to the list of order-by columns.
-	*
-	* @param string column name
-	* @param string sort order (Search::ord_asc or Search::ord_desc)
-	*/
-	function addOrderBy ($col = NULL , $order = NULL) {
-		if (is_null ($col)) {
-			Err::fatal ("column name must be specified");
-		} elseif (! $this->_checkColumn ($col)) {
-			Err::fatal (sprintf ("invalid column '%s'", $col));
-		}
-
-		if (is_null ($order)) {
-			$order = Search::ord_asc;
-		} elseif ( ($order != Search::ord_asc) AND ($order != Search::ord_desc) ) {
-			Err::fatal (sprintf ("invalid sort order '%s'", $order));
-		}
-
-		array_push ($this->_order_by, array ($col, $order));
+		$this->_criteria["page"] = 1;
 	}
 
 
@@ -134,28 +75,30 @@ class Search {
 	* Add one or more columns to be selected.
 	*
 	* @param string one or more names of columns to be selected
-	* @return hash list of columns to be selected, and their respective aliases where present
 	*/
-	function select ($column = NULL) {
+	function select () {
 		$columns = func_get_args();
 
 		if ( empty ($columns) ) {
-			return($this->_select);
 
 		} elseif ( $columns[0] === NULL ) {
-			$this->_select = array();
+			$this->_criteria["select"] = array();
 
 		} else {
+			$select = $this->_criteria["select"];
+
 			foreach ( $columns as $column ) {
-				if ($this->_checkColumn ($column)) {
-					$this->_select{$column} = "";
+				if ( $this->_checkColumn($column) ) {
+					$select[$column] = $column;
 				} else {
-					Err::fatal (sprintf ("unable to add column to select query - invalid column '%s'", $col));
+					Err::fatal("unable to add column '$column' to select clause; column not found");
 				}
 			}
+
+			$this->_criteria["select"] = $select;
 		}
 
-		return($this->_select);
+		return;
 	}
 
 
@@ -170,14 +113,16 @@ class Search {
 	* </code>
 	* ...would result in the following being added to the select statement...
 	* <code>
-	* ...concat(last, ", ", first as lastcommafirst...
+	* ...concat(last, ", ", first) as lastcommafirst...
 	* </code>
 	*
 	* @param string expression to select.
 	* @param string column alias
 	*/
 	function selectExpression ($column, $alias) {
-		$this->_select_cols{$column} = $alias;
+		$select = $this->_criteria["select"];
+		$select[$column] = $alias;
+		$this->_criteria["select"] = $select;
 	}
 
 
@@ -185,13 +130,13 @@ class Search {
 	* Add a where clause to the query.
 	*
 	* <code>
-	* $criteria->addWhere (NULL, array (array ("table1.col1", Search::op_eq, "value")));
+	* $criteria->where (NULL, array (array ("table1.col1", Search::op_eq, "value")));
 	*
 	* This call is equivalent to the following 2.
-	* $criteria->addWhere (NULL, array ( array ("table1.col1", Search::op_eq,
+	* $criteria->where (NULL, array ( array ("table1.col1", Search::op_eq,
 	*      "value1"), Search:op_or, array ("table1.col1", Search::op_eq, "value2") ));
-	* $criteria->addWhere (NULL, array (array ("table1.col1", Search::op_eq, "value1")));
-	* $criteria->addWhere (Search::op_or, array (array ("table1.col1", Search::op_eq, "value2")));
+	* $criteria->where (NULL, array (array ("table1.col1", Search::op_eq, "value1")));
+	* $criteria->where (Search::op_or, array (array ("table1.col1", Search::op_eq, "value2")));
 	* </code>
 	*
 	* A clause takes the following form...
@@ -207,41 +152,42 @@ class Search {
 	*     array ("model.col", Search::op_eq, "col val 2"))
 	* </code>
 	*
-	* You can add as many clauses as you want, containing as many subclauses as you want.
+	* You can add as many clauses as you want, each containing as many subclauses as you want.
 	*
 	* @param string Search::op_and or Search::op_or
 	* @param array clause to add to the query
 	*/
-	function addWhere ($andor, $clause = NULL) {
-		global $L;
-
-		if (is_null ($andor)) {
+	function where ($andor = "", $clause = array()) {
+		if ( is_null($andor) AND is_null($clause) ) {
+			unset($this->_criteria["where"]);
+			return;
+		} elseif ( is_null($andor) ) {
 			$andor = Search::op_and;
+		} elseif ( is_null($clause) ) {
+			Err::fatal("clause must be specified");
+		} elseif ( ($andor != Search::op_and) AND ($andor != Search::op_or) ) {
+			Err::fatal("invalid operator '$andor'");
+		} elseif (! is_array($clause)) {
+			Err::fatal("clause must be an array");
 		}
 
-		if (is_null ($clause)) {
-			Err::fatal ("clause must be specified");
-		} elseif (! is_array ($clause)) {
-			Err::fatal ("claus must be an array");
-		}
+		$where = $this->_criteria["where"];
 
 		$last_item = "";
 		$parsed_clause = array();
 
-		for ($idx = 0; isset ($clause[$idx]); $idx++) {
+		for ($idx = 0; isset($clause[$idx]); $idx++) {
 			$item = $clause[$idx];
 
-			$L->msg(Log::DEBUG, "item = '" . $item . "'");
-
-			if (is_array ($item)) {
+			if ( is_array($item) ) {
 				# $item is a clause
 			
-				if (is_array ($last_item)) {
-					# Got a clause immediately after another clause, add the default operator "and".
+				if ( is_array($last_item) ) {
+					# Last item was also a clause.  Add the default operator "and".
 					array_push ($parsed_clause, Search::op_and);
 				}
 
-				if (count ($item) != 3) {
+				if ( count ($item) != 3 ) {
 					# Invalid clause found.
 					Err::fatal ("invalid clause, less than 3 elements found");
 				}
@@ -250,34 +196,31 @@ class Search {
 				$op = $item[1];
 				$val = $item[2];
 
-				if (! $this->_checkColumn ($col)) {
-					Err::fatal (sprintf ("invalid column '%s'", $col));
+				if ( ! $this->_checkColumn($col) ) {
+					Err::fatal("invalid column '$col'");
 				}
 
-				if (! $this->_checkOperator ($op)) {
-					Err::fatal (sprintf ("invalid operator '%s'", $op));
+				if ( ! $this->_checkOperator($op) ) {
+					Err::fatal("invalid operator '$op'");
 				}
 			} else {
 				# $item is a operator
 
+				# check operator
+				if ( ($item != Search::op_and) AND ($item != Search::op_or) ) {
+					Err::fatal("clause invalid: found invalid operator '$item'");
+				}
+
 				# check previous item
-				if (! is_array ($last_item)) {
-					# got an extra operator, just skip it (no preceeding clause).
+				if ( ! is_array($last_item) ) {
+					# Last item was not a clause, it was an operator, so this one is extra.
 					continue;
 				}
 
 				# check next item
-				if (! isset ($clause[$idx+1])) {
-					# got an extra operator, just skip it (next item is empty)
+				if ( ! isset ($clause[$idx+1]) ) {
+					# got an extra operator, just skip it, next item is empty
 					continue;
-				} elseif (! is_array ($clause[$idx + 1])) {
-					# got an extra operator, just skip it (next item is not a clause)
-					continue;
-				}
-
-				# check operator
-				if ( ($item != Search::op_and) AND ($item != Search::op_or) ) {
-					Err::fatal (sprintf ("clause invalid: found invalid operator '%s'", $item));
 				}
 			}
 
@@ -286,93 +229,63 @@ class Search {
 			$last_item = $item;
 		}
 
-		array_push ($this->_where, array ($andor, $parsed_clause));
-#Dbg::var_dump ("_where", $this->_where);
+		array_push ($where, array ($andor, $parsed_clause));
+#Dbg::var_dump ("where", $where);
+
+		$this->_criteria["where"] = $where;
 	}
 
 
 	/**
-	* Get list of all left joins.
-	* @return mixed ( (<table name>, <model name>, <col. A>, <col. B>) , ... )
-	*/
-	function getLeftJoins () {
-		return ($this->_left_joins);
-	}
-
-
-	/**
-	* Get the limit on the number of rows returned by the query.
-	* @return integer row limit
-	*/
-	function getLimit () {
-		return ($this->_limit);
-	}
-
-
-	/**
-	* Get the order-by info.
-	*
-	* The returned value takes the following form...
+	* Add a left join to the query.
 	* <code>
-	* array (
-	*	array (<col>, <ord>)
-	* )
+	* $search->leftjoin(new CategoryModel($this->db), "category.id", "item.category_id");
 	* </code>
-	* ...where <ord> is Search::ord_asc or Search::ord_desc.
-	*
-	* @return array ( (<col>, <ord>) , ... ) 
+	* @param BaseModel database model object
+	* @param string column A
+	* @param string column B
 	*/
-	function getOrderBy () {
-		return ($this->_order_by);
+	function leftjoin (BaseModel $model, $colA, $colB) {
+		array_push ($this->_criteria["models"], $model);
+
+		$joins = $this->_criteria["leftjoins"];
+
+		if ( $this->_checkColumn($colA) AND $this->_checkColumn($colB) ) {
+			array_push($joins, array($model->table(), $model->name(), $colA, $colB));
+		} elseif (! $this->_checkColumn($colA)) {
+			Err::fatal("unable to add left join; column A '$colA' is not valid");
+		} elseif (! $this->_checkColumn($colB)) {
+			Err::fatal("unable to add left join; column B '$colB' is not valid");
+		}
+
+		$this->_criteria["leftjoins"] = $joins;
 	}
 
 
 	/**
-	* Get the number of the page within the result set.
+	* Add a column to the list of order-by columns.
 	*
-	* @return integer page number
+	* @param string column name
+	* @param string sort order (Search::ord_asc or Search::ord_desc)
 	*/
-	function getPage () {
-		return ($this->_page);
-	}
+	function orderby ($col, $order = NULL) {
+		if ( is_null($col) ) {
+			Err::fatal("column name must be specified");
+		} elseif (! $this->_checkColumn($col)) {
+			Err::fatal("invalid column '$col'");
+		}
 
+		if ( is_null($order) ) {
+			$order = Search::ord_asc;
+		} elseif ( ($order != Search::ord_asc) AND ($order != Search::ord_desc) ) {
+			Err::fatal("invalid sort order '$order'");
+		}
 
-	/**
-	* Get the current list of columns and/or expressions to be selected and any
-	* corresponding aliases.
-	*
-	* @return hash { <column name> => <alias (if any)> }
-	*/
-	function getSelect () {
-		return ($this->_select_cols);
-	}
+		$orderby = $this->_criteria["orderby"];
 
+		array_push($orderby, array ($col, $order));
 
-	/**
-	* Get the first model associated with this criteria, AKA the primary table
-	* in the query.
-	*
-	* @return BaseModel
-	*/
-	function getModel () {
-		return ($this->_models[0]);
-	}
-
-
-	/**
-	* Get all of the where clauses for the query.
-	*
-	* The returned value takes the following form...
-	* <code>
-	* array (
-	*	array (<op>, array (<clauses>))
-	* )
-	* </code>
-	* ...where each of <clauses> is either an array (<col>,<op>,<val>) or string <op>.
-	* @return array ( ( <op>, ( <clause> , ... ) ) , ...)
-	*/
-	function getWhere () {
-		return ($this->_where);
+		$this->_criteria["orderby"] = $orderby;
 	}
 
 
@@ -381,95 +294,60 @@ class Search {
 	*
 	* @param integer limit rows per query
 	*/
-	function setLimit ($limit = NULL) {
+	function limit ($limit) {
 		$limit = (int) $limit;
 
 		if ($limit < 0) {
 			$limit = 0;
 		}
 
-		$this->_limit = $limit;
+		$this->_criteria["limit"] = $limit;
 	}
-
-
-	/**
-	* Set the list of columns and sort order by which the results should be
-	* ordered.
-	*
-	* @param array list of fully qualified column names (<table>.<column>)
-	* @param string Search::ord_asc or Search::ord_desc
-	*/
-#	function setOrderBy (array $cols, string $order = NULL) {
-#		if (is_null ($cols)) {
-#			Err::fatal ("list of columns must be specified");
-#		} elseif (! is_array ($cols)) {
-#			Err::fatal ("list of columns must be an array");
-#		}
-#
-#		if (is_null ($order)) {
-#			$order = Search::ord_asc;
-#		} elseif ( ($order != Search::ord_asc) AND ($order != Search::ord_desc) ) {
-#			Err::fatal (sprintf ("invalid sort order '%s'", $order));
-#		}
-#
-#		foreach ($cols as $col) {
-#			if (! $this->_checkColumn ($col)) {
-#				Err::fatal (sprintf ("invalid column '%s'", $col));
-#			}
-#		}
-#
-#		$this->_order_by = $cols;
-#		$this->_order = $order;
-#	}
 
 
 	/**
 	* Set the number of the page within the result set.
+	*
 	* @param integer page number
 	*/
-	function setPage ($page = NULL) {
+	function page ($page) {
+		$page = (int) $page;
+
 		if ($page < 1) {
 			$page = 1;
 		}
 
-		$this->_page = $page;
+		$this->_criteria["page"] = $page;
 	}
 
 
 	/**
-	* Clear the sort order.
+	* Execute the current search.
+	*
+	* @return mixed results of the search
 	*/
-	function clearOrderBy () {
-		$this->_order_by = "";
-		$this->_order = "";
-	}
+	function go () {
+		if ( empty($this->_criteria["select"]) ) {
+			Err::fatal("you must select at least one column to be returned in the search results");
+		}
 
+		global $DB;
 
-	/**
-	* Clear the list of selected columns and expressions.
-	*/
-	function clearSelect () {
-		$this->_select_cols = array();
-	}
-
-
-	/**
-	* Clear the list of where clauses.
-	*/
-	function clearWhere () {
-		$this->_where = array();
+		return( $DB->select($this->_criteria) );
 	}
 
 
 	private function _checkColumn ($col) {
-		$col_parts = explode (".", $col);
-
-		$model_name = $col_parts[0];
+#Dbg::var_dump("col", $col);
+		$col_parts = explode(".", $col);
+		$col_model = $col_parts[0];
 		$col_name = $col_parts[1];
 
-		foreach ($this->_models as $model) {
-			if ($model_name == $model->name()) {
-				if (in_array ($col_name, $model->columns())) {
+		$models = $this->_criteria["models"];
+
+		foreach ( $models as $model ) {
+			if ( $col_model == $model->name() ) {
+				if ( in_array($col_name, $model->columns()) ) {
 					return (TRUE);
 				}
 			}

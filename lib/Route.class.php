@@ -5,7 +5,7 @@
 *
 * @author >X @ MCS 'Net Productions
 * @package MCS_MVC_API
-* @version 0.1.0
+* @version 0.2.0
 *
 */
 
@@ -35,7 +35,13 @@ class Route {
 
 		$query = array ();
 
-		if ( $route == NULL ) {
+#Dbg::var_dump("route", $route);
+
+		$route = preg_replace('/^\/+/', "", $route);
+
+#Dbg::var_dump("route", $route);
+
+		if (empty($route)) {
 			# Get the default controller.
 			$controller = $CONFIG->getVal("dispatcher.controller.default");
 			if ( ! $controller ) {
@@ -48,7 +54,7 @@ class Route {
 				Err::fatal("invalid route: no action specified via HTTP and no default action found");
 			}
 		} else {
-			# Reroute the route.
+			# Reroute if there is a shortcut configured.
 			$route = self::reroute($route);
 
 			$route_parts = explode ("/", $route);
@@ -203,18 +209,22 @@ class Route {
 	* Useful in views when you need the URL to an application route for an
 	* HREF.
 	*
-	* @param string controller
-	* @param string action
-	* @param string query
-	* @param string GET
+	* @param string destination route
+	* @param string GET parameters
+	*
 	* @return string URL to applicaton route
 	*/
-	static function URL ($controller = NULL, $action = NULL, $query = NULL, $get = NULL) {
+	static function toURL ($route, $get = NULL) {
 		global $CONFIG;
-
 		$url = $CONFIG->getVal("application.base_path");
 
-		$url .= DS . Route::makeRoute($controller, $action, $query);
+		if ($route === NULL) {
+			$route = "";
+		}
+
+		$route = preg_replace('/^\/+/', "", $route);
+
+		$url .= DS . $route;
 
 		if ($get) {
 			$url .= "?" . $get;
@@ -225,16 +235,13 @@ class Route {
 
 
 	/**
-	* Redirect the browser to the URL for the specified application route.
+	* Immediately redirect the browser to the URL for the specified application route.
 	*
-	* @param string controller
-	* @param string action
-	* @param string query
-	* @param string GET
-	* @return string URL to applicaton route
+	* @param string destination route
+	* @param string GET parameters
 	*/
-	static function redirect ($controller = NULL, $action = NULL, $query = NULL, $get = NULL) {
-		header ("Location: " . Route::URL($controller, $action, $query, $get));
+	static function redirect ($route = NULL, $get = NULL) {
+		header("Location: " . Route::toURL($route, $get));
 	}
 
 

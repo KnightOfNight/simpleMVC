@@ -4,7 +4,7 @@
 /**
 * @author >X @ MCS 'Net Productions
 * @package MCS_MVC_API
-* @version 0.1.0
+* @version 0.2.0
 */
 
 
@@ -46,9 +46,9 @@ class BaseForm {
 
 #Dbg::var_dump("values", $values);
 
-		foreach ( $values as $key => $value ) {
-			if ( isset($this->_fields[$key]) ) {
-				$this->_fields[$key]["value"] = $value;
+		foreach ( $values as $field_name => $value ) {
+			if ( isset($this->_fields[$field_name]) ) {
+				$this->_fields[$field_name]["value"] = $value;
 			}
 		}
 	}
@@ -58,7 +58,8 @@ class BaseForm {
 	* Output HTML that starts the form.
 	*/
 	function start () {
-?><form class="mvc_form" method="<?php echo $this->_method ?>" action="<?php echo $this->_action ?>"><fieldset class="mvc_form_fieldset"><?php
+?><form class="mvc_form" method="<?php echo $this->_method ?>" action="<?php echo $this->_action ?>"><fieldset class="mvc_form_fieldset">
+<?php
 	}
 
 
@@ -67,10 +68,11 @@ class BaseForm {
 	*
 	* @param string field name
 	*/
-	function showlabel ($field) {
-		$label = $this->_fields[$field]["label"];
+	function showlabel ($field_name) {
+		$label = $this->_fields[$field_name]["label"];
 
-?><label class="mvc_form_label" for="<?php echo $field ?>"><?php echo $label ?></label><?php
+?><label class="mvc_form_label" for="<?php echo $field_name ?>"><?php echo $label ?></label>
+<?php
 	}
 
 
@@ -79,8 +81,8 @@ class BaseForm {
 	*
 	* @param string field name
 	*/
-	function showfield ($field) {
-		$info = $this->_fields[$field];
+	function showfield ($field_name) {
+		$info = $this->_fields[$field_name];
 
 		$type = $info["label"];
 		$value = $info["value"];
@@ -91,12 +93,14 @@ class BaseForm {
 			$length = $info["length"];
 			$maxlen = $info["maxlen"];
 
-?><input id="<?php echo $field ?>" class="mvc_form_text_field" name="<?php echo $field ?>" value="<?php echo $value ?>" size="<?php echo $length ?>" maxlength="<?php echo $maxlen ?>"></input><?php
+?><input id="<?php echo $field_name ?>" class="mvc_form_text_field" name="<?php echo $field_name ?>" value="<?php echo $value ?>" size="<?php echo $length ?>" maxlength="<?php echo $maxlen ?>"></input>
+<?php
 
 		}
 
 		if ( ! $valid ) {
-?><ul class="mvc_form_error"><li><?php echo $error ?></li></ul><?php
+?><span class="mvc_form_error"><?php echo $error ?></span>
+<?php
 		}
 	}
 
@@ -117,9 +121,9 @@ class BaseForm {
 	* @param integer length of the field
 	* @param integer maximum input length
 	*/
-	function textfield ($name, $length, $maxlen, $checks = array()) {
+	function textfield ($field_name, $length, $maxlen, $checks = array()) {
 		$info = array(	"type" => "text",
-						"label" => $name,
+						"label" => $field_name,
 						"length" => $length,
 						"maxlen" => $maxlen,
 						"checks" => array(),
@@ -128,7 +132,7 @@ class BaseForm {
 						"error" => "",
 		);
 
-		$this->_fields[$name] = $info;
+		$this->_fields[$field_name] = $info;
 	}
 
 
@@ -138,12 +142,12 @@ class BaseForm {
 	* @param string field name
 	* @param string display label
 	*/
-	function label ($name, $label) {
-		if ( ! isset($this->_fields[$name]) ) {
-			Err::fatal("invalid field name '$name' - field not declared in this form");
+	function label ($field_name, $label) {
+		if ( ! isset($this->_fields[$field_name]) ) {
+			Err::fatal("invalid field '$field_name' - field not declared in this form");
 		}
 
-		$this->_fields[$name]["label"] = $label;
+		$this->_fields[$field_name]["label"] = $label;
 	}
 
 
@@ -153,29 +157,65 @@ class BaseForm {
 	* @param string field name
 	* @param array optional list of checks to perform on the field
 	*/
-	function check ($name, $checks = array()) {
-		if ( ! isset($this->_fields[$name]) ) {
-			Err::fatal("invalid field name '$name' - field not declared in this form");
+	function check ($field_name, $checks = array()) {
+		if ( ! isset($this->_fields[$field_name]) ) {
+			Err::fatal("invalid field '$field_name' - field not declared in this form");
 		}
 
 		if ( ! is_array($checks) ) {
 			Err::fatal("list of checks should be an array");
 		}
 
-		$this->_fields[$name]["checks"] = $checks;
+		$this->_fields[$field_name]["checks"] = $checks;
+	}
+
+
+	/**
+	* Set the value for a field.
+	*
+	* @param string field name
+	* @param mixed optional field value
+	*/
+	function value ($field_name, $value = NULL) {
+		if ( ! isset($this->_fields[$field_name]) ) {
+			Err::fatal("invalid field '$field_name' - field not declared in this form");
+		}
+
+		if ( $value === NULL ) {
+			$this->_fields[$field_name]["value"] = "";
+		} else {
+			$this->_fields[$field_name]["value"] = $value;
+		}
+	}
+
+
+	/**
+	* Mark a field as invalid and set a custom error message.
+	*
+	* @param string field name
+	* @param string custom error message
+	*/
+	function invalidate ($field_name, $error_message) {
+		if ( ! isset($this->_fields[$field_name]) ) {
+			Err::fatal("invalid field '$field_name' - field not declared in this form");
+		}
+
+		$this->_fields[$field_name]["valid"] = FALSE;
+		$this->_fields[$field_name]["error"] = $error_message;
 	}
 
 
 	/**
 	* Check to see if the form passes basic validation.
+	* @return bool TRUE => form passed basic field validation
 	*/
-	function isvalid () {
+	function validate () {
 		$ret = TRUE;
 
 #Dbg::var_dump("ret", $ret);
 
-		foreach ( $this->_fields as $field => $info ) {
-#Dbg::var_dump("field", $field);
+		foreach ( $this->_fields as $field_name => $info ) {
+#Dbg::var_dump("field_name", $field_name);
 
 			$value = $info["value"];
 			$checks = $info["checks"];
@@ -192,11 +232,11 @@ class BaseForm {
 
 #Dbg::var_dump("error", $error);
 				if ( $error === TRUE ) {
-					$this->_fields[$field]["valid"] = TRUE;
-					$this->_fields[$field]["error"] = "";
+					$this->_fields[$field_name]["valid"] = TRUE;
+					$this->_fields[$field_name]["error"] = "";
 				} else {
-					$this->_fields[$field]["valid"] = FALSE;
-					$this->_fields[$field]["error"] = $error;
+					$this->_fields[$field_name]["valid"] = FALSE;
+					$this->_fields[$field_name]["error"] = $error;
 					$ret = FALSE;
 					break;
 				}

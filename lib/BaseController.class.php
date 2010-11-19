@@ -4,7 +4,7 @@
 /**
 * @author >X @ MCS 'Net Productions
 * @package MCS_MVC_API
-* @version 0.1.0
+* @version 0.2.0
 */
 
 
@@ -16,7 +16,6 @@
 */
 class BaseController {
 	private $_name;
-	private $_view = NULL;
 
 
 	/**
@@ -40,33 +39,6 @@ class BaseController {
 
 
 	/**
-	* Get or set the current view.
-	*
-	* @param string action name
-	* @param string query string
-	* @return View the current view, if any
-	*/
-	function view ($action = NULL, $query = NULL) {
-		if ($action) {
-			$this->_view = new View($this->_name, $action, $query);
-		}
-
-		return ($this->_view);
-	}
-
-
-	/**
-	* NOTE: when this object is destroyed, it then renders the prepared view if
-	* there is one.
-	*/
-	function __destruct () {
-		if ($this->_view instanceof View) {
-			$this->_view->render();
-		}
-	}
-
-
-	/**
 	* Convert a controller name into the corresponding class name.
 	*
 	* @param string controller name
@@ -86,4 +58,7 @@ class BaseController {
 	static function tocontroller ($class) {
 		return( str_replace("_controller", "", $class) );
 	}
+
+
+	function __destruct () { }
 }

@@ -4,7 +4,7 @@
 /**
 * @author >X @ MCS 'Net Productions
 * @package MCS_MVC_API
-* @version 0.1.0
+* @version 0.2.0
 */
 
 
@@ -68,16 +68,16 @@ class Database {
 	/**
 	* Perform a database select, building the query from the passed criteria.
 	*
-	* @param Criteria
+	* @param mixed hash of all search criteria
 	* @return mixed query results
 	*/
-	function select (Criteria $criteria) {
+	function select ($criteria) {
 		global $L;
 
 		$query = "SELECT ";
 
 		# columns and expressions list
-		$columns = $criteria->getSelect();
+		$columns = $criteria["select"];
 
 		$column_list = "";
 		foreach ($columns as $col => $alias) {
@@ -88,22 +88,22 @@ class Database {
 			$column_list .= $col;
 
 			if ($alias) {
-				$column_list .= " AS " . $alias;
-			} else {
-				$column_list .= " AS " . preg_replace('/\./', "_", $col);
+				$column_list .= " AS '" . $alias . "'";
+#			} else {
+#				$column_list .= " AS " . preg_replace('/\./', "_", $col);
 			}
 		}
 		$query .= $column_list;
 
 
 		# FROM
-		$model = $criteria->getModel();
+		$model = $criteria["models"][0];
 		$table = $model->table();
 		$query .= " FROM " . $table . " AS " . $model->name();
 
 
 		# LEFT JOIN
-		$joins = $criteria->getLeftJoins();
+		$joins = $criteria["leftjoins"];
 		foreach ($joins as $join) {
 			$table = $join[0];
 			$model = $join[1];
@@ -114,7 +114,8 @@ class Database {
 
 
 		# WHERE
-		$wheres = $criteria->getWhere();
+		$L->msg(Log::DEBUG, "Database::select() - parsing 'where' information");
+		$wheres = $criteria["where"];
 		$where_str = "";
 		$values = array();
 		foreach ($wheres as $where) {
@@ -172,7 +173,7 @@ class Database {
 
 		# ORDER BY
 		$orderby_str = "";
-		if ($orderbys = $criteria->getOrderBy()) {
+		if ( $orderbys = $criteria["orderby"] ) {
 			foreach ($orderbys as $orderby) {
 				$col = $orderby[0];
 				$ord = $orderby[1];
@@ -191,8 +192,8 @@ class Database {
 
 
 		# LIMIT
-		$limit = $criteria->getLimit();
-		$page = $criteria->getPage();
+		$limit = $criteria["limit"];
+		$page = $criteria["page"];
 		if ($limit) {
 			$query .= " LIMIT " . $limit;
 
@@ -216,7 +217,7 @@ class Database {
 			$index++;
 		}
 
-		$L->msg(Log::DEBUG, "database query = '" . $query . "'");
+		$L->msg(Log::DEBUG, "Database::select() - database query = '$query'");
 
 		if ($stmnt->execute() === FALSE) {
 			Err::fatal ($this->_pdoError());
@@ -239,7 +240,7 @@ class Database {
 			Err::fatal("No column values set.  Cannot update or create record.");
 		}
 
-		$query = "INSERT INTO " . $table . " SET " . Database::makeset($values);
+	 	$query = "INSERT INTO " . $table . " SET " . Database::makeset($values);
 
 		if ( $log_query === TRUE ) {
 			global $L;
@@ -293,16 +294,24 @@ class Database {
 	static private function makeset ($values) {
 		$set = "";
 
-		foreach ($values as $col_name => $col_val) {
-			$param_name = ":" . $col_name;
+#Dbg::msg("Database::makeset");
 
-			$params[$param_name] = $col_val;
+		foreach ($values as $col_name => $col_val) {
+#Dbg::var_dump("col_name", $col_name);
+#Dbg::var_dump("col_val", $col_val);
 
 			$set .= $set ? " , " : "";
-			$set .= $col_name . " = " . $param_name;
+
+			if ( preg_match('/^DB:/', $col_val) ) {
+				$val = preg_replace('/^DB:/', "", $col_val);
+				$set .= $col_name . " = " . $val;
+			} else {
+				$param_name = ":" . $col_name;
+				$set .= $col_name . " = " . $param_name;
+			}
 		}
 
-		return ($set);
+		return($set);
 	}
 
 
@@ -310,12 +319,16 @@ class Database {
 		$params = array();
 
 		foreach ($values as $col_name => $col_val) {
+			if ( preg_match('/^DB:/', $col_val) ) {
+				continue;
+			}
+
 			$param_name = ":" . $col_name;
 
 			$params[$param_name] = $col_val;
 		}
 
-		return ($params);
+		return($params);
 	}
 
 

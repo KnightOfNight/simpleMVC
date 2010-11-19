@@ -4,7 +4,7 @@
 /**
 * @author >X @ MCS 'Net Productions
 * @package MCS_MVC_API
-* @version 0.1.0
+* @version 0.2.0
 */
 
 
@@ -19,10 +19,7 @@ class BaseModel {
 	* @var string name of the database table associated with the model
 	*/
 	protected $table;
-	/**
-	* @var string name of the database table associated with the model
-	*/
-	protected $columns;
+
 
 	private $_name;
 	private $_columns;
@@ -30,9 +27,15 @@ class BaseModel {
 
 
 	/**
-	* Create a new BaseModel object.
+	* Create a new BaseModel object.  If you overload this constructor, make
+	* sure yours calls the function 'setup'.
+	*
 	* <code>
 	* class ItemModel extends BaseModel {
+	*    function __construct () {
+	*        # custom code such as $this->table = "CUSTOM TABLE NAME";
+	*        $this->setup();
+    *    }
 	* }
 	* </code>
 	*
@@ -145,7 +148,7 @@ class BaseModel {
 		}
 
 		if ( in_array("created_at", $this->_columns) ) {
-			$this->_values["created_at"] = NULL;
+			$this->_values["created_at"] = "DB:now()";
 		}
 
 		return( $DB->create($this->table, $this->_values, $log_query) );

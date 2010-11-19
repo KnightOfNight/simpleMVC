@@ -4,7 +4,7 @@
 /**
 * @author >X @ MCS 'Net Productions
 * @package MCS_MVC_API
-* @version 0.1.0
+* @version 0.2.0
 */
 
 
@@ -30,6 +30,8 @@ class Dispatch {
 		global $DB;
 		global $CONFIG;
 
+#Dbg::msg("Dispatch::go('$route', $external)");
+
 		$route = Route::parse($route);
 
 		$controller = $route["controller"];
@@ -53,15 +55,15 @@ class Dispatch {
 		$dispatcher = new $controller_class();
 
 		# call the three main parts of the controller
-		if ($external) {
+#		if ($external) {
 			$dispatcher->beforeAction($query);
-		}
+#		}
 
 		$retval = $dispatcher->$action($query);
 
-		if ($external) {
+#		if ($external) {
 			$dispatcher->afterAction($query);
-		}
+#		}
 
 		return ($retval);
 	}

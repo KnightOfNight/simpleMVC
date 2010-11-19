@@ -1,4 +1,4 @@
-<?PHP
+<?php
 
 class Login {
 	static function authorize ($username = NULL) {

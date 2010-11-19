@@ -1,9 +1,11 @@
-A route consists of 3 basic parts: controller, action, and query string.
+A route consists of 3 basic parts: a controller, an action, and a query string.
 
 It is formatted as a string as follows...
 
-/<controller>/<action>/?????????
+/<controller>/<action>/<query>[/<query>]
 
-The controller handles all interaction between the model and the view.  The
-action is a specific request for a given conroller, and the query string
-contains ???????
+The controller manages the entire request.  It executes the action, which
+handles all interaction between the database model and the associated view, if
+any.
+
+The query string is optional can be one or more values separated by /'s.
