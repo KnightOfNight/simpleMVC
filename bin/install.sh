@@ -1,10 +1,10 @@
 #!/bin/bash
 
 
-if [ -d ".git" ]; then
-	echo "ERROR: this is a git repository.  Remove '.git' if you want to setup a new application."
-	exit -1
-fi
+#if [ -d ".git" ]; then
+#	echo "ERROR: this is a git repository.  Remove '.git' if you want to setup a new application."
+#	exit -1
+#fi
 
 
 MVC_URL=""
@@ -48,16 +48,34 @@ while true; do
 	fi
 done
 
-exit
+echo
 
+cp /dev/null .config
+echo "MVC_PROTOCOL=\"$MVC_PROTOCOL\"" >> .config
+echo "MVC_DOMAIN=\"$MVC_DOMAIN\"" >> .config
+echo "MVC_PATH=\"$MVC_PATH\"" >> .config
+
+tmpfile=$(mktemp /tmp/XXXXX)
 file=".htaccess"
-[ -s $file ] && echo "File '$file' already exists"
-[ -s $file ] || ( echo "$file does not exist"; cat $source/$file | sed -e "s,MVC_URL,$MVC_URL,g" | sed -e "s,MVC_DOMAIN,$MVC_DOMAIN,g" -e "s,MVC_PATH,$MVC_PATH,g" > $file ; chmod 644 $file)
+cat $file | sed -e "s,MVC_URL,$MVC_URL,g" | sed -e "s,MVC_DOMAIN,$MVC_DOMAIN,g" -e "s,MVC_PATH,$MVC_PATH,g" >  $tmpfile
+mv $tmpfile $file
+chmod 644 "$file"
 
+tmpfile=$(mktemp /tmp/XXXXX)
 file="public/.htaccess"
-[ -s $file ] && echo "File '$file' already exists"
-[ -s $file ] || ( echo "$file does not exist"; cat $source/$file | sed -e "s,MVC_URL,$MVC_URL,g" | sed -e "s,MVC_DOMAIN,$MVC_DOMAIN,g" -e "s,MVC_PATH,$MVC_PATH,g" > $file ; chmod 644 $file)
+cat $file | sed -e "s,MVC_URL,$MVC_URL,g" | sed -e "s,MVC_DOMAIN,$MVC_DOMAIN,g" -e "s,MVC_PATH,$MVC_PATH,g" >  $tmpfile
+mv $tmpfile $file
+chmod 644 "$file"
 
+tmpfile=$(mktemp /tmp/XXXXX)
 file="cfg/config.json"
-[ -s $file ] && echo "File '$file' already exists"
-[ -s $file ] || ( echo "$file does not exist"; cat $source/$file | sed -e "s,MVC_URL,$MVC_URL,g" | sed -e "s,MVC_DOMAIN,$MVC_DOMAIN,g" -e "s,MVC_PATH,$MVC_PATH,g" > $file ; chmod 644 $file)
+cat $file | sed -e "s,MVC_URL,$MVC_URL,g" | sed -e "s,MVC_DOMAIN,$MVC_DOMAIN,g" -e "s,MVC_PATH,$MVC_PATH,g" >  $tmpfile
+mv $tmpfile $file
+chmod 644 "$file"
+
+for dir in app cfg lib public tmp; do 
+	find $dir -type f -exec chmod a+r {} \;
+	find $dir -type d -exec chmod a+rx {} \;
+done
+
+find tmp -type d -exec chmod a+rwx {} \;
