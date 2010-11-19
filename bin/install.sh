@@ -79,4 +79,4 @@ for dir in app cfg lib public tmp; do
 done
 
 chmod 755 tmp
-find tmp -type d -mindepth 1 -exec chmod a+rwx {} \;
+find tmp -mindepth 1 -type d -exec chmod a+rwx {} \;
