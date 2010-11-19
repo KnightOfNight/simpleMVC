@@ -33,7 +33,7 @@
 
 	"framework" : {
 		"loglevel"	: "0",
-		"version"	: "PHP MVC v0.1.0",
+		"version"	: "PHP MVC 0.2.0",
 		"copyright" : "&copy; 2010 MCS 'Net Productions"
 	}
 }

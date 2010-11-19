@@ -21,6 +21,7 @@ fi
 
 echo "Setting version: $version ..."
 sed --in-place -e "s/@version .*/@version $version/" lib/*.php
+sed --in-place -e "s/PHP MVC [^\"][^\"]*/PHP MVC $version/" cfg/config.json
 echo "... source files updated."
 
 
