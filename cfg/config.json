@@ -3,7 +3,7 @@
 		"base_url"		: "MVC_URL",
 		"domain"		: "MVC_DOMAIN",
 		"base_path"		: "MVC_PATH",
-		"development" : "0"
+		"development"	: "0"
 	},
 
 	"dispatcher" : {
@@ -37,6 +37,3 @@
 		"copyright" : "&copy; 2010 MCS 'Net Productions"
 	}
 }
-
-
-
