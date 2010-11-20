@@ -8,18 +8,18 @@
 
 	"dispatcher" : {
 		"controller" : {
-			"default" : "",
+			"default" : "sample",
 
 			"sample" : {
-				"external_actions" : [ "index" ],
-				"internal_actions" : [ "get_items" ],
-				"default_action"   : "index"
+				"external_actions" : [ "action" ],
+				"internal_actions" : [ ],
+				"default_action"   : "action"
 			}
 		}
 	},
 
 	"routes" : {
-		"/^si/" : "sample/index"
+		"/^s/" : "sample/action"
 	},
 
 	"database" : {
