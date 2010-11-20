@@ -28,10 +28,10 @@ class Database {
 	* @param string password
 	*/
 	function connect ($host, $port, $name, $user, $pass) {
-		$dsn = sprintf ("%s:host=%s;port=%d;dbname=%s", "mysql", $host, $port, $name);
+		$dsn = sprintf("%s:host=%s;port=%d;dbname=%s", "mysql", $host, $port, $name);
 
 		try {
-			$this->_dbh = new PDO ($dsn, $user, $pass);
+			$this->_dbh = new PDO($dsn, $user, $pass);
 		} catch (PDOException $e) {
 			Err::fatal($e->getMessage());
 		}
@@ -89,8 +89,6 @@ class Database {
 
 			if ($alias) {
 				$column_list .= " AS '" . $alias . "'";
-#			} else {
-#				$column_list .= " AS " . preg_replace('/\./', "_", $col);
 			}
 		}
 		$query .= $column_list;
@@ -152,9 +150,13 @@ class Database {
 					$L->msg(Log::DEBUG, "op = '" . $op . "'");
 					$L->msg(Log::DEBUG, "val = '" . $val . "'");
 
-					$clause_str .= $col . " " . $op . " ?";
-
-					array_push ($values, $val);
+					if ( preg_match('/^DB:/', $val) ) {
+						$val = preg_replace('/^DB:/', "", $val);
+						$clause_str .= $col . " " . $op . " " . $val;
+					} else {
+						$clause_str .= $col . " " . $op . " ?";
+						array_push ($values, $val);
+					}
 				} else {
 					$L->msg(Log::DEBUG, "clause is an operator");
 
@@ -203,6 +205,7 @@ class Database {
 			}
 		}
 
+
 		$this->_last_query = $query;
 
 #Dbg::var_dump ("query", $query);
@@ -212,7 +215,7 @@ class Database {
 		$index = 0;
 		foreach ($values as $val) {
 			if ($stmnt->bindValue($index + 1, $val) === FALSE) {
-				Err::fatal (sprintf ("unable to bind value '%s' to parameter %d", $val, $index + 1));
+				Err::fatal( sprintf("unable to bind value '%s' to parameter %d", $val, $index + 1) );
 			}
 			$index++;
 		}
@@ -223,7 +226,7 @@ class Database {
 			Err::fatal ($this->_pdoError());
 		}
 
-		return ($stmnt->fetchAll(PDO::FETCH_BOTH));
+		return ( $stmnt->fetchAll(PDO::FETCH_BOTH) );
 	}
 
 
@@ -332,69 +335,70 @@ class Database {
 	}
 
 
-	/**
-	* Save a database record.
-
-* from the passed model.  If the 'id' column has a
-	* value, then the record will updated.  Otherwise a new record will be
-	* created.
-	*
-	* @param string table name
-	* @param array list of column names
-	* @param hash column name => value
-	* @return integer current value of the 'id' column or new value on create
-	*/
-	function save ($table, $columns, $values) {
-		if (empty ($values)) {
-			Err::fatal("No column values set.  Cannot update or create record.");
-		}
-
-		$query = "";
-		$set = "";
-		$where = "";
-		$params = array();
-
-		if (isset ($values["id"])) {
-			$query = "UPDATE " . $table . " SET ";
-			$where .= "WHERE id = :id";
-		} else {
-			$query = "INSERT INTO " . $table . " SET ";
-
-			if (in_array ("created_at", $columns)) {
-				$set = "created_at = NULL";
-			}
-		}
-
-		foreach ($values as $col_name => $col_val) {
-			$param_name = ":" . $col_name;
-
-			$params[$param_name] = $col_val;
-
-			$set .= $set ? " , " : "";
-			$set .= $col_name . " = " . $param_name;
-		}
-
-		$query .= $set;
-
-		$query .= $where ? " " . $where : "";
-
-#Dbg::var_dump("params", $params);
-#Dbg::var_dump("query", $query);
-
-		$stmnt = $this->_dbh->prepare($query);
-
-#Dbg::var_dump("stmnt", $stmnt);
-
-		if ($stmnt->execute($params) === FALSE) {
-			Err::fatal ($this->_pdoError());
-		}
-
-		if (isset ($values["id"])) {
-			return ($values["id"]);
-		} else {
-			return ($this->_dbh->lastInsertId());
-		}
-	}
+# Old function
+#	/**
+#	* Save a database record.
+#
+#* from the passed model.  If the 'id' column has a
+#	* value, then the record will updated.  Otherwise a new record will be
+#	* created.
+#	*
+#	* @param string table name
+#	* @param array list of column names
+#	* @param hash column name => value
+#	* @return integer current value of the 'id' column or new value on create
+#	*/
+#	function save ($table, $columns, $values) {
+#		if (empty ($values)) {
+#			Err::fatal("No column values set.  Cannot update or create record.");
+#		}
+#
+#		$query = "";
+#		$set = "";
+#		$where = "";
+#		$params = array();
+#
+#		if (isset ($values["id"])) {
+#			$query = "UPDATE " . $table . " SET ";
+#			$where .= "WHERE id = :id";
+#		} else {
+#			$query = "INSERT INTO " . $table . " SET ";
+#
+#			if (in_array ("created_at", $columns)) {
+#				$set = "created_at = NULL";
+#			}
+#		}
+#
+#		foreach ($values as $col_name => $col_val) {
+#			$param_name = ":" . $col_name;
+#
+#			$params[$param_name] = $col_val;
+#
+#			$set .= $set ? " , " : "";
+#			$set .= $col_name . " = " . $param_name;
+#		}
+#
+#		$query .= $set;
+#
+#		$query .= $where ? " " . $where : "";
+#
+##Dbg::var_dump("params", $params);
+##Dbg::var_dump("query", $query);
+#
+#		$stmnt = $this->_dbh->prepare($query);
+#
+##Dbg::var_dump("stmnt", $stmnt);
+#
+#		if ($stmnt->execute($params) === FALSE) {
+#			Err::fatal ($this->_pdoError());
+#		}
+#
+#		if (isset ($values["id"])) {
+#			return ($values["id"]);
+#		} else {
+#			return ($this->_dbh->lastInsertId());
+#		}
+#	}
 
 
 	# Delete a database record for the passed model.
@@ -429,6 +433,7 @@ class Database {
 
 	/**
 	* Perform a general database query and return the results.
+	*
 	* @param string query to send to database
 	* @return mixed results
 	*/
@@ -443,6 +448,7 @@ class Database {
 
 	/**
 	* Get the last database query that was executed.
+	*
 	* @return string
 	*/
 	function getLastQuery () {
