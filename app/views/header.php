@@ -5,9 +5,9 @@
 <head>
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title><?PHP $this->includeSlot("page_title") ?></title>
-<?PHP $this->includeCSS() ?>
-<?PHP $this->includeJS() ?>
+<title><?php $this->slot("page_title") ?></title>
+<?php $this->showCSS() ?>
+<?php $this->showJS() ?>
 
 </head>
 
