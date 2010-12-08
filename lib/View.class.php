@@ -5,7 +5,7 @@
 *
 * @author >X @ MCS 'Net Productions
 * @package MCS_MVC_API
-* @version 0.2.0
+* @version 0.3.0
 *
 */
 
@@ -251,8 +251,7 @@ class View {
 
 
 	/**
-	* Render the view.  Usually only called from the __destruct() function in a
-	* Controller object.
+	* Render the view.
 	*/
     function render () {
 		# All local variables in this function should actually be class
@@ -291,8 +290,7 @@ class View {
 		}
 
 
-		# Extract all the variables so that they are directly available to the
-		# view code.
+		# Extract all the variables so that they are available to the view.
 		#
 		extract ($this->_config["variables"]);
 
@@ -323,9 +321,47 @@ class View {
 		if ( isset($this->_render["footer_file"]) ) {
 			include($this->_render["footer_file"]);
 		}
-
-
     }
+
+
+	/**
+	* Include a view in the current view.
+	*
+	* @param string name of the view to include, formatted as <controller>/<view name> (.php is optional)
+	*/
+	private function include_view ($path = "") {
+		if ( empty($path) ) {
+			Err::fatal("no view passed");
+		}
+
+
+		$parts = explode('/', $path);
+
+		$controller = $parts[0];
+		$view = $parts[1];
+
+		$file = VIEWDIR.DS.$controller.DS.$view;
+
+		if ( ! File::Ready($file) ) {
+			$file .= ".php";
+			if ( ! File::Ready($file) ) {
+				Err::fatal("unable to find view '$path'");
+			}
+		}
+
+
+		# Get the global variable for the application configuration.
+		#
+		global $CONFIG;
+
+
+		# Extract all the variables so that they are available to the view.
+		#
+		extract ($this->_config["variables"]);
+
+
+		include($file);
+	}
 
 
 	function __destruct () {}

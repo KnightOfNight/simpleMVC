@@ -1,66 +1,109 @@
 <?php
 
+
+/**
+* @author >X @ MCS 'Net Productions
+* @package MCS_MVC_API
+* @version 0.3.0
+*/
+
+
+/**
+* Provide easy access to all the different page numbers that might be needed:
+* first, last, previous, next, etc.
+*
+* @package MCS_MVC_API
+*/
 class Pager {
 	private $_page_num;
 	private $_page_count;
-	private $_row_count;
 
 
-	function __construct (Criteria $passed_criteria) {
-		global $DB;
+	/**
+	* Create a new Pager object.
+	*
+	* @param integer current page number
+	* @param integer number of results per page
+	* @param integer total number of results
+	*/
+	function __construct ($page_num, $results_per_page, $num_results) {
 
-		$criteria = clone $passed_criteria;
-
-		$passed_page = $passed_criteria->getPage();
-		$passed_limit = $passed_criteria->getLimit();
-
-		# Reset some of the criteria so that the lookup checks the entire
-		# result set.
-		$criteria->clearSelect();
-		$criteria->setLimit(0);
-		$criteria->setPage(0);
-		$criteria->clearOrderBy();
-
-		# Set the column to be selected to count(<primary key>).
-		$model = $criteria->getModel()->name;
-		$column = $model . ".id";
-		$criteria->addSelect("count(" . $column . ")", "row_count");
-
-		# Perform the database lookup.
-		$results = $DB->select($criteria);
-
-		# Get the number of rows and the number of pages.
-		$row_count = $results[0]["row_count"];
-		$page_count = (int) ($row_count / $passed_limit) + 1;
-
-		# Check the page number that was originally passed in and reset it if
-		# necessary (if out of bounds).
-		if ($passed_page < 1) {
-			$page = 1;
-		} elseif ($passed_page > $page_count) {
-			$page = $page_count;
-		} else {
-			$page = $passed_page;
+		$page_count = (int) ($num_results / $results_per_page);
+		if ( $num_results % $results_per_page ) {
+			$page_count++;
 		}
 
-		$this->_page_num = $page;
+		if ( ($page_num < 1) OR ($page_num > $page_count) ) {
+			$page_num = 1;
+		}
+
+		$this->_page_num = $page_num;
 		$this->_page_count = $page_count;
-		$this->_row_count = $row_count;
+
 	}
 
 
-	function page () {
+	/**
+	* Return the current page number.
+	* @return integer current page number
+	*/
+	function page_num () {
 		return ($this->_page_num);
 	}
 
 
-	function pageCount () {
+	/**
+	* Return the number of pages.
+	* @return integer number of pages
+	*/
+	function page_count () {
 		return ($this->_page_count);
 	}
 
 
-	function rowCount () {
-		return ($this->_row_count);
+	/**
+	* Return the next page, if any.
+	* @return integer next page
+	*/
+	function next_page () {
+		$next_page = ($this->_page_num < $this->_page_count) ? ($this->_page_num + 1) : 0;
+
+		return($next_page);
+	}
+
+
+	/**
+	* Return the previous page, if any.
+	* @return integer previous page
+	*/
+	function prev_page () {
+		$prev_page = ($this->_page_num > 1) ? ($this->_page_num - 1) : 1;
+
+		return($prev_page);
+	}
+
+
+	/**
+	* Return the range of page numbers around the current page number.
+	*
+	* @return array low page number, high page number
+	*/
+	function range () {
+
+		$offset = 4;
+
+		$low_end = max(1, ($this->_page_num - $offset));
+
+		$offset = 4;
+
+		$high_end = min($this->_page_count, ($this->_page_num + $offset));
+
+		$range = array();
+		for ( $i = $low_end; $i <= $high_end; $i++ ) {
+			array_push($range, $i);
+		}
+		
+		return($range);
 	}
 
 

@@ -4,7 +4,7 @@
 /**
 * @author >X @ MCS 'Net Productions
 * @package MCS_MVC_API
-* @version 0.2.0
+* @version 0.3.0
 */
 
 
@@ -24,7 +24,7 @@ class BaseForm {
 	* @param string the action URL
 	* @param hash optional list of field names and their values
 	*/
-	function __construct ($method, $action, $values = array()) {
+	function __construct ($method, $action) {
 		if ( ! method_exists($this, "setup") ) {
 			Err::fatal("unable to instantiate form - no setup method found");
 		}
@@ -35,22 +35,10 @@ class BaseForm {
 			Err::fatal("invalid form method '$method'");
 		}
 
-		if ( ! is_array($values) ) {
-			Err::fatal("optional list of field values should be a hash of field name => field value pairs");
-		}
-
 		$this->_method = $method;
 		$this->_action = $action;
 
 		$this->setup();
-
-#Dbg::var_dump("values", $values);
-
-		foreach ( $values as $field_name => $value ) {
-			if ( isset($this->_fields[$field_name]) ) {
-				$this->_fields[$field_name]["value"] = $value;
-			}
-		}
 	}
 
 
@@ -58,7 +46,7 @@ class BaseForm {
 	* Output HTML that starts the form.
 	*/
 	function start () {
-?><form class="mvc_form" method="<?php echo $this->_method ?>" action="<?php echo $this->_action ?>"><fieldset class="mvc_form_fieldset">
+?><form class="mvc_form" method="<?= $this->_method ?>" action="<?= $this->_action ?>"><fieldset class="mvc_form_fieldset">
 <?php
 	}
 
@@ -71,7 +59,7 @@ class BaseForm {
 	function showlabel ($field_name) {
 		$label = $this->_fields[$field_name]["label"];
 
-?><label class="mvc_form_label" for="<?php echo $field_name ?>"><?php echo $label ?></label>
+?><label class="mvc_form_label" for="<?= $field_name ?>"><?= $label ?></label>
 <?php
 	}
 
@@ -85,21 +73,44 @@ class BaseForm {
 		$info = $this->_fields[$field_name];
 
 		$type = $info["label"];
-		$value = $info["value"];
+		$value = htmlentities($info["value"]);
 		$valid = $info["valid"];
 		$error = $info["error"];
 
 		if ( $info["type"] == "text" ) {
-			$length = $info["length"];
-			$maxlen = $info["maxlen"];
+			if ( ! ($size = $info['options']['size']) ) {
+				$size = 10;
+			}
+			if ( ! ($maxlength = $info['options']['maxlength']) ) {
+				$maxlength = 20;
+			}
 
-?><input id="<?php echo $field_name ?>" class="mvc_form_text_field" name="<?php echo $field_name ?>" value="<?php echo $value ?>" size="<?php echo $length ?>" maxlength="<?php echo $maxlen ?>"></input>
+?><input id="<?= $field_name ?>" class="mvc_form_text_field" name="<?= $field_name ?>" value="<?= $value ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>"></input>
+<?php
+
+		} elseif ( $info["type"] == "password" ) {
+			if ( ! ($size = $info['options']['size']) ) {
+				$size = 10;
+			}
+			if ( ! ($maxlength = $info['options']['maxlength']) ) {
+				$maxlength = 20;
+			}
+
+?><input id="<?= $field_name ?>" class="mvc_form_password" name="<?= $field_name ?>" value="<?= $value ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>" type="password"></input>
+<?php
+
+		} elseif ( $info["type"] == "checkbox" ) {
+?><input id="<?= $field_name ?>" class="mvc_form_checkbox" name="<?= $field_name ?>" value="<?= $value ?>" type="checkbox" />
+<?php
+
+		} elseif ( $info["type"] == "hidden" ) {
+?><input name="<?= $field_name ?>" value="<?= $value ?>" type="hidden"></input>
 <?php
 
 		}
 
 		if ( ! $valid ) {
-?><span class="mvc_form_error"><?php echo $error ?></span>
+?><span class="mvc_form_error"><?= $error ?></span>
 <?php
 		}
 	}
@@ -115,17 +126,17 @@ class BaseForm {
 
 
 	/**
-	* Add a text field to the form.
+	* Add a generic field to the form.
 	*
-	* @param string field name
-	* @param integer length of the field
-	* @param integer maximum input length
+	* @param string type of field
+	* @param string name of field
+	* @param mixed hash of any optional parameters
 	*/
-	function textfield ($field_name, $length, $maxlen, $checks = array()) {
-		$info = array(	"type" => "text",
+	private function _addfield ($field_type, $field_name, $options = array()) {
+
+		$info = array(	"type" => $field_type,
 						"label" => $field_name,
-						"length" => $length,
-						"maxlen" => $maxlen,
+						"options" => $options,
 						"checks" => array(),
 						"value" => "",
 						"valid" => TRUE,
@@ -133,6 +144,61 @@ class BaseForm {
 		);
 
 		$this->_fields[$field_name] = $info;
+
+	}
+
+
+	/**
+	* Add a text field to the form.
+	*
+	* @param string field name
+	* @param integer size of the field
+	* @param integer maximum input length
+	*/
+	function textfield ($field_name, $size, $maxlength) {
+		$this->_addfield("text", $field_name, array("size" => $size, "maxlength" => $maxlength));
+	}
+
+
+	/**
+	* Add a password field to the form.
+	*
+	* @param string field name
+	* @param integer size of the field
+	* @param integer maximum input length
+	*/
+	function passwordfield ($field_name, $size, $maxlength) {
+		$this->_addfield("password", $field_name, array("size" => $size, "maxlength" => $maxlength));
+	}
+
+
+	/**
+	* Add a checkbox field to the form.
+	*
+	* @param string field name
+	*/
+	function checkboxfield ($field_name) {
+		$this->_addfield("checkbox", $field_name);
+	}
+
+
+	/**
+	* Add a hidden field to the form.
+	*
+	* @param string field name
+	*/
+	function hiddenfield ($field_name) {
+		$this->_addfield("hidden", $field_name);
+	}
+
+
+	/**
+	* Add a select field to the form.
+	*
+	* @param string field name
+	*/
+	function selectfield ($field_name) {
+		$this->_addfield('text', $field_name, array('size'=>5, 'maxlength'=>10));
 	}
 
 

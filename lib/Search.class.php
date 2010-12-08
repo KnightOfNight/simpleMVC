@@ -5,7 +5,7 @@
 *
 * @author >X @ MCS 'Net Productions
 * @package MCS_MVC_API
-* @version 0.2.0
+* @version 0.3.0
 *
 */
 
@@ -154,12 +154,14 @@ class Search {
 	*
 	* You can add as many clauses as you want, each containing as many subclauses as you want.
 	*
+	* If you pass NULL for both arguments, you will remove all where clauses.
+	*
 	* @param string Search::op_and or Search::op_or
 	* @param array clause to add to the query
 	*/
 	function where ($andor = "", $clause = array()) {
 		if ( is_null($andor) AND is_null($clause) ) {
-			unset($this->_criteria["where"]);
+			$this->_criteria["where"] = array();
 			return;
 		} elseif ( is_null($andor) ) {
 			$andor = Search::op_and;
@@ -179,8 +181,8 @@ class Search {
 		for ($idx = 0; isset($clause[$idx]); $idx++) {
 			$item = $clause[$idx];
 
+			# $item is a clause
 			if ( is_array($item) ) {
-				# $item is a clause
 			
 				if ( is_array($last_item) ) {
 					# Last item was also a clause.  Add the default operator "and".
@@ -196,15 +198,16 @@ class Search {
 				$op = $item[1];
 				$val = $item[2];
 
-				if ( ! $this->_checkColumn($col) ) {
-					Err::fatal("invalid column '$col'");
-				}
+#				if ( ! $this->_checkColumn($col) ) {
+#					Err::fatal("invalid column '$col'");
+#				}
 
 				if ( ! $this->_checkOperator($op) ) {
 					Err::fatal("invalid operator '$op'");
 				}
+
+			# $item is a operator
 			} else {
-				# $item is a operator
 
 				# check operator
 				if ( ($item != Search::op_and) AND ($item != Search::op_or) ) {
@@ -230,6 +233,7 @@ class Search {
 		}
 
 		array_push ($where, array ($andor, $parsed_clause));
+
 #Dbg::var_dump ("where", $where);
 
 		$this->_criteria["where"] = $where;
@@ -337,6 +341,17 @@ class Search {
 	}
 
 
+	/**
+	* Reset the search: list of selected columns, order by, limit, and page #.
+	*/
+	function reset () {
+		$this->_criteria["select"] = array();
+		$this->_criteria["orderby"] = array();
+		$this->_criteria["limit"] = 0;
+		$this->_criteria["page"] = 1;
+	}
+
+
 	private function _checkColumn ($col) {
 #Dbg::var_dump("col", $col);
 		$col_parts = explode(".", $col);
@@ -358,6 +373,8 @@ class Search {
 
 
 	private function _checkOperator ($op) {
+		$op = strtoupper($op);
+
 		return (	($op === Search::op_and)	OR
 					($op === Search::op_or)	OR
 					($op === Search::op_gt)	OR

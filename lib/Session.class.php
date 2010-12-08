@@ -5,7 +5,7 @@
 *
 * @author >X @ MCS 'Net Productions
 * @package MCS_MVC_API
-* @version 0.2.0
+* @version 0.3.0
 *
 */
 
@@ -27,34 +27,33 @@ class Session {
 	static function start () {
 		global $CONFIG;
 
-		ini_set ("session.gc_probability", 1);
-		ini_set ("session.gc_divisor", 1000);
-		ini_set ("session.gc_maxlifetime", 43200);
+		ini_set("session.gc_probability", 1);
+		ini_set("session.gc_divisor", 1000);
+		ini_set("session.gc_maxlifetime", 43200);
 
-		session_save_path (ROOT.DS."tmp".DS."sessions");
+		session_save_path(ROOT.DS."tmp".DS."sessions");
 
-		session_name ("SESSION_ID");
+		session_name("session");
 
-		session_set_cookie_params (0, $CONFIG->getVal("application.base_path"),
-			$CONFIG->getVal("application.domain"), TRUE, TRUE);
+		session_set_cookie_params(0, $CONFIG->getVal("application.base_path"), $CONFIG->getVal("application.domain"), TRUE, TRUE);
 
-		session_start ();
+		session_start();
 
 		# session_start doesn't resend the session cookie if the session has
 		# already started.
 
-		if ( isset ($_COOKIE[session_name ()]) ) {
+		if ( isset($_COOKIE[session_name()]) ) {
 			if (Login::remembered()) {
 				$timeout = time() + 31536000;
 			} else {
 				$timeout = 0;
 			}
 
-			setcookie (session_name (), session_id (), $timeout, $CONFIG->getVal("application.base_path"),
+			setcookie( session_name(), session_id(), $timeout, $CONFIG->getVal("application.base_path"),
 				$CONFIG->getVal("application.domain"), TRUE, TRUE);
 
-#Dbg::var_dump ("application.base_path", $CONFIG->getVal("application.base_path"));
-#Dbg::var_dump ("application.domain", $CONFIG->getVal("application.domain"));
+#Dbg::var_dump("application.base_path", $CONFIG->getVal("application.base_path"));
+#Dbg::var_dump("application.domain", $CONFIG->getVal("application.domain"));
 		}
 	}
 
@@ -67,9 +66,9 @@ class Session {
 
 		$_SESSION = array();
 
-		setcookie (session_name (), "", time() - 86400,  $CONFIG->getVal("application.base_path"),
+		setcookie( session_name(), "", time() - 86400,  $CONFIG->getVal("application.base_path"),
 			$CONFIG->getVal("application.domain"),  TRUE, TRUE);
 
-		session_destroy ();
+		session_destroy();
 	}
 }

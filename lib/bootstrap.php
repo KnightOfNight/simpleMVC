@@ -10,7 +10,7 @@
 *
 * @author >X @ MCS 'Net Productions
 * @package MCS_MVC_API
-* @version 0.2.0
+* @version 0.3.0
 */
 
 
@@ -33,7 +33,7 @@ $LIBDIR = array(	ROOT.DS."lib",
 );
 /**
 * Global variable: library path.
-* @global float $START_TIME
+* @global float $LIBDIR
 */
 $LIBDIR = implode(":", $LIBDIR);
 

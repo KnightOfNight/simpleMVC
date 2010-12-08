@@ -10,9 +10,9 @@
 
 <style type="text/css">
 body { font-family: sans-serif; margin: 0px; padding: 0px; }
-.header { text-align: center; font-weight: 900; font-size: 1.10em; }
-.errmsg { margin-left: auto; margin-right: auto; padding: 5px; width: 700px; color: #FFFF00; font-weight: 900; font-size: .75em; background-color: #A0A0A0; }
-.trace { margin-left: auto; margin-right: auto; padding: 5px; width: 700px; color: #FFFF00; font-weight: 900; font-size: .75em; background-color: #A0A0A0; }
+.header { font-weight: 900; font-size: 1.10em; }
+.errmsg { padding: 5px; color: #FF0; font-weight: 500; font-size: .9em; background-color: #333; }
+.trace { padding: 5px; color: #FF0; font-weight: 500; font-size: .9em; background-color: #333; line-height: 150%; }
 .copy { text-align: center; font-weight: 900; font-size: .75em; }
 </style>
 

@@ -4,7 +4,7 @@
 /**
 * @author >X @ MCS 'Net Productions
 * @package MCS_MVC_API
-* @version 0.2.0
+* @version 0.3.0
 */
 
 
@@ -208,7 +208,7 @@ class Database {
 
 		$this->_last_query = $query;
 
-#Dbg::var_dump ("query", $query);
+# Dbg::var_dump ("query", $query);
 
 		$stmnt = $this->_dbh->prepare($query);
 
@@ -335,72 +335,6 @@ class Database {
 	}
 
 
-# Old function
-#	/**
-#	* Save a database record.
-#
-#* from the passed model.  If the 'id' column has a
-#	* value, then the record will updated.  Otherwise a new record will be
-#	* created.
-#	*
-#	* @param string table name
-#	* @param array list of column names
-#	* @param hash column name => value
-#	* @return integer current value of the 'id' column or new value on create
-#	*/
-#	function save ($table, $columns, $values) {
-#		if (empty ($values)) {
-#			Err::fatal("No column values set.  Cannot update or create record.");
-#		}
-#
-#		$query = "";
-#		$set = "";
-#		$where = "";
-#		$params = array();
-#
-#		if (isset ($values["id"])) {
-#			$query = "UPDATE " . $table . " SET ";
-#			$where .= "WHERE id = :id";
-#		} else {
-#			$query = "INSERT INTO " . $table . " SET ";
-#
-#			if (in_array ("created_at", $columns)) {
-#				$set = "created_at = NULL";
-#			}
-#		}
-#
-#		foreach ($values as $col_name => $col_val) {
-#			$param_name = ":" . $col_name;
-#
-#			$params[$param_name] = $col_val;
-#
-#			$set .= $set ? " , " : "";
-#			$set .= $col_name . " = " . $param_name;
-#		}
-#
-#		$query .= $set;
-#
-#		$query .= $where ? " " . $where : "";
-#
-##Dbg::var_dump("params", $params);
-##Dbg::var_dump("query", $query);
-#
-#		$stmnt = $this->_dbh->prepare($query);
-#
-##Dbg::var_dump("stmnt", $stmnt);
-#
-#		if ($stmnt->execute($params) === FALSE) {
-#			Err::fatal ($this->_pdoError());
-#		}
-#
-#		if (isset ($values["id"])) {
-#			return ($values["id"]);
-#		} else {
-#			return ($this->_dbh->lastInsertId());
-#		}
-#	}
-
-
 	# Delete a database record for the passed model.
 	#
 	function delete ($model) {
@@ -460,28 +394,20 @@ class Database {
 	#
 	private function _pdoError () {
 		$results_error = $this->_dbh->errorInfo();
+		$results_code = $this->_dbh->errorCode();
 
-#Dbg::var_dump("results_error", $results_error);
+		$error = 'database query failed: SQLSTATE[' . $results_error[0] . '] ' . $results_code;
 
-		return ("database query failed: SQLSTATE[" . $results_error[0] . "] [" . $results_error[1] . "] " . $results_error[2]);
+		if ( isset($results_error[1]) ) {
+			$error .= ' [' . $results_error[1];
+		}
+
+		if ( isset($results_error[2]) ) {
+			$error .= ' ' . $results_error[2];
+		}
+
+		$error .= "\n\n" . $this->_last_query;
+
+		return ($error);
 	}
-
-
-	/**
-	* Pagination Count
-	*/
-#	function totalPages() {
-#		if ($this->_query && $this->_limit) {
-#			$pattern = '/SELECT (.*?) FROM (.*)LIMIT(.*)/i';
-#			$replacement = 'SELECT COUNT(*) FROM $2';
-#			$countQuery = preg_replace($pattern, $replacement, $this->_query);
-#			$this->_result = mysql_query($countQuery, $this->_dbHandle);
-#			$count = mysql_fetch_row($this->_result);
-#			$totalPages = ceil($count[0]/$this->_limit);
-#			return $totalPages;
-#		} else {
-#			/* Error Generation Code Here */
-#			return -1;
-#		}
-#	}
 }

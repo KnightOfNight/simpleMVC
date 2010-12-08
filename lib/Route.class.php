@@ -5,7 +5,7 @@
 *
 * @author >X @ MCS 'Net Productions
 * @package MCS_MVC_API
-* @version 0.2.0
+* @version 0.3.0
 *
 */
 
@@ -94,13 +94,15 @@ class Route {
 
 
 		# Check the action.
-		$all_actions = array();
-		$all_actions = array_merge($all_actions, $CONFIG->getVal("dispatcher.controller." . $controller . ".external_actions"));
-		$all_actions = array_merge($all_actions, $CONFIG->getVal("dispatcher.controller." . $controller . ".internal_actions"));
+#		$all_actions = array();
+#		$all_actions = array_merge($all_actions, $CONFIG->getVal("dispatcher.controller." . $controller . ".external_actions"));
+#		$all_actions = array_merge($all_actions, $CONFIG->getVal("dispatcher.controller." . $controller . ".internal_actions"));
 #Dbg::var_dump("all_actions", $all_actions);
-		if (! in_array ($action, $all_actions)) {
-			Err::fatal (sprintf ("invalid route: action '%s' not found in configuration for controller '%s'", $action, $controller));
-		} elseif (! method_exists ($class, $action)) {
+#		if (! in_array ($action, $all_actions)) {
+#			Err::fatal (sprintf ("invalid route: action '%s' not found in configuration for controller '%s'", $action, $controller));
+#		} elseif (! method_exists ($class, $action)) {
+
+		if (! method_exists ($class, $action)) {
 			Err::fatal (sprintf ("invalid route: '%s' is not a valid action for controller '%s', method not found in class", $action, $controller));
 		}
 

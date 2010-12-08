@@ -4,7 +4,7 @@
 /**
 * @author >X @ MCS 'Net Productions
 * @package MCS_MVC_API
-* @version 0.2.0
+* @version 0.3.0
 */
 
 
@@ -41,12 +41,13 @@ class Dispatch {
 		# check to make sure the requested action is allowed for the given mode
 		if ($external) {
 			$allowed_actions = $CONFIG->getVal("dispatcher.controller." . $controller . ".external_actions");
-		} else {
-			$allowed_actions = $CONFIG->getVal("dispatcher.controller." . $controller . ".internal_actions");
-		}
 
-		if (! in_array ($action, $allowed_actions)) {
-			Err::fatal (sprintf ("action '%s' is not valid when called from an %s source", $action, $external ? "external" : "internal"));
+#		} else {
+#			$allowed_actions = $CONFIG->getVal("dispatcher.controller." . $controller . ".internal_actions");
+
+			if (! in_array ($action, $allowed_actions)) {
+				Err::fatal (sprintf ("action '%s' is not valid when called from an %s source", $action, $external ? "external" : "internal"));
+			}
 		}
 
 		# create a new controller object
@@ -77,15 +78,20 @@ class Dispatch {
 	* @param string route
 	*/
 	static function show ($route) {
-		Dispatch::go ($route, FALSE);
+		Dispatch::go($route, FALSE);
 	}
 
 
-	# Return the results of an action
-	#
-#	function return_action_results ($controller, $action, $query) {
-#		return (dispatch (Route::makeRoute($controller, $action, $query), FALSE));
-#	}
+	/**
+	* Dispatch a route that returns data.  Usually called from a controller
+	* action, e.g. to reuse code that gets a list of records that are needed by
+	* various actions.
+	*
+	* @param string route
+	*/
+	static function get ($route) {
+		return( Dispatch::go($route, FALSE) );
+	}
 
 
 	function __destruct () {}
