@@ -20,18 +20,17 @@ class BaseForm {
 	/**
 	* Create a new BaseForm object.
 	*
-	* @param string form method, i.e. "get" or "post"
+	* @param string form method, i.e. 'get' or 'post'
 	* @param string the action URL
-	* @param hash optional list of field names and their values
 	*/
 	function __construct ($method, $action) {
-		if ( ! method_exists($this, "setup") ) {
+		if ( ! method_exists($this, 'setup') ) {
 			Err::fatal("unable to instantiate form - no setup method found");
 		}
 
 		$method = strtolower($method);
 
-		if ( ($method != "post") && ($method != "get") ) {
+		if ( ($method != 'post') && ($method != 'get') ) {
 			Err::fatal("invalid form method '$method'");
 		}
 
@@ -57,7 +56,7 @@ class BaseForm {
 	* @param string field name
 	*/
 	function showlabel ($field_name) {
-		$label = $this->_fields[$field_name]["label"];
+		$label = $this->_fields[$field_name]['label'];
 
 ?><label class="mvc_form_label" for="<?= $field_name ?>"><?= $label ?></label>
 <?php
@@ -72,39 +71,39 @@ class BaseForm {
 	function showfield ($field_name) {
 		$info = $this->_fields[$field_name];
 
-		$type = $info["label"];
-		$value = htmlentities($info["value"]);
-		$valid = $info["valid"];
-		$error = $info["error"];
+		$type = $info['type'];
+		$valid = $info['valid'];
+		$error = $info['error'];
 
-		if ( $info["type"] == "text" ) {
+		if ( ($type == 'text' ) OR ($type == 'password') ) {
+			$value = htmlentities($info['value']);
+
 			if ( ! ($size = $info['options']['size']) ) {
 				$size = 10;
 			}
 			if ( ! ($maxlength = $info['options']['maxlength']) ) {
 				$maxlength = 20;
 			}
+		}
+
+		if ( $info['type'] == 'text' ) {
 
 ?><input id="<?= $field_name ?>" class="mvc_form_text_field" name="<?= $field_name ?>" value="<?= $value ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>"></input>
 <?php
 
-		} elseif ( $info["type"] == "password" ) {
-			if ( ! ($size = $info['options']['size']) ) {
-				$size = 10;
-			}
-			if ( ! ($maxlength = $info['options']['maxlength']) ) {
-				$maxlength = 20;
-			}
+		} elseif ( $info['type'] == 'password' ) {
 
 ?><input id="<?= $field_name ?>" class="mvc_form_password" name="<?= $field_name ?>" value="<?= $value ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>" type="password"></input>
 <?php
 
-		} elseif ( $info["type"] == "checkbox" ) {
-?><input id="<?= $field_name ?>" class="mvc_form_checkbox" name="<?= $field_name ?>" value="<?= $value ?>" type="checkbox" />
+		} elseif ( $info['type'] == 'checkbox' ) {
+?><input id="<?= $field_name ?>" class="mvc_form_checkbox" name="<?= $field_name ?>" value="1" type="checkbox" <?php if ( $info['value'] === 1 ) echo 'checked'; ?>/>
 <?php
 
-		} elseif ( $info["type"] == "hidden" ) {
-?><input name="<?= $field_name ?>" value="<?= $value ?>" type="hidden"></input>
+		} elseif ( $info['type'] == 'hidden' ) {
+			$value = htmlentities($info['value']);
+
+?><input class="mvc_form_hidden" name="<?= $field_name ?>" value="<?= $value ?>" type="hidden"></input>
 <?php
 
 		}
@@ -134,13 +133,13 @@ class BaseForm {
 	*/
 	private function _addfield ($field_type, $field_name, $options = array()) {
 
-		$info = array(	"type" => $field_type,
-						"label" => $field_name,
-						"options" => $options,
-						"checks" => array(),
-						"value" => "",
-						"valid" => TRUE,
-						"error" => "",
+		$info = array(	'type' => $field_type,
+						'label' => $field_name,
+						'options' => $options,
+						'checks' => array(),
+						'value' => '',
+						'valid' => TRUE,
+						'error' => '',
 		);
 
 		$this->_fields[$field_name] = $info;
@@ -156,7 +155,7 @@ class BaseForm {
 	* @param integer maximum input length
 	*/
 	function textfield ($field_name, $size, $maxlength) {
-		$this->_addfield("text", $field_name, array("size" => $size, "maxlength" => $maxlength));
+		$this->_addfield('text', $field_name, array('size' => $size, 'maxlength' => $maxlength));
 	}
 
 
@@ -168,7 +167,7 @@ class BaseForm {
 	* @param integer maximum input length
 	*/
 	function passwordfield ($field_name, $size, $maxlength) {
-		$this->_addfield("password", $field_name, array("size" => $size, "maxlength" => $maxlength));
+		$this->_addfield('password', $field_name, array('size' => $size, 'maxlength' => $maxlength));
 	}
 
 
@@ -178,7 +177,7 @@ class BaseForm {
 	* @param string field name
 	*/
 	function checkboxfield ($field_name) {
-		$this->_addfield("checkbox", $field_name);
+		$this->_addfield('checkbox', $field_name);
 	}
 
 
@@ -188,7 +187,7 @@ class BaseForm {
 	* @param string field name
 	*/
 	function hiddenfield ($field_name) {
-		$this->_addfield("hidden", $field_name);
+		$this->_addfield('hidden', $field_name);
 	}
 
 
@@ -213,7 +212,7 @@ class BaseForm {
 			Err::fatal("invalid field '$field_name' - field not declared in this form");
 		}
 
-		$this->_fields[$field_name]["label"] = $label;
+		$this->_fields[$field_name]['label'] = $label;
 	}
 
 
@@ -232,7 +231,7 @@ class BaseForm {
 			Err::fatal("list of checks should be an array");
 		}
 
-		$this->_fields[$field_name]["checks"] = $checks;
+		$this->_fields[$field_name]['checks'] = $checks;
 	}
 
 
@@ -248,9 +247,9 @@ class BaseForm {
 		}
 
 		if ( $value === NULL ) {
-			$this->_fields[$field_name]["value"] = "";
+			$this->_fields[$field_name]['value'] = '';
 		} else {
-			$this->_fields[$field_name]["value"] = $value;
+			$this->_fields[$field_name]['value'] = $value;
 		}
 	}
 
@@ -266,8 +265,8 @@ class BaseForm {
 			Err::fatal("invalid field '$field_name' - field not declared in this form");
 		}
 
-		$this->_fields[$field_name]["valid"] = FALSE;
-		$this->_fields[$field_name]["error"] = $error_message;
+		$this->_fields[$field_name]['valid'] = FALSE;
+		$this->_fields[$field_name]['error'] = $error_message;
 	}
 
 
@@ -278,38 +277,38 @@ class BaseForm {
 	function validate () {
 		$ret = TRUE;
 
-#Dbg::var_dump("ret", $ret);
+#Dbg::var_dump('ret', $ret);
 
 		foreach ( $this->_fields as $field_name => $info ) {
-#Dbg::var_dump("field_name", $field_name);
+#Dbg::var_dump('field_name', $field_name);
 
-			$value = $info["value"];
-			$checks = $info["checks"];
-#Dbg::var_dump("value", $value);
-#Dbg::var_dump("checks", $checks);
+			$value = $info['value'];
+			$checks = $info['checks'];
+#Dbg::var_dump('value', $value);
+#Dbg::var_dump('checks', $checks);
 
 			foreach ( $checks as $check ) {
-				if ( ! method_exists($this, $ckfunc = "_ck_" . $check) ) {
+				if ( ! method_exists($this, $ckfunc = '_ck_' . $check) ) {
 					Err::fatal("invalid check function '$check' declared in form");
 				}
 
-#Dbg::var_dump("ckfunc", $ckfunc);
+#Dbg::var_dump('ckfunc', $ckfunc);
 				$error = $this->$ckfunc($value);
 
-#Dbg::var_dump("error", $error);
+#Dbg::var_dump('error', $error);
 				if ( $error === TRUE ) {
-					$this->_fields[$field_name]["valid"] = TRUE;
-					$this->_fields[$field_name]["error"] = "";
+					$this->_fields[$field_name]['valid'] = TRUE;
+					$this->_fields[$field_name]['error'] = '';
 				} else {
-					$this->_fields[$field_name]["valid"] = FALSE;
-					$this->_fields[$field_name]["error"] = $error;
+					$this->_fields[$field_name]['valid'] = FALSE;
+					$this->_fields[$field_name]['error'] = $error;
 					$ret = FALSE;
 					break;
 				}
 			}
 		}
 
-#Dbg::var_dump("ret", $ret);
+#Dbg::var_dump('ret', $ret);
 
 		return($ret);
 	}
@@ -317,20 +316,20 @@ class BaseForm {
 
 	private function _ck_required ($value) {
 		if ( isset($value) AND (! empty($value)) ) {
-#Dbg::var_dump("value", $value);
+#Dbg::var_dump('value', $value);
 			return(TRUE);
 		} else {
-			return("this field is required");
+			return('this field is required');
 		}
 	}
 
 
 	private function _ck_numeric ($value) {
 		if ( empty($value) OR (! preg_match('/[^0-9]/', $value)) ) {
-#Dbg::var_dump("value", $value);
+#Dbg::var_dump('value', $value);
 			return(TRUE);
 		} else {
-			return("this field may only contain numbers");
+			return('this field may only contain numbers');
 		}
 	}
 
