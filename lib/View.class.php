@@ -172,7 +172,7 @@ class View {
 		global $CONFIG;
 
 		foreach ($this->_css_files as $file) {
-			$fullpath = $CONFIG->getVal("application.base_url") . "/css/" . $file;
+			$fullpath = $CONFIG->getVal("application.base_path") . "/css/" . $file;
 ?>
 <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $fullpath ?>" />
 <?php
@@ -205,7 +205,7 @@ class View {
 		global $CONFIG;
 
 		foreach ($this->_js_files as $file) {
-			$fullpath = $CONFIG->getVal("application.base_url") . "/js/" . $file;
+			$fullpath = $CONFIG->getVal("application.base_path") . "/js/" . $file;
 
 ?>
 <script type="text/javascript" src="<?php echo $fullpath ?>"></script>
