@@ -74,36 +74,76 @@ class BaseForm {
 		$type = $info['type'];
 		$valid = $info['valid'];
 		$error = $info['error'];
+		$disabled = $info['disabled'];
+		$options = $info['options'];
 
 		if ( ($type == 'text' ) OR ($type == 'password') ) {
 			$value = htmlentities($info['value']);
 
-			if ( ! ($size = $info['options']['size']) ) {
+			if ( ! ($size = $options['size']) ) {
 				$size = 10;
 			}
-			if ( ! ($maxlength = $info['options']['maxlength']) ) {
+			if ( ! ($maxlength = $options['maxlength']) ) {
 				$maxlength = 20;
 			}
 		}
 
-		if ( $info['type'] == 'text' ) {
+		if ( $type == 'text' ) {
 
-?><input id="<?= $field_name ?>" class="mvc_form_text_field" name="<?= $field_name ?>" value="<?= $value ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>"></input>
+?><input id="<?= $field_name ?>" class="mvc_form_text_field" name="<?= $field_name ?>" value="<?= $value ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>" <?= $disabled ?>></input>
 <?php
 
-		} elseif ( $info['type'] == 'password' ) {
+		} elseif ( $type == 'password' ) {
 
-?><input id="<?= $field_name ?>" class="mvc_form_password" name="<?= $field_name ?>" value="<?= $value ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>" type="password"></input>
+?><input id="<?= $field_name ?>" class="mvc_form_password" name="<?= $field_name ?>" value="<?= $value ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>" type="password" <?= $disabled ?>></input>
 <?php
 
-		} elseif ( $info['type'] == 'checkbox' ) {
-?><input id="<?= $field_name ?>" class="mvc_form_checkbox" name="<?= $field_name ?>" value="1" type="checkbox" <?php if ( $info['value'] === 1 ) echo 'checked'; ?>/>
+		} elseif ( $type == 'checkbox' ) {
+?><input id="<?= $field_name ?>" class="mvc_form_checkbox" name="<?= $field_name ?>" value="1" type="checkbox" <?php if ( $info['value'] === 1 ) echo 'checked'; ?> <?= $disabled ?>></input>
 <?php
 
-		} elseif ( $info['type'] == 'hidden' ) {
+		} elseif ( $type == 'checkbox_group' ) {
+			$choices = $options['choices'];
+
+			echo '<table class="mvc_form_checkbox_group"><tr class="mvc_form_checkbox_group"><td class="mvc_form_checkbox_group">';
+			$ctr = 0;
+			foreach ( $choices as $choice ) {
+				if ( $ctr >= 4 ) {
+					$ctr = 0;
+					echo '</td><td class="mvc_form_checkbox_group">';
+				}
+				$sub_field_name = $field_name . '_' . md5($choice);
+				$this->showfield($sub_field_name);
+				$this->showlabel($sub_field_name);
+				$ctr++;
+				echo '<br />';
+			}
+			echo '</td></tr></table>';
+
+		} elseif ( $type == 'hidden' ) {
 			$value = htmlentities($info['value']);
 
-?><input class="mvc_form_hidden" name="<?= $field_name ?>" value="<?= $value ?>" type="hidden"></input>
+?><input class="mvc_form_hidden" name="<?= $field_name ?>" value="<?= $value ?>" type="hidden" <?= $disabled ?>></input>
+<?php
+
+		} elseif ( $type == 'dropdown' ) {
+			$value = $info['value'];
+
+			if ( ( ! isset($options['choices']) ) OR empty($options['choices']) ) {
+				Err::fatal("unable to render dropdown box, no choices specified");
+			}
+
+?><select id="<?= $field_name ?>" class="mvc_form_select" name="<?= $field_name ?>" <?= $disabled ?>>
+<?php
+
+			foreach ( $options['choices'] as $choice ) {
+				$selected = ( $choice == $value ) ? 'selected' : '';
+
+?><option <?= $selected ?>><?= $choice ?></option>
+<?php
+			}
+
+?></select>
 <?php
 
 		}
@@ -125,6 +165,85 @@ class BaseForm {
 
 
 	/**
+	* Add a text field to the form.
+	*
+	* @param string field name
+	* @param integer size of the field
+	* @param integer maximum input length
+	*/
+	function add_textfield ($field_name, $size, $maxlength) {
+		$this->_addfield('text', $field_name, array('size' => $size, 'maxlength' => $maxlength));
+	}
+
+
+	/**
+	* Add a password field to the form.
+	*
+	* @param string field name
+	* @param integer size of the field
+	* @param integer maximum input length
+	*/
+	function add_passwordfield ($field_name, $size, $maxlength) {
+		$this->_addfield('password', $field_name, array('size' => $size, 'maxlength' => $maxlength));
+	}
+
+
+	/**
+	* Add a hidden field to the form.
+	*
+	* @param string field name
+	*/
+	function add_hiddenfield ($field_name) {
+		$this->_addfield('hidden', $field_name);
+	}
+
+
+	/**
+	* Add a checkbox field to the form.
+	*
+	* @param string field name
+	*/
+	function add_checkbox ($field_name) {
+		$this->_addfield('checkbox', $field_name);
+	}
+
+
+	/**
+	* Add a group of checkboxes to the form.
+	*
+	* @param string field name
+	* @param array list of choices
+	*/
+	function add_checkbox_group ($field_name, $choices = array()) {
+		if ( empty($choices) ) {
+			Err::fatal("you must specify a list of choices");
+		}
+
+		$this->_addfield('checkbox_group', $field_name, array( 'choices' => $choices ));
+
+		foreach ( $choices as $choice ) {
+			$sub_field_name = $field_name . '_' . md5($choice);
+			$this->_addfield('checkbox', $sub_field_name);
+			$this->label($sub_field_name, $choice);
+		}
+	}
+
+
+	/**
+	* Add a select field to the form.
+	*
+	* @param string field name
+	* @param array list of choices
+	*/
+	function add_dropdown ($field_name, $choices = array()) {
+		if ( empty($choices) ) {
+			Err::fatal("you must specify a list of choices");
+		}
+		$this->_addfield('dropdown', $field_name, array('choices' => $choices));
+	}
+
+
+	/**
 	* Add a generic field to the form.
 	*
 	* @param string type of field
@@ -140,64 +259,11 @@ class BaseForm {
 						'value' => '',
 						'valid' => TRUE,
 						'error' => '',
+						'disabled' => '',
 		);
 
 		$this->_fields[$field_name] = $info;
 
-	}
-
-
-	/**
-	* Add a text field to the form.
-	*
-	* @param string field name
-	* @param integer size of the field
-	* @param integer maximum input length
-	*/
-	function textfield ($field_name, $size, $maxlength) {
-		$this->_addfield('text', $field_name, array('size' => $size, 'maxlength' => $maxlength));
-	}
-
-
-	/**
-	* Add a password field to the form.
-	*
-	* @param string field name
-	* @param integer size of the field
-	* @param integer maximum input length
-	*/
-	function passwordfield ($field_name, $size, $maxlength) {
-		$this->_addfield('password', $field_name, array('size' => $size, 'maxlength' => $maxlength));
-	}
-
-
-	/**
-	* Add a checkbox field to the form.
-	*
-	* @param string field name
-	*/
-	function checkboxfield ($field_name) {
-		$this->_addfield('checkbox', $field_name);
-	}
-
-
-	/**
-	* Add a hidden field to the form.
-	*
-	* @param string field name
-	*/
-	function hiddenfield ($field_name) {
-		$this->_addfield('hidden', $field_name);
-	}
-
-
-	/**
-	* Add a select field to the form.
-	*
-	* @param string field name
-	*/
-	function selectfield ($field_name) {
-		$this->_addfield('text', $field_name, array('size'=>5, 'maxlength'=>10));
 	}
 
 
@@ -271,8 +337,22 @@ class BaseForm {
 
 
 	/**
-	* Check to see if the form passes basic validation.
-	* @return bool TRUE => form passed basic field validation
+	* Disable a field.
+	*
+	* @param string name of field
+	*/
+	function disable ($field_name) {
+		if ( ! isset($this->_fields[$field_name]) ) {
+			Err::fatal("invalid field '$field_name' - field not declared in this form");
+		}
+
+		$this->_fields[$field_name]['disabled'] = 'disabled';
+	}
+
+
+	/**
+	* Check to see if the form passes validation.
+	* @return bool TRUE => form passed field validation
 	*/
 	function validate () {
 		$ret = TRUE;
@@ -319,7 +399,7 @@ class BaseForm {
 #Dbg::var_dump('value', $value);
 			return(TRUE);
 		} else {
-			return('this field is required');
+			return('This field is required.');
 		}
 	}
 
@@ -329,7 +409,7 @@ class BaseForm {
 #Dbg::var_dump('value', $value);
 			return(TRUE);
 		} else {
-			return('this field may only contain numbers');
+			return('Numbers only.');
 		}
 	}
 
