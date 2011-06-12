@@ -51,7 +51,7 @@ require_once("__autoload.php");
 
 # Load any libraries or configuration files othat the autoloader won't catch
 # require_once (ROOT.DS."lib".DS."debug.php");
-require_once(ROOT.DS."cfg".DS."inflection.php");
+require_once(ROOT.DS."app/cfg".DS."inflection.php");
 
 
 # Turn on output buffering, using gzip to compress output if supported by
