@@ -29,7 +29,7 @@ class Config {
 		}
 
 		if ( ($this->_values = json_decode ($cfg_data, TRUE)) === NULL ) {
-			Err::fatal ("unable to parse configuration information, invalid json found");
+			Err::fatal ("unable to parse application configuration, invalid JSON found");
 		}
 	}
 
