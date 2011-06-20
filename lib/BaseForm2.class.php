@@ -11,48 +11,229 @@
 /**
 * Handle all basic aspects of an HTML form.
 *
+* Internal structure of 'fields'
+* type: string, required
+* label: string, required
+* value: string, optional, default ''
+* valid: string, optional, default TRUE
+* error: string, optional, default ''
+* options: hash ('option name' => 'value'), optional, default is all default options set
+* option enabled: string, default 'yes'
+* option required: string, default 'yes'
+* option hidden: string, default 'yes'
+* checks: hash ('check function' => 'custom error message'), optional, default is none
+*
 * @package MCS_MVC_API
 */
 class BaseForm2 {
 
 	protected $form_name;
 
-	private $_options = array();
-	private $_fields = array();
+	protected $fields;
+	protected $options;
+
+	private $_method;
+	private $_HTML_form_name;
+
+	private $_field_types = array( 'text', 'password', 'dropdown', 'checkbox', 'bitmask' );
+	private $_fields_with_choices = array( 'dropdown', 'bitmask' );
 
 	/**
 	* Create a new BaseForm object.
 	*
-	* @param string form method, i.e. 'get' or 'post'
-	* @param string the action URL
+	* @param string form name
+	* @param string form name suffix
 	*/
-	function __construct ($method, $action) {
+	function __construct ($form_name, $suffix = NULL) {
 
-		$form_name = 
+		$this->form_name = $form_name;
 
+		$this->_HTML_form_name = 'f_' . $form_name;
+
+		if ( $suffix ) {
+			$this->_HTML_form_name .= '_' . $suffix;
+		}
+
+		if ( $cache = Cache::value($cache_key = "form:" . $this->form_name) ) {
+#			$this->fields = $cache['fields'];
+#			$this->options = $cache['options'];
+#			return;
+		}
+
+		$cfg_file = ROOT.DS."app/forms".DS.$this->form_name.".json";
+
+		if ( (! File::ready ($cfg_file)) OR ( ($cfg_data = file_get_contents ($cfg_file)) === FALSE ) ) {
+			Err::fatal (sprintf ("unable to read configuration file '%s'", $cfg_file));
+		}
+
+		if ( ($config = json_decode ($cfg_data, TRUE)) === NULL ) {
+            Err::fatal ("unable to parse form configuration, invalid JSON found");
+		}
+
+
+		if ( ! isset($config['fields']) ) {
+            Err::fatal ("invalid form config: no fields configured");
+		} elseif ( (! is_array($config['fields'])) OR empty($config['fields']) ) {
+            Err::fatal ("invalid form config: 'fields' must be an array of one or more");
+		} else {
+			$this->fields = $config["fields"];
+		}
+
+
+		if ( ! isset($config['options']) ) {
+			$this->options = array();
+		} elseif ( ! is_array($config['options']) ) {
+           	Err::fatal ("invalid form config: 'options' must be an array");
+		} else {
+			$this->options = $config['options'];
+		}
+
+
+		$this->_check_field_config();
+
+
+		$cache = array();
+		$cache['fields'] = $this->fields;
+		$cache['options'] = $this->options;
+		Cache::value($cache_key, $cache);
+
+
+		if ( method_exists($this, 'setup') ) {
+			$this->setup();
+		}
+
+	}
+
+
+
+
+	/**
+	* Perform a detailed check of the field configuration.  Die if invalid in any way.
+	*/
+	private function _check_field_config () {
+		foreach ( $this->fields as $field_name => $field_info ) {
+
+			# type
+			if ( ! isset($this->fields[$field_name]['type']) ) {
+				Err::fatal("invalid form config: field '$field_name' - no field type specified");
+			}
+
+			if ( ! in_array($this->fields[$field_name]['type'], $this->_field_types) ) {
+				Err::fatal("invalid form config: field '$field_name' - invalid field type '$this->fields[$field_name]['type']'");
+			}
+
+
+			# label
+			if ( ! isset($this->fields[$field_name]['label']) ) {
+				Err::fatal("invalid form config: field '$field_name' - field label is required");
+			}
+
+
+			# value
+			if ( ! isset($this->fields[$field_name]['value']) ) {
+				$this->fields[$field_name]['value'] = '';
+			}
+
+			# valid
+			$this->fields[$field_name]['valid'] = FALSE;
+
+			# error
+			$this->fields[$field_name]['error'] = 'Field is invalid.';
+
+			# options and checks
+			foreach ( array('options', 'checks') as $item) {
+				if ( ! isset($this->fields[$field_name][$item]) ) {
+					$this->fields[$field_name][$item] = array();
+				} elseif ( ! is_array($this->fields[$field_name][$item]) ) {
+					Err::fatal("invalid form config: field '$field_name' - '$item' must be an array");
+				}
+			}
+
+			# option: enabled
+			if ( ! isset($this->fields[$field_name]['options']['enabled']) ) {
+				$this->fields[$field_name]['options']['enabled'] = 'yes';
+			}
+
+			# option: required
+			if ( ! isset($this->fields[$field_name]['options']['required']) ) {
+				$this->fields[$field_name]['options']['required'] = 'yes';
+			}
+
+			# option: hidden
+			if ( ! isset($this->fields[$field_name]['options']['hidden']) ) {
+				$this->fields[$field_name]['options']['hidden'] = 'no';
+			}
+
+			# option: choices
+			if ( in_array($this->fields[$field_name]['type'], $this->_fields_with_choices) ) {
+				if ( ! isset($this->fields[$field_name]['options']['choices']) ) {
+					Err::fatal("invalid form config: field '$field_name' is type '$this->fields[$field_name]['type']' but no 'choices' found in 'options'");
+				}
+
+				if ( ! is_array($this->fields[$field_name]['options']['choices']) ) {
+
+					$parts = explode(".", $this->fields[$field_name]['options']['choices']);
+
+					if ( count($parts) != 2 ) {
+						Err::fatal("invalid form config: field '$field_name' - 'choices' is invalid, should be array or 'class.method'");
+					}
+
+					$class = $parts[0];
+					$method = $parts[1];
+
+					if ( ! method_exists($class, $method) ) {
+						Err::fatal("invalid form config: field '$field_name' - 'choices' is invalid, method not found");
+					}
+
+					$this->fields[$field_name]['options']['choices'] = call_user_func( array($class, $method) );
+
+					if ( empty($this->fields[$field_name]['options']['choices']) ) {
+						Err::fatal("invalid form config: field '$field_name' - 'choices' is invalid, method returned empty list");
+					}
+
+				}
+
+			}
 		
-		if ( ! method_exists($this, 'setup') ) {
-			Err::fatal("unable to instantiate form - no setup method found");
+			# checks
+			foreach ( $this->fields[$field_name]['checks'] as $check_name => $check_errmsg ) {
+				if ( ! method_exists($this, $ckfunc = '_ck_' . $check_name) ) {
+					Err::fatal("invalid form config: field '$field_name' - check '$check_name' is invalid, method '$ckfunc' not found");
+				}
+			}
 		}
 
-		$method = strtolower($method);
-
-		if ( ($method != 'post') && ($method != 'get') ) {
-			Err::fatal("invalid form method '$method'");
-		}
-
-		$this->_method = $method;
-		$this->_action = $action;
-
-		$this->setup();
+		return(TRUE);
 	}
 
 
 	/**
 	* Output HTML that starts the form.
+	*
+	* @param string form method, i.e. 'get' or 'post'
+	* @param string the action URL
 	*/
-	function start () {
-?><form class="mvc_form" method="<?= $this->_method ?>" action="<?= $this->_action ?>"><fieldset class="mvc_form_fieldset">
+	function HTMLstart ($method, $action) {
+		if ( ($method != 'post') AND ($method != 'get') ) {
+			Err::fatal("invalid form method '$method'");
+		}
+
+		$this->_method = $method;
+
+		$id = $this->_HTML_form_name;
+
+?><form id="<?= $id ?>" class="mvc_form" method="<?= $method ?>" action="<?= $action ?>">
+<div>
+<input class="mvc_form_internal" name="form_name" value="<?= $this->form_name ?>" type="hidden"></input>
+<?php
+	}
+
+
+	/**
+	* Output HTML that finishes the form.
+	*/
+	function HTMLfinish () {
+?></div></form>
 <?php
 	}
 
@@ -62,10 +243,18 @@ class BaseForm2 {
 	*
 	* @param string field name
 	*/
-	function showlabel ($field_name) {
-		$label = $this->_fields[$field_name]['label'];
+	function HTMLlabel ($field_name) {
+		if ( ! isset($this->fields[$field_name]) ) {
+			Err::fatal("invalid field name '$field_name'");
+		}
 
-?><label class="mvc_form_label" for="<?= $field_name ?>"><?= $label ?></label>
+		$field_info = $this->fields[$field_name];
+
+		$id = $this->_HTML_form_name . '_l_' . $field_name;
+		$for = $this->_HTML_form_name . '_' . $field_name;
+		$label = $field_info['label'];
+
+?><label id="<?= $id ?>" class="mvc_form_label" for="<?= $for ?>"><?= $label ?></label>
 <?php
 	}
 
@@ -75,85 +264,172 @@ class BaseForm2 {
 	*
 	* @param string field name
 	*/
-	function showfield ($field_name) {
-		$info = $this->_fields[$field_name];
-
-		$type = $info['type'];
-		$valid = $info['valid'];
-		$error = $info['error'];
-		$disabled = $info['disabled'];
-		$options = $info['options'];
-
-		if ( ($type == 'text' ) OR ($type == 'password') ) {
-			$value = htmlentities($info['value']);
-
-			if ( ! ($size = $options['size']) ) {
-				$size = 10;
-			}
-			if ( ! ($maxlength = $options['maxlength']) ) {
-				$maxlength = 20;
-			}
+	function HTMLfield ($field_name) {
+		if ( ! isset($this->fields[$field_name]) ) {
+			Err::fatal("invalid field name '$field_name'");
 		}
 
-		if ( $type == 'text' ) {
+		$field_info = $this->fields[$field_name];
 
-?><input id="<?= $field_name ?>" class="mvc_form_text_field" name="<?= $field_name ?>" value="<?= $value ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>" <?= $disabled ?>></input>
+		$type = $field_info['type'];
+
+		$func = "_HTML_" . $type;
+
+		$this->$func($field_name);
+	}
+
+
+	/**
+	* Output the HTML for a field type 'text'.
+	*
+	* @param string field name
+	*/
+	private function _HTML_text ($field_name) {
+
+		# common
+		$id = $name = $this->_HTML_form_name . '_' . $field_name;
+		$value = $this->fields[$field_name]['value'];
+		$options = $this->fields[$field_name]['options'];
+
+		$disabled = ($options['enabled'] == 'no') ? ' disabled="disabled"' : '';
+		$hidden = ($options['hidden'] == 'yes') ? ' type="hidden"' : '';
+
+		$valid = $this->fields[$field_name]['valid'];
+		$error = $this->fields[$field_name]['error'];
+
+		# specific
+		$inputclass = 'mvc_form_text_field';
+
+		$size = ( isset($options['size']) AND ($options['size'] > 0) ) ?  $options['size'] : 10;
+
+		$maxlength = ( isset($options['maxlength']) AND ($options['maxlength'] > 0) ) ?  $options['maxlength'] : 80;
+
+		$password = ( isset($options['password']) AND ($options['password'] == 'yes') ) ? ' type="password"' : '';
+
+		$password = ( $hidden AND $password ) ? '' : $password;
+
+		# HTML
+?><input id="<?= $id ?>" class="<?= $inputclass ?>" name="<?= $name ?>" value="<?= $value ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>"<?= $disabled ?><?= $password ?><?= $hidden ?>></input>
 <?php
 
-		} elseif ( $type == 'password' ) {
+		$this->_HTML_field_error($field_name);
 
-?><input id="<?= $field_name ?>" class="mvc_form_password" name="<?= $field_name ?>" value="<?= $value ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>" type="password" <?= $disabled ?>></input>
+	}
+
+	/**
+	* Output the HTML for a field type 'dropdown'.
+	*
+	* @param string field name
+	*/
+	private function _HTML_dropdown ($field_name) {
+
+		# common
+		$id = $name = $this->_HTML_form_name . '_' . $field_name;
+		$value = $this->fields[$field_name]['value'];
+		$options = $this->fields[$field_name]['options'];
+		$disabled = ($options['enabled'] == 'no') ? ' disabled="disabled"' : '';
+		$hidden = ($options['hidden'] == 'yes') ? ' type="hidden"' : '';
+		$valid = $this->fields[$field_name]['valid'];
+		$error = $this->fields[$field_name]['error'];
+
+		# specific
+		$inputclass = 'mvc_form_dropdown_field';
+		$choices = $options['choices'];
+
+		# HTML
+?><select id="<?= $id ?>" class="<?= $inputclass ?>" name="<?= $name ?>"<?= $disabled ?><?= $hidden ?>>
 <?php
 
-		} elseif ( $type == 'checkbox' ) {
-?><input id="<?= $field_name ?>" class="mvc_form_checkbox" name="<?= $field_name ?>" value="1" type="checkbox" <?php if ( $info['value'] === 1 ) echo 'checked'; ?> <?= $disabled ?>></input>
+		foreach ( $options['choices'] as $choice => $choice_value ) {
+			$selected = ( $value == $choice_value ) ? ' selected="selected"' : '';
+
+?><option value="<?= $choice_value ?>"<?= $selected ?>><?= $choice ?></option>
 <?php
-
-		} elseif ( $type == 'checkbox_group' ) {
-			$choices = $options['choices'];
-
-			echo '<table class="mvc_form_checkbox_group"><tr class="mvc_form_checkbox_group"><td class="mvc_form_checkbox_group">';
-			$ctr = 0;
-			foreach ( $choices as $choice ) {
-				if ( $ctr >= 4 ) {
-					$ctr = 0;
-					echo '</td><td class="mvc_form_checkbox_group">';
-				}
-				$sub_field_name = $field_name . '_' . md5($choice);
-				$this->showfield($sub_field_name);
-				$this->showlabel($sub_field_name);
-				$ctr++;
-				echo '<br />';
-			}
-			echo '</td></tr></table>';
-
-		} elseif ( $type == 'hidden' ) {
-			$value = htmlentities($info['value']);
-
-?><input class="mvc_form_hidden" name="<?= $field_name ?>" value="<?= $value ?>" type="hidden" <?= $disabled ?>></input>
-<?php
-
-		} elseif ( $type == 'dropdown' ) {
-			$value = $info['value'];
-
-			if ( ( ! isset($options['choices']) ) OR empty($options['choices']) ) {
-				Err::fatal("unable to render dropdown box, no choices specified");
-			}
-
-?><select id="<?= $field_name ?>" class="mvc_form_select" name="<?= $field_name ?>" <?= $disabled ?>>
-<?php
-
-			foreach ( $options['choices'] as $choice ) {
-				$selected = ( $choice == $value ) ? 'selected' : '';
-
-?><option <?= $selected ?>><?= $choice ?></option>
-<?php
-			}
+		}
 
 ?></select>
 <?php
 
+		$this->_HTML_field_error($field_name);
+
+	}
+
+
+	/**
+	* Output the HTML for a field type 'bitmask'.
+	*
+	* @param string field name
+	*/
+	private function _HTML_bitmask ($field_name) {
+
+		# common
+		$id = $name = $this->_HTML_form_name . '_' . $field_name;
+		$value = $this->fields[$field_name]['value'];
+		$options = $this->fields[$field_name]['options'];
+		$disabled = ($options['enabled'] == 'no') ? ' disabled="disabled"' : '';
+		$hidden = ($options['hidden'] == 'yes') ? ' type="hidden"' : '';
+		$valid = $this->fields[$field_name]['valid'];
+		$error = $this->fields[$field_name]['error'];
+
+		# specific
+		$tableclass = 'mvc_form_bitmask';
+		$inputclass = 'mvc_form_bitmask_field';
+		$choices = $options['choices'];
+		$columns = ( isset($options['columns']) AND ($options['columns'] > 0)  AND ($options['columns'] < count($choices)) ) ?  $options['columns'] : 3;
+
+		# HTML
+
+?>
+<table id="<?= $id ?>" class="<?= $tableclass ?>">
+<tr> <td>
+<?php
+
+		$count = 0;
+		$per_column = count($choices) / $columns;
+
+		foreach ( $choices as $choice => $choice_value ) {
+
+			$input_id = $fld_name = $id . '_' . md5($choice);
+			$checked = ( $value & $choice_value ) ? ' checked="checked"' : '';
+
+			$label_id = $this->_HTML_form_name . '_l_' . $field_name . '_' . md5($choice);
+			$for = $input_id;
+			$label = $choice;
+
+			if ( $count >= $per_column ) {
+				$count = 0;
+?>
+</td> <td>
+<?php
+			}
+
+?><input id="<?= $input_id ?>" class="<?= $inputclass ?>" name="<?= $fld_name ?>" value="checked" type="checkbox"<?= $checked ?><?= $disabled ?><?= $hidden ?>></input>
+<label id="<?= $label_id ?>" class="mvc_form_label" for="<?= $for ?>"><?= $label ?></label>
+<br />
+<?php
+
+			$count++;
+
 		}
+
+?>
+</td> </tr>
+</table>
+<?php
+
+		$this->_HTML_field_error($field_name);
+
+	}
+
+
+	/**
+	* Output the HTML for a field error.
+	*
+	* @param string field name
+	*/
+	private function _HTML_field_error ($field_name) {
+		$valid = $this->fields[$field_name]['valid'];
+		$error = $this->fields[$field_name]['error'];
 
 		if ( ! $valid ) {
 ?><span class="mvc_form_error"><?= $error ?></span>
@@ -163,129 +439,113 @@ class BaseForm2 {
 
 
 	/**
-	* Output HTML that finishes the form.
-	*/
-	function finish () {
-?></fieldset></form>
-<?php
-	}
-
-
-	/**
-	* Add a text field to the form.
+	* Get/Set the displayed label for a field.
 	*
 	* @param string field name
-	* @param integer size of the field
-	* @param integer maximum input length
+	* @param string optional display label
 	*/
-	function add_textfield ($field_name, $size, $maxlength) {
-		$this->_addfield('text', $field_name, array('size' => $size, 'maxlength' => $maxlength));
-	}
-
-
-	/**
-	* Add a password field to the form.
-	*
-	* @param string field name
-	* @param integer size of the field
-	* @param integer maximum input length
-	*/
-	function add_passwordfield ($field_name, $size, $maxlength) {
-		$this->_addfield('password', $field_name, array('size' => $size, 'maxlength' => $maxlength));
-	}
-
-
-	/**
-	* Add a hidden field to the form.
-	*
-	* @param string field name
-	*/
-	function add_hiddenfield ($field_name) {
-		$this->_addfield('hidden', $field_name);
-	}
-
-
-	/**
-	* Add a checkbox field to the form.
-	*
-	* @param string field name
-	*/
-	function add_checkbox ($field_name) {
-		$this->_addfield('checkbox', $field_name);
-	}
-
-
-	/**
-	* Add a group of checkboxes to the form.
-	*
-	* @param string field name
-	* @param array list of choices
-	*/
-	function add_checkbox_group ($field_name, $choices = array()) {
-		if ( empty($choices) ) {
-			Err::fatal("you must specify a list of choices");
-		}
-
-		$this->_addfield('checkbox_group', $field_name, array( 'choices' => $choices ));
-
-		foreach ( $choices as $choice ) {
-			$sub_field_name = $field_name . '_' . md5($choice);
-			$this->_addfield('checkbox', $sub_field_name);
-			$this->label($sub_field_name, $choice);
-		}
-	}
-
-
-	/**
-	* Add a select field to the form.
-	*
-	* @param string field name
-	* @param array list of choices
-	*/
-	function add_dropdown ($field_name, $choices = array()) {
-		if ( empty($choices) ) {
-			Err::fatal("you must specify a list of choices");
-		}
-		$this->_addfield('dropdown', $field_name, array('choices' => $choices));
-	}
-
-
-	/**
-	* Add a generic field to the form.
-	*
-	* @param string type of field
-	* @param string name of field
-	* @param mixed hash of any optional parameters
-	*/
-	private function _addfield ($field_type, $field_name, $options = array()) {
-
-		$info = array(	'type' => $field_type,
-						'label' => $field_name,
-						'options' => $options,
-						'checks' => array(),
-						'value' => '',
-						'valid' => TRUE,
-						'error' => '',
-						'disabled' => '',
-		);
-
-		$this->_fields[$field_name] = $info;
-
-	}
-
-
-	/**
-	* Set the displayed label for a field.
-	*
-	* @param string field name
-	* @param string display label
-	*/
-	function label ($field_name, $label) {
-		if ( ! isset($this->_fields[$field_name]) ) {
+	function label ($field_name, $label = NULL) {
+		if ( ! isset($this->fields[$field_name]) ) {
 			Err::fatal("invalid field '$field_name' - field not declared in this form");
 		}
 
-		$this->_fields[$field_name]['label'] = $label;
+		if ( $label === NULL ) {
+			return($this->fields[$field_name]['label']);
+		} else {
+			$this->fields[$field_name]['label'] = $label;
+		}
+
+	}
+
+
+	/**
+	* Get/Set the value for a field.
+	*
+	* @param string field name
+	* @param mixed optional field value
+	*/
+	function value ($field_name, $value = NULL) {
+		if ( ! isset($this->fields[$field_name]) ) {
+			Err::fatal("invalid field '$field_name' - field not declared in this form");
+		}
+
+		if ( $value === NULL ) {
+			return($this->fields[$field_name]['value']);
+		} else {
+			$this->fields[$field_name]['value'] = $value;
+		}
+	}
+
+
+	/**
+	* Get/Set an option for a field.
+	*
+	* @param string field name
+	* @param string option name
+	* @param string optional option value
+	*/
+	function option ($field_name, $option_name, $value = NULL) {
+		if ( ! isset($this->fields[$field_name]) ) {
+			Err::fatal("invalid field '$field_name' - field not declared in this form");
+		}
+
+		if ( $value === NULL ) {
+			return($this->fields[$field_name]['options'][$option_name]);
+		} else {
+			$this->fields[$field_name]['options'][$option_name] = $value;
+		}
+
+	}
+
+
+	/**
+	* Check to see if the form has been submitted, populate field values.
+	* Will not check input.
+	*/
+	function submitted () {
+		if ( $this->_method == 'post' ) {
+			$sub = $_POST;
+		} elseif ( $this->_method == 'get' ) {
+			$sub = $_GET;
+		}
+
+		if ( (! isset($sub['form_name'])) OR ($sub['form_name'] != $this->form_name) ) {
+			return(FALSE);
+		}
+
+		foreach ( $this->fields as $field_name => $field_info ) {
+			$form_field_name = $this->_HTML_form_name . '_' . $field_name;
+			$type = $this->fields[$field_name]['type'];
+			$value = $this->fields[$field_name]['value'];
+
+			if ( $type == 'checkbox' ) {
+				if ( isset($sub[$form_field_name]) AND ($sub[$form_field_name] == 'checked') ) {
+					$this->fields[$field_name]['value'] = 'checked';
+				}
+			} elseif ( $type == 'bitmask' ) {
+				$choices = $this->fields[$field_name]['options']['choices'];
+
+				$bitmask = 0;
+
+				foreach ( $choices as $choice => $choice_value ) {
+					$fld_name = $form_field_name . '_' . md5($choice);
+
+					if ( isset($sub[$fld_name]) AND ($sub[$fld_name] == 'checked') ) {
+						$bitmask |= $choice_value;
+					}
+				
+				}
+
+				$this->fields[$field_name]['value'] = $bitmask;
+			} else {
+				if ( isset($sub[$form_field_name]) ) {
+					$this->fields[$field_name]['value'] = htmlentities($sub[$form_field_name]);
+				}
+			}
+
+		}
+
+		return(TRUE);
 	}
 
 
@@ -296,7 +556,7 @@ class BaseForm2 {
 	* @param array optional list of checks to perform on the field
 	*/
 	function check ($field_name, $checks = array()) {
-		if ( ! isset($this->_fields[$field_name]) ) {
+		if ( ! isset($this->fields[$field_name]) ) {
 			Err::fatal("invalid field '$field_name' - field not declared in this form");
 		}
 
@@ -304,26 +564,7 @@ class BaseForm2 {
 			Err::fatal("list of checks should be an array");
 		}
 
-		$this->_fields[$field_name]['checks'] = $checks;
-	}
-
-
-	/**
-	* Set the value for a field.
-	*
-	* @param string field name
-	* @param mixed optional field value
-	*/
-	function value ($field_name, $value = NULL) {
-		if ( ! isset($this->_fields[$field_name]) ) {
-			Err::fatal("invalid field '$field_name' - field not declared in this form");
-		}
-
-		if ( $value === NULL ) {
-			$this->_fields[$field_name]['value'] = '';
-		} else {
-			$this->_fields[$field_name]['value'] = $value;
-		}
+		$this->fields[$field_name]['checks'] = $checks;
 	}
 
 
@@ -334,12 +575,12 @@ class BaseForm2 {
 	* @param string custom error message
 	*/
 	function invalidate ($field_name, $error_message) {
-		if ( ! isset($this->_fields[$field_name]) ) {
+		if ( ! isset($this->fields[$field_name]) ) {
 			Err::fatal("invalid field '$field_name' - field not declared in this form");
 		}
 
-		$this->_fields[$field_name]['valid'] = FALSE;
-		$this->_fields[$field_name]['error'] = $error_message;
+		$this->fields[$field_name]['valid'] = FALSE;
+		$this->fields[$field_name]['error'] = $error_message;
 	}
 
 
@@ -349,11 +590,11 @@ class BaseForm2 {
 	* @param string name of field
 	*/
 	function disable ($field_name) {
-		if ( ! isset($this->_fields[$field_name]) ) {
+		if ( ! isset($this->fields[$field_name]) ) {
 			Err::fatal("invalid field '$field_name' - field not declared in this form");
 		}
 
-		$this->_fields[$field_name]['disabled'] = 'disabled';
+		$this->fields[$field_name]['disabled'] = 'disabled';
 	}
 
 
@@ -366,7 +607,7 @@ class BaseForm2 {
 
 #Dbg::var_dump('ret', $ret);
 
-		foreach ( $this->_fields as $field_name => $info ) {
+		foreach ( $this->fields as $field_name => $info ) {
 #Dbg::var_dump('field_name', $field_name);
 
 			$value = $info['value'];
@@ -384,11 +625,11 @@ class BaseForm2 {
 
 #Dbg::var_dump('error', $error);
 				if ( $error === TRUE ) {
-					$this->_fields[$field_name]['valid'] = TRUE;
-					$this->_fields[$field_name]['error'] = '';
+					$this->fields[$field_name]['valid'] = TRUE;
+					$this->fields[$field_name]['error'] = '';
 				} else {
-					$this->_fields[$field_name]['valid'] = FALSE;
-					$this->_fields[$field_name]['error'] = $error;
+					$this->fields[$field_name]['valid'] = FALSE;
+					$this->fields[$field_name]['error'] = $error;
 					$ret = FALSE;
 					break;
 				}
@@ -398,16 +639,6 @@ class BaseForm2 {
 #Dbg::var_dump('ret', $ret);
 
 		return($ret);
-	}
-
-
-	private function _ck_required ($value) {
-		if ( isset($value) AND (! empty($value)) ) {
-#Dbg::var_dump('value', $value);
-			return(TRUE);
-		} else {
-			return('This field is required.');
-		}
 	}
 
 
