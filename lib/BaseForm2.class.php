@@ -11,16 +11,30 @@
 /**
 * Handle all basic aspects of an HTML form.
 *
-* Internal structure of 'fields'
+* Internal Structure of Fields Hash
+*
+* Key: string, field name
+*
+* Value: hash, field information - keys follow
+*
 * type: string, required
+*
 * label: string, required
+*
 * value: string, optional, default ''
+*
 * valid: string, optional, default TRUE
+*
 * error: string, optional, default ''
+*
 * options: hash ('option name' => 'value'), optional, default is all default options set
+*
 * option enabled: string, default 'yes'
+*
 * option required: string, default 'yes'
+*
 * option hidden: string, default 'yes'
+*
 * checks: hash ('check function' => 'custom error message'), optional, default is none
 *
 * @package MCS_MVC_API
@@ -60,7 +74,7 @@ class BaseForm2 {
 #			return;
 		}
 
-		$cfg_file = ROOT.DS."app/forms".DS.$this->form_name.".json";
+		$cfg_file = ROOT.DS."app/forms/json".DS.$this->form_name.".json";
 
 		if ( (! File::ready ($cfg_file)) OR ( ($cfg_data = file_get_contents ($cfg_file)) === FALSE ) ) {
 			Err::fatal (sprintf ("unable to read configuration file '%s'", $cfg_file));
@@ -135,7 +149,7 @@ class BaseForm2 {
 			}
 
 			# valid
-			$this->fields[$field_name]['valid'] = FALSE;
+			$this->fields[$field_name]['valid'] = TRUE;
 
 			# error
 			$this->fields[$field_name]['error'] = 'Field is invalid.';
@@ -335,10 +349,16 @@ class BaseForm2 {
 		# specific
 		$inputclass = 'mvc_form_dropdown_field';
 		$choices = $options['choices'];
+		$forcechoice = ( isset($options['forcechoice']) AND ($options['forcechoice'] == 'yes') ) ? TRUE : FALSE;
 
 		# HTML
 ?><select id="<?= $id ?>" class="<?= $inputclass ?>" name="<?= $name ?>"<?= $disabled ?><?= $hidden ?>>
 <?php
+
+		if ( (! $value) AND $forcechoice ) {
+?><option value="">Select One</option>
+<?php
+		}
 
 		foreach ( $options['choices'] as $choice => $choice_value ) {
 			$selected = ( $value == $choice_value ) ? ' selected="selected"' : '';
@@ -501,11 +521,13 @@ class BaseForm2 {
 	/**
 	* Check to see if the form has been submitted, populate field values.
 	* Will not check input.
+	*
+	* @param string form method, i.e. 'get' or 'post'
 	*/
-	function submitted () {
-		if ( $this->_method == 'post' ) {
+	function submitted ($method) {
+		if ( $method == 'post' ) {
 			$sub = $_POST;
-		} elseif ( $this->_method == 'get' ) {
+		} elseif ( $method == 'get' ) {
 			$sub = $_GET;
 		}
 
@@ -514,14 +536,15 @@ class BaseForm2 {
 		}
 
 		foreach ( $this->fields as $field_name => $field_info ) {
+
 			$form_field_name = $this->_HTML_form_name . '_' . $field_name;
 			$type = $this->fields[$field_name]['type'];
-			$value = $this->fields[$field_name]['value'];
 
 			if ( $type == 'checkbox' ) {
 				if ( isset($sub[$form_field_name]) AND ($sub[$form_field_name] == 'checked') ) {
 					$this->fields[$field_name]['value'] = 'checked';
 				}
+
 			} elseif ( $type == 'bitmask' ) {
 				$choices = $this->fields[$field_name]['options']['choices'];
 
@@ -537,6 +560,7 @@ class BaseForm2 {
 				}
 
 				$this->fields[$field_name]['value'] = $bitmask;
+
 			} else {
 				if ( isset($sub[$form_field_name]) ) {
 					$this->fields[$field_name]['value'] = htmlentities($sub[$form_field_name]);
@@ -550,22 +574,101 @@ class BaseForm2 {
 
 
 	/**
+	* Check a form's contents.
+	*/
+	function check () {
+		$all_errors = 0;
+
+#		Dbg::msg('check() - starting');
+
+		foreach ( $this->fields as $field_name => $field_info ) {
+
+			$type = $this->fields[$field_name]['type'];
+			$value = $this->fields[$field_name]['value'];
+			$checks = $this->fields[$field_name]['checks'];
+
+
+			$this->fields[$field_name]['valid'] = TRUE;
+			$this->fields[$field_name]['error'] = '';
+
+
+			$enabled = ($this->fields[$field_name]['options']['enabled'] == 'yes') ? TRUE : FALSE;
+
+
+#			if ( ! $enabled ) {
+#				continue;
+#			}
+
+
+			if ( ($type == 'checkbox') AND $value AND ($value != 'checked') ) {
+
+				$this->fields[$field_name]['valid'] = FALSE;
+				$this->fields[$field_name]['error'] = 'Invalid value submitted.';
+				continue;
+
+			}
+
+
+			if ( $type == 'dropdown' ) {
+
+				$choices = $this->fields[$field_name]['options']['choices'];
+
+				if ( $value AND (! in_array($value, $choices)) ) {
+					$this->fields[$field_name]['valid'] = FALSE;
+					$this->fields[$field_name]['error'] = 'Invalid value submitted.';
+					continue;
+				}
+
+			}
+
+
+			foreach ( $checks as $check => $check_errmsg ) {
+
+#				Dbg::msg('check = ' . $check);
+
+				if ( ! method_exists($this, $ckfunc = '_ck_' . $check) ) {
+					Err::fatal("invalid check function '$check' declared in form");
+				}
+
+				$error = $this->$ckfunc($value);
+
+#				Dbg::var_dump('error', $error);
+
+				if ( $error !== TRUE ) {
+					$this->fields[$field_name]['valid'] = FALSE;
+
+					if ( $check_errmsg ) {
+						$this->fields[$field_name]['error'] = $check_errmsg;
+					} else {
+						$this->fields[$field_name]['error'] = $error;
+					}
+
+					break;
+				}
+
+			}
+
+		}
+	}
+
+
+	/**
 	* Set the list of check functions for a field.
 	*
 	* @param string field name
 	* @param array optional list of checks to perform on the field
 	*/
-	function check ($field_name, $checks = array()) {
-		if ( ! isset($this->fields[$field_name]) ) {
-			Err::fatal("invalid field '$field_name' - field not declared in this form");
-		}
-
-		if ( ! is_array($checks) ) {
-			Err::fatal("list of checks should be an array");
-		}
-
-		$this->fields[$field_name]['checks'] = $checks;
-	}
+#	function check ($field_name, $checks = array()) {
+#		if ( ! isset($this->fields[$field_name]) ) {
+#			Err::fatal("invalid field '$field_name' - field not declared in this form");
+#		}
+#
+#		if ( ! is_array($checks) ) {
+#			Err::fatal("list of checks should be an array");
+#		}
+#
+#		$this->fields[$field_name]['checks'] = $checks;
+#	}
 
 
 	/**
@@ -642,12 +745,20 @@ class BaseForm2 {
 	}
 
 
-	private function _ck_numeric ($value) {
+	private function _ck_required ($value) {
+		if ( empty($value) ) {
+			return('This field requires a value.');
+		} else {
+			return(TRUE);
+		}
+	}
+
+
+	private function _ck_digits ($value) {
 		if ( empty($value) OR (! preg_match('/[^0-9]/', $value)) ) {
-#Dbg::var_dump('value', $value);
 			return(TRUE);
 		} else {
-			return('Numbers only.');
+			return('Please enter numbers only.');
 		}
 	}
 
