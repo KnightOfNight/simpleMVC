@@ -13,6 +13,7 @@
 * @package MCS_MVC_API
 */
 class Database {
+
 	private $_dbh;
 	private $_log_queries;
 	private $_last_query;
@@ -50,8 +51,10 @@ class Database {
 
 			$query = "describe " . $table;
 
+			$this->_last_query = $query;
+
 			if ( ($results = $this->_dbh->query($query)) === FALSE ) {
-				Err::fatal($this->_pdoError());
+				Err::fatal($this->_last_error());
 			}
 
 			while ( $result = $results->fetch() ) {
@@ -223,7 +226,7 @@ class Database {
 		$L->msg(Log::DEBUG, "Database::select() - database query = '$query'");
 
 		if ($stmnt->execute() === FALSE) {
-			Err::fatal ($this->_pdoError());
+			Err::fatal($this->_last_error($stmnt));
 		}
 
 		return ( $stmnt->fetchAll(PDO::FETCH_BOTH) );
@@ -245,6 +248,8 @@ class Database {
 
 	 	$query = "INSERT INTO " . $table . " SET " . Database::makeset($values);
 
+		$this->_last_query = $query;
+
 		if ( $log_query === TRUE ) {
 			global $L;
 			$L->msg(Log::DEBUG, "database query = '" . $query . "'");
@@ -253,7 +258,7 @@ class Database {
 		$stmnt = $this->_dbh->prepare($query);
 
 		if ( $stmnt->execute(Database::getparams($values)) === FALSE ) {
-			Err::fatal($this->_pdoError());
+			Err::fatal($this->_last_error($stmnt));
 		}
 
 		return( $this->_dbh->lastInsertId() );
@@ -279,6 +284,8 @@ class Database {
 
 		$query = "UPDATE " . $table . " SET " . Database::makeset($values) . " WHERE id = :id";
 
+		$this->_last_query = $query;
+
 		if ( $log_query === TRUE ) {
 			global $L;
 			$L->msg(Log::DEBUG, "database query = '" . $query . "'");
@@ -287,7 +294,7 @@ class Database {
 		$stmnt = $this->_dbh->prepare($query);
 
 		if ( $stmnt->execute(Database::getparams($values)) === FALSE ) {
-			Err::fatal( $this->_pdoError() );
+			Err::fatal( $this->_last_error($stmnt) );
 		}
 
 		return (TRUE);
@@ -339,14 +346,14 @@ class Database {
 	#
 	function delete ($model) {
 		if (! ($model instanceof BaseModel)) {
-			Err::fatal ("passed model is not an instance of BaseModel");
+			Err::fatal("passed model is not an instance of BaseModel");
 		}
 
 		$table = $model->table;
 		$values = $model->values;
 
 		if (! isset ($values["id"])) {
-			Err::fatal ("no value set for column 'id'");
+			Err::fatal("no value set for column 'id'");
 		}
 
 		$id = $values["id"];
@@ -356,11 +363,11 @@ class Database {
 		$stmnt = $this->_dbh->prepare($query);
 
 		if ($stmnt->bindValue(1, $id) === FALSE) {
-			Err::fatal (sprintf ("unable to bind value '%s' to parameter 1", $id));
+			Err::fatal(sprintf("unable to bind value '%s' to parameter 1", $id));
 		}
 
 		if ($stmnt->execute() === FALSE) {
-			Err::fatal ($this->_pdoError());
+			Err::fatal($this->_last_error($stmnt));
 		}
 	}
 
@@ -373,10 +380,10 @@ class Database {
 	*/
 	function query ($query) {
 		if ( ($results = $this->_dbh->query($query)) === FALSE ) {
-			Err::fatal ($this->_pdoError());
+			Err::fatal($this->_last_error());
 		}
 
-		return ($results->fetchAll());
+		return($results->fetchAll());
 	}
 
 
@@ -386,28 +393,50 @@ class Database {
 	* @return string
 	*/
 	function getLastQuery () {
-		return ($this->_last_query);
+		return($this->_last_query);
 	}
 
 
-	# Return the last PDO error
-	#
-	private function _pdoError () {
-		$results_error = $this->_dbh->errorInfo();
-		$results_code = $this->_dbh->errorCode();
+	/**
+	* Return a string containing details about any error on the last query.
+	*
+	* @param mixed optional statement handle to check for errors
+	*/
+	private function _last_error ($sth = NULL) {
+		$error = "unable to execute database query: $this->_last_query\n\n";
 
-		$error = 'database query failed: SQLSTATE[' . $results_error[0] . '] ' . $results_code;
+		$dbh_info = $this->_dbh->errorInfo();
+		$dbh_code = $dbh_info[0];
+		$drv_code = ( isset($dbh_info[1]) ) ? $dbh_info[1] : NULL;
+		$drv_msg = ( isset($dbh_info[2]) ) ? $dbh_info[2] : NULL;
 
-		if ( isset($results_error[1]) ) {
-			$error .= ' [' . $results_error[1];
+		$error .= "database: SQLSTATE $dbh_code";
+
+		if ( $drv_code ) {
+			$error .= ", $drv_code";
+
+			if ( $drv_msg ) {
+				$error .= ", $drv_msg";
+			}
 		}
 
-		if ( isset($results_error[2]) ) {
-			$error .= ' ' . $results_error[2];
+		if ( $sth ) {
+			$sth_info = $sth->errorInfo();
+			$sth_code = $dbh_info[0];
+			$drv_code = ( isset($sth_info[1]) ) ? $sth_info[1] : NULL;
+			$drv_msg = ( isset($sth_info[2]) ) ? $sth_info[2] : NULL;
+
+			$error .= "\n\nstatement: SQLSTATE $sth_code";
+
+			if ( $drv_code ) {
+				$error .= ", $drv_code";
+
+				if ( $drv_msg ) {
+					$error .= ", $drv_msg";
+				}
+			}
 		}
-
-		$error .= "\n\n" . $this->_last_query;
-
-		return ($error);
+	
+		return($error);
 	}
 }
