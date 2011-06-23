@@ -22,8 +22,8 @@ class BaseModel {
 
 
 	private $_name;
-	private $_columns;
-	private $_values;
+	private $_columns = array();
+	private $_values = array();
 
 
 	/**
