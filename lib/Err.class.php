@@ -18,18 +18,18 @@ class Err {
 
 
 	/**
-	* Report a fatal application error to the browser and the log file,
-	* display a stack trace, and exit.
-	* @param string error message to report
+	* Report a fatal application error to the browser and exit.
+	*
+	* @param string error message
 	*/
 	static function fatal ($errmsg) {
 		global $CONFIG;
 
-		if (is_null ($errmsg)) {
+		if ( is_null($errmsg) ) {
 			$errmsg = "undefined error message";
 		}
 
-		if (isset ($CONFIG)) {
+		if ( isset($CONFIG) ) {
 			$app_version = $CONFIG->getVal("framework.version");
 			$app_copyright = $CONFIG->getVal("framework.copyright");
 		} else {
@@ -37,9 +37,37 @@ class Err {
 			$app_copyright = "&copy; MCS 'Net Productions";
 		}
 
-		$trace_info = debug_backtrace ();
+		$trace_info = debug_backtrace();
+		$trace_details = '';
 
-		require ("err_fatal.php");
+		if ( $trace_info ) {
+
+			$trace = array_shift($trace_info);
+			$file = $trace['file'];
+			$line = $trace['line'];
+
+			$trace = array_shift($trace_info);
+			$class = ( isset($trace['class']) ) ? $trace['class'] . '-&gt;' : '';
+			$function = $trace['function'];
+
+			$trace_details .= "$class$function() terminated at $file:$line\n\n";
+
+			$file = $trace['file'];
+			$line = $trace['line'];
+
+			$trace_details .= "$class$function() called at $file:$line\n";
+
+			foreach ( $trace_info as $trace ) {
+				$file = $trace['file'];
+				$line = $trace['line'];
+				$class = ( isset($trace['class']) ) ? $trace['class'] . '-&gt;' : '';
+				$function = $trace['function'];
+
+				$trace_details .= "$class$function() called at $file:$line\n";
+			}
+		}
+
+		require("err_fatal.php");
 
 		exit (0);
 	}
