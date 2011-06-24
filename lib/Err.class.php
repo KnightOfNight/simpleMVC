@@ -38,34 +38,6 @@ class Err {
 		}
 
 		$trace_info = debug_backtrace();
-		$trace_details = '';
-
-		if ( $trace_info ) {
-
-			$trace = array_shift($trace_info);
-			$file = $trace['file'];
-			$line = $trace['line'];
-
-			$trace = array_shift($trace_info);
-			$class = ( isset($trace['class']) ) ? $trace['class'] . '-&gt;' : '';
-			$function = $trace['function'];
-
-			$trace_details .= "$class$function() terminated at $file:$line\n\n";
-
-			$file = $trace['file'];
-			$line = $trace['line'];
-
-			$trace_details .= "$class$function() called at $file:$line\n";
-
-			foreach ( $trace_info as $trace ) {
-				$file = $trace['file'];
-				$line = $trace['line'];
-				$class = ( isset($trace['class']) ) ? $trace['class'] . '-&gt;' : '';
-				$function = $trace['function'];
-
-				$trace_details .= "$class$function() called at $file:$line\n";
-			}
-		}
 
 		require("err_fatal.php");
 
