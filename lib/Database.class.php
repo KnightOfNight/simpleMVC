@@ -364,14 +364,14 @@ class Database {
 	* @param mixed optional statement handle to check for errors
 	*/
 	private function _last_error ($sth = NULL) {
-		$error = "unable to execute database query: $this->_last_query\n\n";
+		$error = "Unable to execute database query.\n\n$this->_last_query\n\n";
 
 		$dbh_info = $this->_dbh->errorInfo();
 		$dbh_code = $dbh_info[0];
 		$drv_code = ( isset($dbh_info[1]) ) ? $dbh_info[1] : NULL;
 		$drv_msg = ( isset($dbh_info[2]) ) ? $dbh_info[2] : NULL;
 
-		$error .= "database: SQLSTATE $dbh_code";
+		$error .= "Database error: SQLSTATE $dbh_code";
 
 		if ( $drv_code ) {
 			$error .= ", $drv_code";
@@ -383,11 +383,12 @@ class Database {
 
 		if ( $sth ) {
 			$sth_info = $sth->errorInfo();
-			$sth_code = $dbh_info[0];
+
+			$sth_code = $sth_info[0];
 			$drv_code = ( isset($sth_info[1]) ) ? $sth_info[1] : NULL;
 			$drv_msg = ( isset($sth_info[2]) ) ? $sth_info[2] : NULL;
 
-			$error .= "\n\nstatement: SQLSTATE $sth_code";
+			$error .= "\n\nStatement error: SQLSTATE $sth_code";
 
 			if ( $drv_code ) {
 				$error .= ", $drv_code";
