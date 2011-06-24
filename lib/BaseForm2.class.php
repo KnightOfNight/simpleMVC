@@ -11,39 +11,15 @@
 /**
 * Handle all basic aspects of an HTML form.
 *
-* Internal Structure of Fields Hash
-*
-* Key: string, field name
-*
-* Value: hash, field information - keys follow
-*
-* type: string, required
-*
-* label: string, required
-*
-* value: string, optional, default ''
-*
-* valid: string, optional, default TRUE
-*
-* error: string, optional, default ''
-*
-* options: hash ('option name' => 'value'), optional, default is all default options set
-*
-* option enabled: string, default 'yes'
-*
-* option hidden: string, default 'no'
-*
-* checks: hash ('check function' => 'custom error message'), optional, default is none
-*
 * @package MCS_MVC_API
 */
 class BaseForm2 {
 
 	private $_form_name;		# name of the form
-	private $_html_form_name;	# may include suffix
+
 	private $_options;			# form level options
-	private $_fields;			# all fields
-	private $_method;			# form submission method
+
+	private $_fields;			# all the fields
 
 	private $_field_types = array( 'text', 'dropdown', 'checkbox', 'bitmask' );
 	private $_fields_with_choices = array( 'dropdown', 'bitmask' );
@@ -54,23 +30,28 @@ class BaseForm2 {
 	* @param string form name
 	* @param string form name suffix
 	*/
-	function __construct ($form_name, $suffix = NULL) {
+	function __construct ($suffix = NULL) {
 
-		$this->_form_name = $form_name;
+		$form_class = get_class($this);
 
-		$this->_html_form_name = 'f_' . $form_name;
+		$this->_form_name = $form_class;
+		$this->_form_name .= ( $suffix ) ? '_' . $suffix : '';
 
-		if ( $suffix ) {
-			$this->_html_form_name .= '_' . $suffix;
-		}
 
+		# Check cache.
 		if ( $cache = Cache::value($cache_key = 'form:' . $this->_form_name) ) {
 #			$this->_fields = $cache['fields'];
 #			$this->_options = $cache['options'];
 #			return;
 		}
 
-		$cfg_file = ROOT.DS.'app/forms/json'.DS.$this->_form_name.'.json';
+
+		# Load the config.
+		if ( (! isset($this->use_json)) OR (! $this->use_json) ) {
+			Err::fatal ("no JSON file specified; form class '$form_class' does not set 'use_json'");
+		}
+
+		$cfg_file = ROOT.DS.'app/forms/json'.DS.$this->use_json;
 
 		if ( (! File::ready ($cfg_file)) OR ( ($cfg_data = file_get_contents ($cfg_file)) === FALSE ) ) {
 			Err::fatal (sprintf ("unable to read configuration file '%s'", $cfg_file));
@@ -81,15 +62,19 @@ class BaseForm2 {
 		}
 
 
+		# Basic check on the fields array.
 		if ( ! isset($config['fields']) ) {
             Err::fatal ("invalid form config: no fields configured");
+
 		} elseif ( (! is_array($config['fields'])) OR empty($config['fields']) ) {
             Err::fatal ("invalid form config: 'fields' must be an array of one or more");
+
 		} else {
 			$this->_fields = $config['fields'];
 		}
 
 
+		# Basic check on the form options array.
 		if ( ! isset($config['options']) ) {
 			$this->_options = array();
 		} elseif ( ! is_array($config['options']) ) {
@@ -99,20 +84,23 @@ class BaseForm2 {
 		}
 
 
+		# Run the parent class seteup script, if any.
+		if ( method_exists($this, 'setup') ) {
+			$this->setup();
+		}
+
+
+		# Detailed check of all fields.
 		foreach ( $this->_fields as $field_name => $UNUSED_field_info ) {
 			$this->_check_field_config($field_name);
 		}
 
 
+		# Save cache.
 		$cache = array();
 		$cache['fields'] = $this->_fields;
 		$cache['options'] = $this->_options;
 		Cache::value($cache_key, $cache);
-
-
-		if ( method_exists($this, 'setup') ) {
-			$this->setup();
-		}
 
 	}
 
@@ -221,13 +209,11 @@ class BaseForm2 {
 			Err::fatal(__FUNCTION__ . "() - invalid form method '$method'");
 		}
 
-		$this->_method = $method;
-
-		$id = $this->_html_form_name;
+		$id = $this->_form_name;
 
 ?><form id="<?= $id ?>" class="mvc_form" method="<?= $method ?>" action="<?= $action ?>">
 <div>
-<input class="mvc_form_internal" name="form_name" value="<?= $this->_form_name ?>" type="hidden"></input>
+<input name="form_name" class="mvc_form_internal" value="<?= $this->_form_name ?>" type="hidden"></input>
 <?php
 	}
 
@@ -251,8 +237,8 @@ class BaseForm2 {
 
 		$field_info = $this->_fields[$field_name];
 
-		$id = $this->_html_form_name . '_l_' . $field_name;
-		$for = $this->_html_form_name . '_' . $field_name;
+		$id = $this->_form_name . '_l_' . $field_name;
+		$for = $this->_form_name . '_' . $field_name;
 		$label = $field_info['label'];
 
 ?><label id="<?= $id ?>" class="mvc_form_label" for="<?= $for ?>"><?= $label ?></label>
@@ -286,7 +272,7 @@ class BaseForm2 {
 	private function _html_text ($field_name) {
 
 		# common
-		$id = $name = $this->_html_form_name . '_' . $field_name;
+		$id = $name = $this->_form_name . '_' . $field_name;
 		$value = $this->_fields[$field_name]['value'];
 
 		$options = $this->_fields[$field_name]['options'];
@@ -305,7 +291,7 @@ class BaseForm2 {
 		$password = ( $hidden AND $password ) ? '' : $password;
 
 		# HTML
-?><input id="<?= $id ?>" class="<?= $inputclass ?>" name="<?= $name ?>" value="<?= htmlentities($value) ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>"<?= $disabled ?><?= $password ?><?= $hidden ?>></input>
+?><input id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" value="<?= htmlentities($value) ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>" autocomplete="off"<?= $disabled ?><?= $password ?><?= $hidden ?>></input>
 <?php
 
 		$this->_html_field_error($field_name);
@@ -320,7 +306,7 @@ class BaseForm2 {
 	private function _html_dropdown ($field_name) {
 
 		# common
-		$id = $name = $this->_html_form_name . '_' . $field_name;
+		$id = $name = $this->_form_name . '_' . $field_name;
 		$value = $this->_fields[$field_name]['value'];
 
 		$options = $this->_fields[$field_name]['options'];
@@ -333,7 +319,7 @@ class BaseForm2 {
 		$forcechoice = ( isset($options['forcechoice']) AND ($options['forcechoice'] == 'yes') ) ? TRUE : FALSE;
 
 		# HTML
-?><select id="<?= $id ?>" class="<?= $inputclass ?>" name="<?= $name ?>"<?= $disabled ?><?= $hidden ?>>
+?><select id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>"<?= $disabled ?><?= $hidden ?>>
 <?php
 
 		if ( (! $value) AND $forcechoice ) {
@@ -364,7 +350,7 @@ class BaseForm2 {
 	private function _html_checkbox ($field_name) {
 
 		# common
-		$id = $name = $this->_html_form_name . '_' . $field_name;
+		$id = $name = $this->_form_name . '_' . $field_name;
 		$value = $this->_fields[$field_name]['value'];
 
 		$options = $this->_fields[$field_name]['options'];
@@ -376,7 +362,7 @@ class BaseForm2 {
 		$checked = ( $value === TRUE ) ? ' checked="checked"' : '';
 
 		# HTML
-?><input id="<?= $id ?>" class="<?= $inputclass ?>" name="<?= $name ?>" value="checked" type="checkbox"<?= $checked ?><?= $disabled ?><?= $hidden ?>></input>
+?><input id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" value="checked" type="checkbox"<?= $checked ?><?= $disabled ?><?= $hidden ?>></input>
 <?php
 
 		$this->_html_field_error($field_name);
@@ -392,7 +378,7 @@ class BaseForm2 {
 	private function _html_bitmask ($field_name) {
 
 		# common
-		$id = $name = $this->_html_form_name . '_' . $field_name;
+		$id = $name = $this->_form_name . '_' . $field_name;
 		$value = $this->_fields[$field_name]['value'];
 		$options = $this->_fields[$field_name]['options'];
 		$disabled = ($options['enabled'] == 'no') ? ' disabled="disabled"' : '';
@@ -405,7 +391,6 @@ class BaseForm2 {
 		$columns = ( isset($options['columns']) AND ($options['columns'] > 0) AND ($options['columns'] < count($choices)) ) ?  $options['columns'] : 3;
 
 		# HTML
-
 ?>
 <table id="<?= $id ?>" class="<?= $tableclass ?>">
 <tr> <td>
@@ -419,7 +404,7 @@ class BaseForm2 {
 			$input_id = $fld_name = $id . '_' . md5($choice);
 			$checked = ( $value & $choice_value ) ? ' checked="checked"' : '';
 
-			$label_id = $this->_html_form_name . '_l_' . $field_name . '_' . md5($choice);
+			$label_id = $this->_form_name . '_l_' . $field_name . '_' . md5($choice);
 			$for = $input_id;
 			$label = $choice;
 
@@ -430,7 +415,7 @@ class BaseForm2 {
 <?php
 			}
 
-?><input id="<?= $input_id ?>" class="<?= $inputclass ?>" name="<?= $fld_name ?>" value="checked" type="checkbox"<?= $checked ?><?= $disabled ?><?= $hidden ?>></input>
+?><input id="<?= $input_id ?>" name="<?= $fld_name ?>" class="<?= $inputclass ?>" value="checked" type="checkbox"<?= $checked ?><?= $disabled ?><?= $hidden ?>></input>
 <label id="<?= $label_id ?>" class="mvc_form_label" for="<?= $for ?>"><?= $label ?></label>
 <br />
 <?php
@@ -540,6 +525,28 @@ class BaseForm2 {
 
 
 	/**
+	* Add an impromptu field to the form.
+	*/
+	protected function field_add ($field_name, $field_type, $field_label, $field_options = array(), $field_checks = array()) {
+		if ( isset($this->_fields[$field_name]) ) {
+			Err::fatal("unable to add field to form, '$field_name' already exists");
+		}
+
+		if ( ! is_array($field_options) ) {
+			$field_options = array();
+		}
+
+		if ( ! is_array($field_checks) ) {
+			$field_checks = array();
+		}
+
+		$field = array( 'type' => $field_type, 'label' => $field_label, 'options' => $field_options, 'checks' => $field_checks );
+
+		$this->_fields[$field_name] = $field;
+	}
+
+
+	/**
 	* Check to see if the form has been submitted, populate field values.
 	* Does not check input.
 	*
@@ -560,7 +567,7 @@ class BaseForm2 {
 
 		foreach ( $this->_fields as $field_name => $UNUSED_field_info ) {
 
-			$form_field_name = $this->_html_form_name . '_' . $field_name;
+			$form_field_name = $this->_form_name . '_' . $field_name;
 			$type = $this->_fields[$field_name]['type'];
 
 			if ( $type == 'checkbox' ) {
@@ -569,6 +576,8 @@ class BaseForm2 {
 				}
 
 			} elseif ( $type == 'bitmask' ) {
+#Dbg::msg('processing bitmask');
+#Dbg::var_dump('_POST', $_POST);
 				$choices = $this->_fields[$field_name]['options']['choices'];
 
 				$bitmask = 0;
@@ -740,3 +749,32 @@ class BaseForm2 {
 
 	function __destruct () {}
 }
+
+
+/**
+* Internal Structure of Fields Hash
+*
+* Key: string, field name
+*
+* Value: hash, field information - keys follow
+*
+* type: string, required
+*
+* label: string, required
+*
+* value: string, optional, default ''
+*
+* valid: string, optional, default TRUE
+*
+* error: string, optional, default ''
+*
+* options: hash ('option name' => 'value'), optional, default is all default options set
+*
+* option enabled: string, default 'yes'
+*
+* option hidden: string, default 'no'
+*
+* checks: hash ('check function' => 'custom error message'), optional, default is none
+*/
+
+
