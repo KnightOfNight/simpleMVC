@@ -246,7 +246,7 @@ class Database {
 			Err::fatal("No column values set.  Cannot update or create record.");
 		}
 
-	 	$query = "INSERT INTO " . $table . " SET " . Database::makeset($values);
+	 	$query = "INSERT INTO " . $table . " SET " . $this->_makeset($values);
 
 		$this->_last_query = $query;
 
@@ -257,7 +257,7 @@ class Database {
 
 		$stmnt = $this->_dbh->prepare($query);
 
-		if ( $stmnt->execute(Database::getparams($values)) === FALSE ) {
+		if ( $stmnt->execute($this->_getparams($values)) === FALSE ) {
 			Err::fatal($this->_last_error($stmnt));
 		}
 
@@ -282,7 +282,7 @@ class Database {
 			Err::fatal( sprintf("No value set for primary key column '%s'.", $key) );
 		}
 
-		$query = "UPDATE " . $table . " SET " . Database::makeset($values) . " WHERE id = :id";
+		$query = "UPDATE " . $table . " SET " . $this->_makeset($values) . " WHERE " . $key . " = :id";
 
 		$this->_last_query = $query;
 
@@ -293,7 +293,7 @@ class Database {
 
 		$stmnt = $this->_dbh->prepare($query);
 
-		if ( $stmnt->execute(Database::getparams($values)) === FALSE ) {
+		if ( $stmnt->execute($this->_getparams($values)) === FALSE ) {
 			Err::fatal( $this->_last_error($stmnt) );
 		}
 
@@ -301,84 +301,45 @@ class Database {
 	}
 
 
-	static private function makeset ($values) {
-		$set = "";
-
-#Dbg::msg("Database::makeset");
-
-		foreach ($values as $col_name => $col_val) {
-#Dbg::var_dump("col_name", $col_name);
-#Dbg::var_dump("col_val", $col_val);
-
-			$set .= $set ? " , " : "";
-
-			if ( preg_match('/^DB:/', $col_val) ) {
-				$val = preg_replace('/^DB:/', "", $col_val);
-				$set .= $col_name . " = " . $val;
-			} else {
-				$param_name = ":" . $col_name;
-				$set .= $col_name . " = " . $param_name;
-			}
+	/**
+	* Delete a database record.
+	*
+	* @param string table name
+	* @param hash column name => value
+	* @param string primary key column name
+	* @param bool TRUE => log the query
+	*/
+	function delete ($table, $values, $key, $log_query = TRUE) {
+		if ( ! isset ($values[$key]) ) {
+			Err::fatal( sprintf("No value set for primary key column '%s'.", $key) );
 		}
 
-		return($set);
-	}
+		$query = "DELETE FROM " . $table . " WHERE " . $key . " = :id";
 
+		$this->_last_query = $query;
 
-	static private function getparams ($values) {
-		$params = array();
-
-		foreach ($values as $col_name => $col_val) {
-			if ( preg_match('/^DB:/', $col_val) ) {
-				continue;
-			}
-
-			$param_name = ":" . $col_name;
-
-			$params[$param_name] = $col_val;
+		if ( $log_query === TRUE ) {
+			global $L;
+			$L->msg(Log::DEBUG, "database query = '" . $query . "'");
 		}
-
-		return($params);
-	}
-
-
-	# Delete a database record for the passed model.
-	#
-	function delete ($model) {
-		if (! ($model instanceof BaseModel)) {
-			Err::fatal("passed model is not an instance of BaseModel");
-		}
-
-		$table = $model->table;
-		$values = $model->values;
-
-		if (! isset ($values["id"])) {
-			Err::fatal("no value set for column 'id'");
-		}
-
-		$id = $values["id"];
-
-		$query = "DELETE FROM " . $table . " WHERE id=?";
 
 		$stmnt = $this->_dbh->prepare($query);
 
-		if ($stmnt->bindValue(1, $id) === FALSE) {
-			Err::fatal(sprintf("unable to bind value '%s' to parameter 1", $id));
+		if ( $stmnt->execute($this->_getparams($values)) === FALSE ) {
+			Err::fatal( $this->_last_error($stmnt) );
 		}
 
-		if ($stmnt->execute() === FALSE) {
-			Err::fatal($this->_last_error($stmnt));
-		}
+		return (TRUE);
 	}
 
 
 	/**
-	* Perform a general database query and return the results.
+	* Perform any database select and return the results.
 	*
 	* @param string query to send to database
 	* @return mixed results
 	*/
-	function query ($query) {
+	function generic_select ($query) {
 		if ( ($results = $this->_dbh->query($query)) === FALSE ) {
 			Err::fatal($this->_last_error());
 		}
@@ -439,4 +400,42 @@ class Database {
 	
 		return($error);
 	}
+
+
+	private function _makeset ($values) {
+		$set = "";
+
+		foreach ($values as $col_name => $col_val) {
+			$set .= $set ? " , " : "";
+
+			if ( preg_match('/^DB:/', $col_val) ) {
+				$val = preg_replace('/^DB:/', "", $col_val);
+				$set .= $col_name . " = " . $val;
+			} else {
+				$param_name = ":" . $col_name;
+				$set .= $col_name . " = " . $param_name;
+			}
+		}
+
+		return($set);
+	}
+
+
+	private function _getparams ($values) {
+		$params = array();
+
+		foreach ($values as $col_name => $col_val) {
+			if ( preg_match('/^DB:/', $col_val) ) {
+				continue;
+			}
+
+			$param_name = ":" . $col_name;
+
+			$params[$param_name] = $col_val;
+		}
+
+		return($params);
+	}
+
+
 }
