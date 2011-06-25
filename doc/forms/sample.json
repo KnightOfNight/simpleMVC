@@ -1,0 +1,36 @@
+}
+
+"options" : {							# hash, optional, specify any form options
+},
+
+"fields" : {							# hash, required, must have at least one field defined
+
+	"field" : {
+
+		"type"	:	"type",				# string, required, field type
+
+		"label"	:	"label",			# string, required, field label to display in HTML output
+
+		"value"	:	"value",			# string, optional, default to none
+
+		"options"	:	{				# hash, optional, specify any field options
+			"enabled"	:	"yes",		# string, optional, default 'yes'
+			"hidden"	:	"no",		# string, optional, default 'no'
+
+			"choices"	: {				# hash or string, required for certain field types
+										# if hash - must contain "Display String" => "form value" pairs
+										# if string - must contain Class.Method which must be a static method
+										# that returns "Display String" => "form value" pairs
+			}
+		},
+
+		"checks"	:	{				# hash, optional, specify any field checks
+			"check"		:	"errmsg",	# string, optional, name of check to apply with optional custom error message
+		}
+
+	}
+
+	[, "field"...]
+}
+
+}

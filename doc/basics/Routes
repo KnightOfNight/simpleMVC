@@ -5,7 +5,6 @@ It is formatted as a string as follows...
 /<controller>/<action>/<query>[/<query>]
 
 The controller manages the entire request.  It executes the action, which
-handles all interaction between the database model and the associated view, if
-any.
+handles all interaction between the database model and the associated view.
 
 The query string is optional can be one or more values separated by /'s.
