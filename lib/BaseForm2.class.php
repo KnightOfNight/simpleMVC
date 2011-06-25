@@ -553,9 +553,9 @@ class BaseForm2 {
 	* Check to see if the form has been submitted, populate field values.
 	* Does not check input.
 	*
-	* @param string form method, i.e. 'get' or 'post'
+	* @param string form method, default 'post'
 	*/
-	function submitted ($method) {
+	function submitted ($method = 'post') {
 		if ( $method == 'post' ) {
 			$sub = $_POST;
 		} elseif ( $method == 'get' ) {
