@@ -14,9 +14,10 @@
 */
 class Database {
 
+
 	private $_dbh;
-	private $_log_queries;
 	private $_last_query;
+	private $_transaction;
 
 
 	/**
@@ -43,7 +44,7 @@ class Database {
 	* Describe a table and return the list of column names.
 	*
 	* @param string table name
-	* @return array list of column names
+	* @return array column names
 	*/
 	function describe ($table) {
 		if ( ! $columns = Cache::value($cache_name = "describe_" . $table) ) {
@@ -359,12 +360,56 @@ class Database {
 
 
 	/**
+	* Begin a database transaction.
+	* @return mixed TRUE or error message
+	*/
+	function transaction_begin () {
+		if ( $this->_transaction ) {
+			return('Database transaction already in progress.');
+		}
+
+		$this->_last_query = '';
+
+		if ( $this->_dbh->beginTransaction() ) {
+			return($this->_transaction = TRUE);
+		} else {
+			return("Unable to begin transaction.\n\n" . $this->_last_error());
+		}
+	}
+
+
+	/**
+	* Commit a database transaction.
+	* @return mixed TRUE or error message
+	*/
+	function transaction_commit () {
+		if ( ! $this->_transaction ) {
+			return('No database transaction in progress.');
+		}
+
+		$this->_last_query = '';
+
+		if ( $this->_dbh->commit() ) {
+			$this->_transaction = FALSE;
+
+			return(TRUE);
+		} else {
+			return("Unable to commit transaction.\n\n" . $this->_last_error());
+		}
+	}
+
+
+	/**
 	* Return a string containing details about any error on the last query.
 	*
 	* @param mixed optional statement handle to check for errors
 	*/
 	private function _last_error ($sth = NULL) {
-		$error = "Unable to execute database query.\n\n$this->_last_query\n\n";
+		$error = '';
+
+		if ( $this->_last_query ) {
+			$error .= "Unable to execute database query.\n\n$this->_last_query\n\n";
+		}
 
 		$dbh_info = $this->_dbh->errorInfo();
 		$dbh_code = $dbh_info[0];
@@ -375,10 +420,10 @@ class Database {
 
 		if ( $drv_code ) {
 			$error .= ", $drv_code";
+		}
 
-			if ( $drv_msg ) {
-				$error .= ", $drv_msg";
-			}
+		if ( $drv_msg ) {
+			$error .= ", $drv_msg";
 		}
 
 		if ( $sth ) {
@@ -392,10 +437,10 @@ class Database {
 
 			if ( $drv_code ) {
 				$error .= ", $drv_code";
+			}
 
-				if ( $drv_msg ) {
-					$error .= ", $drv_msg";
-				}
+			if ( $drv_msg ) {
+				$error .= ", $drv_msg";
 			}
 		}
 	
