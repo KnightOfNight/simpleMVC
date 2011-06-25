@@ -45,7 +45,7 @@ class Route {
 
 		$controller = '';
 		$action = '';
-		$query = array ();
+		$query = array();
 
 		if (! empty($route)) {
 
@@ -63,10 +63,10 @@ class Route {
 			array_shift ($route_parts);
 
 			foreach ($route_parts as $route_part) {
-				$route_part = trim ($route_part);
+				$route_part = trim($route_part);
 
 				if (! empty ($route_part)) {
-					array_push ($query, $route_part);
+					array_push( $query, htmlentities($route_part) );
 				}
 			}
 		}
