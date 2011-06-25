@@ -51,7 +51,7 @@ class BaseForm2 {
 			Err::fatal ("no JSON file specified; form class '$form_class' does not set 'use_json'");
 		}
 
-		$cfg_file = ROOT.DS.'app/forms/json'.DS.$this->use_json;
+		$cfg_file = FORMDIR.DS.'json'.DS.$this->use_json;
 
 		if ( (! File::ready ($cfg_file)) OR ( ($cfg_data = file_get_contents ($cfg_file)) === FALSE ) ) {
 			Err::fatal (sprintf ("unable to read configuration file '%s'", $cfg_file));
@@ -211,8 +211,9 @@ class BaseForm2 {
 
 		$id = $this->_form_name;
 
-?><form id="<?= $id ?>" class="mvc_form" method="<?= $method ?>" action="<?= $action ?>">
-<div>
+?><!-- start form HTML -->
+<form id="<?= $id ?>" method="<?= $method ?>" action="<?= $action ?>">
+<div class="mvc_form">
 <input name="form_name" class="mvc_form_internal" value="<?= $this->_form_name ?>" type="hidden"></input>
 <?php
 	}
@@ -222,7 +223,9 @@ class BaseForm2 {
 	* Output HTML that finishes the form.
 	*/
 	function html_finish () {
-?></div></form>
+?></div>
+</form>
+<!-- end of form HTML -->
 <?php
 	}
 
