@@ -15,8 +15,17 @@
 */
 
 
-define ("DS", DIRECTORY_SEPARATOR);
-define ("ROOT", dirname (dirname (__FILE__)));
+define ('DS', DIRECTORY_SEPARATOR);
+define ('ROOT', dirname (dirname (__FILE__)));
 
-require_once (ROOT.DS."lib".DS."bootstrap.php");
+define ( 'VIEWDIR', ROOT.DS.'app'.DS.'views' );
+define ( 'FORMDIR', ROOT.DS.'app'.DS.'forms' );
+
+define ( 'CFGDIR', ROOT.DS.'app'.DS.'cfg' );
+
+define ( 'LOGDIR', ROOT.DS.'tmp'.DS.'logs' );
+define ( 'CACHEDIR', ROOT.DS.'tmp'.DS.'cache' );
+define ( 'SESSIONDIR', ROOT.DS.'tmp'.DS.'sessions' );
+
+require_once (ROOT.DS.'lib'.DS.'bootstrap.php');
 
