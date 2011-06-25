@@ -21,43 +21,38 @@
 $START_TIME = microtime(TRUE);
 
 
-$LIBDIR = array(	ROOT.DS."lib",
-					ROOT.DS."lib/mvc/controllers",
-					ROOT.DS."lib/mvc/models",
-					ROOT.DS."lib/mvc/views",
-					ROOT.DS."app/controllers",
-					ROOT.DS."app/models",
-					ROOT.DS."app/views",
-					ROOT.DS."app/forms",
-					ROOT.DS."app/lib",
+$LIBDIR = array(	ROOT.DS.'lib',
+					ROOT.DS.'lib/mvc/controllers',
+					ROOT.DS.'lib/mvc/models',
+					ROOT.DS.'lib/mvc/views',
+					ROOT.DS.'app/controllers',
+					ROOT.DS.'app/models',
+					VIEWDIR,
+					FORMDIR,
+					ROOT.DS.'app/lib',
 );
 /**
 * Global variable: library path.
 * @global float $LIBDIR
 */
-$LIBDIR = implode(":", $LIBDIR);
-
-
-define ( "VIEWDIR", ROOT.DS."app/views" );
+$LIBDIR = implode(':', $LIBDIR);
 
 
 set_include_path($LIBDIR);
 
 
 # Setup the autoloader
-# require_once(ROOT.DS."lib".DS."__autoload.php");
-require_once("__autoload.php");
+require_once('__autoload.php');
 
 
-# Load any libraries or configuration files othat the autoloader won't catch
-# require_once (ROOT.DS."lib".DS."debug.php");
-require_once(ROOT.DS."app/cfg".DS."inflection.php");
+# Load any libraries or configuration files that the autoloader won't catch
+require_once(CFGDIR.DS.'inflection.php');
 
 
 # Turn on output buffering, using gzip to compress output if supported by
 # browser
 #
-ob_start("ob_gzhandler");
+ob_start('ob_gzhandler');
 
 
 /**
@@ -72,8 +67,8 @@ $CONFIG = new Config;
 * @global Database $DB
 */
 $DB = new Database;
-$cfg = $CONFIG->getVal("database");
-$DB->connect($cfg["host"], $cfg["port"], $cfg["name"], $cfg["user"], $cfg["pass"]);
+$cfg = $CONFIG->getVal('database');
+$DB->connect($cfg['host'], $cfg['port'], $cfg['name'], $cfg['user'], $cfg['pass']);
 
 
 Session::start();
@@ -89,25 +84,25 @@ $SESSION_ID = session_id();
 * Global variable: log file handler
 * @global Log $L
 */
-$L = new Log((int) $CONFIG->getVal("framework.loglevel"));
+$L = new Log((int) $CONFIG->getVal('framework.loglevel'));
 
 
 # Setup error reporting
 #
 error_reporting(E_ALL | E_STRICT);
-ini_set("log_errors", "ON");
-ini_set("error_log", ROOT.DS."tmp".DS."logs".DS."error.log");
+ini_set('log_errors', 'ON');
+ini_set('error_log', LOGDIR.DS.'error.log');
 
-if ($CONFIG->getVal("application.development")) {
-	ini_set("display_errors", "ON");
+if ($CONFIG->getVal('application.development')) {
+	ini_set('display_errors', 'ON');
 } else {
-	ini_set("display_errors", "OFF");
+	ini_set('display_errors', 'OFF');
 }
 
 
 # Get the route
 #
-$route = isset($_GET["route"]) ? $_GET["route"] : NULL;
+$route = isset($_GET['route']) ? $_GET['route'] : NULL;
 $L->msg(Log::INFO, "initial route = '" . $route . "'");
 
 
