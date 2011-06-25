@@ -39,6 +39,12 @@ class Err {
 
 		$trace_info = debug_backtrace();
 
+		$ob_level = ob_get_level();
+
+		if ( $ob_level > 2 ) {
+			ob_end_clean();
+		}
+
 		require("err_fatal.php");
 
 		exit (0);
