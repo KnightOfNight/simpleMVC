@@ -29,6 +29,7 @@ class Dispatch {
 	static function go ($passed_route, $external = TRUE) {
 		global $DB;
 		global $CONFIG;
+		global $ERROR;
 
 		$route = Route::parse($passed_route);
 
@@ -44,8 +45,14 @@ class Dispatch {
 		if ($external) {
 			$allowed_actions = $CONFIG->getVal("dispatcher.controller." . $controller . ".external_actions");
 
-			if (! in_array ($action, $allowed_actions)) {
-				Err::fatal("Unable to dispatch route '$passed_route'.  It cannot be accessed by an external request.");
+			if ( (! is_array($allowed_actions)) OR (! in_array($action, $allowed_actions)) ) {
+				$errmsg = "Dispatch error: route '$passed_route' cannot be accessed by an external request.";
+
+				if ( $ERROR ) {
+					$errmsg .= "\n\nAdditional Error\n" . $ERROR;
+				}
+
+				Err::fatal($errmsg);
 			}
 		}
 
