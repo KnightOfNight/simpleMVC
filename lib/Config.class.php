@@ -44,13 +44,20 @@ class Config {
 
 		$values = $this->_values;
 
+		global $ERROR;
+
 		foreach ($levels as $level) {
 			if (! isset ($values[$level])) {
-				Err::fatal (sprintf ("attempted to traverse too far into configuration tree, path = '%s', failed on '%s'", $path, $level));
+
+				$ERROR = "Config::getVal() - unable to find requested path '$path', failed on '$level'.";
+
+				return(FALSE);
 			}
 
 			$values = $values[$level];
 		}
+
+		$ERROR = '';
 
 		return ($values);
 	}
