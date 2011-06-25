@@ -26,27 +26,26 @@ class Dispatch {
 	* @param bool TRUE => external route
 	* @return array optional data returned from the route processing
 	*/
-	static function go ($route, $external = TRUE) {
+	static function go ($passed_route, $external = TRUE) {
 		global $DB;
 		global $CONFIG;
 
-#Dbg::msg("Dispatch::go('$route', $external)");
+		$route = Route::parse($passed_route);
 
-		$route = Route::parse($route);
+		if ( ! is_array($route) ) {
+			Err::fatal("Dispatch error: route '$passed_route' could not be parsed.\n\n$route");
+		}
 
 		$controller = $route["controller"];
 		$action = $route["action"];
 		$query = $route["query"];
 
-		# check to make sure the requested action is allowed for the given mode
+		# Check to make sure the requested action is allowed if external.
 		if ($external) {
 			$allowed_actions = $CONFIG->getVal("dispatcher.controller." . $controller . ".external_actions");
 
-#		} else {
-#			$allowed_actions = $CONFIG->getVal("dispatcher.controller." . $controller . ".internal_actions");
-
 			if (! in_array ($action, $allowed_actions)) {
-				Err::fatal (sprintf ("action '%s' is not valid when called from an %s source", $action, $external ? "external" : "internal"));
+				Err::fatal("Unable to dispatch route '$passed_route'.  It cannot be accessed by an external request.");
 			}
 		}
 
@@ -56,15 +55,9 @@ class Dispatch {
 		$dispatcher = new $controller_class();
 
 		# call the three main parts of the controller
-#		if ($external) {
-			$dispatcher->beforeAction($query);
-#		}
-
+		$dispatcher->beforeAction($query);
 		$retval = $dispatcher->$action($query);
-
-#		if ($external) {
-			$dispatcher->afterAction($query);
-#		}
+		$dispatcher->afterAction($query);
 
 		return ($retval);
 	}
