@@ -15,10 +15,9 @@
 */
 class BaseForm2 {
 
+	private $_use_json;			# JSON file
 	private $_form_name;		# name of the form
-
 	private $_options;			# form level options
-
 	private $_fields;			# all the fields
 
 	private $_field_types = array( 'text', 'dropdown', 'checkbox', 'bitmask' );
@@ -34,9 +33,13 @@ class BaseForm2 {
 
 		$form_class = get_class($this);
 
+		$this->_use_json = $form_class;
 		$this->_form_name = $form_class;
 		$this->_form_name .= ( $suffix ) ? '_' . $suffix : '';
 
+		if ( isset($this->use_json) ) {
+			$this->_use_json = $this->use_json;
+		}
 
 		# Check cache.
 		if ( $cache = Cache::value($cache_key = 'form:' . $this->_form_name) ) {
@@ -45,13 +48,8 @@ class BaseForm2 {
 #			return;
 		}
 
-
 		# Load the config.
-		if ( (! isset($this->use_json)) OR (! $this->use_json) ) {
-			Err::fatal ("no JSON file specified; form class '$form_class' does not set 'use_json'");
-		}
-
-		$cfg_file = FORMDIR.DS.'json'.DS.$this->use_json;
+		$cfg_file = FORMDIR.DS.'json'.DS.$this->_use_json;
 
 		if ( (! File::ready ($cfg_file)) OR ( ($cfg_data = file_get_contents ($cfg_file)) === FALSE ) ) {
 			Err::fatal (sprintf ("unable to read configuration file '%s'", $cfg_file));
