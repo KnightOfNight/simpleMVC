@@ -49,7 +49,7 @@ class Dispatch {
 				$errmsg = "Dispatch error: route '$passed_route' cannot be accessed by an external request.";
 
 				if ( $ERROR ) {
-					$errmsg .= "\n\nAdditional Error\n" . $ERROR;
+					$errmsg .= "\n\nAdditional Error...\n\n" . $ERROR;
 				}
 
 				Err::fatal($errmsg);
