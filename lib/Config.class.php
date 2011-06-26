@@ -24,12 +24,12 @@ class Config {
 	function __construct () {
 		$cfg_file = CFGDIR.DS."config.json";
 
-		if ( (! File::ready ($cfg_file)) OR ( ($cfg_data = file_get_contents ($cfg_file)) === FALSE ) ) {
-			Err::fatal (sprintf ("unable to read configuration file '%s'", $cfg_file));
+		if ( (! File::ready($cfg_file)) OR ( ($cfg_data = file_get_contents($cfg_file)) === FALSE ) ) {
+			Err::fatal("Unable to read application configuration file '$cfg_file'.");
 		}
 
-		if ( ($this->_values = json_decode ($cfg_data, TRUE)) === NULL ) {
-			Err::fatal ("unable to parse application configuration, invalid JSON found");
+		if ( ($this->_values = json_decode($cfg_data, TRUE)) === NULL ) {
+			Err::fatal("Unable to parse application configuration, invalid JSON found.");
 		}
 	}
 
