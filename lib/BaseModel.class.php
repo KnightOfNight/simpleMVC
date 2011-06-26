@@ -16,8 +16,8 @@
 */
 class BaseModel {
 
-	private $_name;
-	private $_table;
+	private $_model_name;
+	private $_table_name;
 	private $_columns = array();
 	private $_values = array();
 
@@ -30,16 +30,20 @@ class BaseModel {
 		global $DB;
 		global $CONFIG;
 
-		$this->_name = strtolower( str_replace("Model", "", get_class($this)) );
+		$this->_model_name = strtolower( str_replace("Model", "", get_class($this)) );
 
 		if ( isset ($this->table) ) {
-			$this->_table = $this->table;
+			$this->_table_name = $this->table;
 		} else {
 			$prefix = $CONFIG->getVal("database.prefix");
-			$this->_table = $prefix . Inflection::pluralize($this->_name);
+			$this->_table_name = $prefix . Inflection::pluralize($this->_model_name);
 		}
 
-		$this->_columns = $DB->describe($this->_table);
+		$this->_columns = $DB->describe($this->_table_name);
+
+		if ( ! in_array('id', $this->_columns) ) {
+			Err::fatal("Unablel to load database model.  Primary key column 'id' not found in table.");
+		}
 	}
 
 
@@ -49,7 +53,7 @@ class BaseModel {
 	* @return string model name
 	*/
 	function name () {
-		return ($this->_name);
+		return ($this->_model_name);
 	}
 
 
@@ -59,7 +63,7 @@ class BaseModel {
 	* @return string table name
 	*/
 	function table () {
-		return ($this->_table);
+		return ($this->_table_name);
 	}
 
 
@@ -125,11 +129,21 @@ class BaseModel {
 			Err::fatal("Unable to create record, no database connection present.");
 		}
 
-		if ( in_array("created_at", $this->_columns) ) {
-			$this->_values["created_at"] = "DB:now()";
+		$values = $this->_values;
+
+		if ( in_array('id', $values) ) {
+			unset($values['id']);
 		}
 
-		return( $DB->create($this->_table, $this->_values, $log_query) );
+		if ( in_array("created_at", $this->_columns) ) {
+			$values["created_at"] = "DB:now()";
+		}
+
+		if ( in_array("updated_at", $this->_values) ) {
+			unset($values["updated_at"]);
+		}
+
+		return( $DB->create($this->_table_name, $values, $log_query) );
 	}
 
 
@@ -144,11 +158,22 @@ class BaseModel {
 
 		if ( ! isset ($DB) ) {
 			Err::fatal("Unable to update record, no database connection present.");
-		} elseif ( ! isset ($this->_values["id"]) ) {
-			Err::fatal("Unable to update record, primary key (column 'id') not set.");
+
+		} elseif ( (! in_array('id', $this->_values)) OR (! isset($this->_values["id"])) ) {
+			Err::fatal("Unable to update record, primary key column 'id' is not set.");
 		}
 
-		return( $DB->update($this->_table, $this->_values, "id", $log_query) );
+		$values = $this->_values;
+
+		if ( in_array("created_at", $this->_columns) ) {
+			unset($values['created_at']);
+		}
+
+		if ( in_array("updated_at", $this->_columns) ) {
+			$values["updated_at"] = "DB:now()";
+		}
+
+		return( $DB->update($this->_table_name, $values, "id", $log_query) );
 	}
 
 
@@ -160,16 +185,16 @@ class BaseModel {
 	* @param mixed column value
 	* @param bool log the query
 	*/
-	function load ($name, $value, $log_query = TRUE) {
-		$columns = preg_replace('/^(.*)$/', "$this->_name.$1", $this->_columns);
-		$search_col = $this->_name . '.' . $name;
+	function load ($column_name, $value, $log_query = TRUE) {
+		$search_col = $this->_model_name . '.' . $column_name;
+		$db_columns = preg_replace('/^(.*)$/', "$this->_model_name.$1", $this->_columns);
 
 #		Dbg::var_dump('this columns', $this->_columns);
-#		Dbg::var_dump('columns', $columns);
+#		Dbg::var_dump('db_columns', $db_columns);
 #		Dbg::var_dump('search_col', $search_col);
 		
 		$search = new Search($this);
-		$search->select($columns);
+		$search->select($db_columns);
 		$search->where( NULL, array( array($search_col, Search::op_eq, $value)) );
 		$results = $search->go();
 
@@ -177,6 +202,15 @@ class BaseModel {
 			global $ERROR;
 			$ERROR = "Search results found $res_count matches for '$search_col' = '$value'.";
 			return(FALSE);
+		}
+
+#		Dbg::var_dump('results', $results);
+
+		$result = $results[0];
+
+		foreach ( $db_columns as $db_col ) {
+			$col = preg_replace("/^$this->_model_name\./", "", $db_col);
+			$this->_values[$col] = $result[$db_col];
 		}
 
 		return(TRUE);
