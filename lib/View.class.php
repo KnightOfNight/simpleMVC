@@ -134,17 +134,17 @@ class View {
 	}
 
 
-	function pager ($pager = NULL) {
-		if (is_null ($pager)) {
-			if ($this->_pager->pageCount() > 1) {
-				return ($this->_pager);
-			} else {
-				return (NULL);
-			}
-		} else {
-			$this->_pager = $pager;
-		}
-	}
+#	function pager ($pager = NULL) {
+#		if (is_null ($pager)) {
+#			if ($this->_pager->pageCount() > 1) {
+#				return ($this->_pager);
+#			} else {
+#				return (NULL);
+#			}
+#		} else {
+#			$this->_pager = $pager;
+#		}
+#	}
 
 
 	/**
