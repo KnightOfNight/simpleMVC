@@ -22,6 +22,7 @@ define ( 'VIEWDIR', ROOT.DS.'app'.DS.'views' );
 define ( 'FORMDIR', ROOT.DS.'app'.DS.'forms' );
 define ( 'CFGDIR', ROOT.DS.'app'.DS.'cfg' );
 
+define ( 'TMPDIR', ROOT.DS.'tmp'.DS.'tmp' );
 define ( 'LOGDIR', ROOT.DS.'tmp'.DS.'logs' );
 define ( 'CACHEDIR', ROOT.DS.'tmp'.DS.'cache' );
 define ( 'SESSIONDIR', ROOT.DS.'tmp'.DS.'sessions' );
