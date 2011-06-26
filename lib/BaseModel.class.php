@@ -15,53 +15,31 @@
 * @package MCS_MVC_API
 */
 class BaseModel {
-	/**
-	* @var string name of the database table associated with the model
-	*/
-	protected $table;
-
 
 	private $_name;
+	private $_table;
 	private $_columns = array();
 	private $_values = array();
 
-
 	/**
-	* Create a new BaseModel object.  If you overload this constructor, make
-	* sure yours calls the function 'setup'.
-	*
-	* <code>
-	* class ItemModel extends BaseModel {
-	*    function __construct () {
-	*        # custom code such as $this->table = "CUSTOM TABLE NAME";
-	*        $this->setup();
-    *    }
-	* }
-	* </code>
+	* Create a new BaseModel object.
 	*
 	* @return BaseModel a new BaseModel object
 	*/
 	function __construct () {
-		$this->setup();
-	}
-
-
-	/**
-	* Setup an instance of this class.  Used by __construct so that __construct
-	* can be overridden by the parent class if needed.
-	*/
-	protected function setup () {
 		global $DB;
 		global $CONFIG;
 
 		$this->_name = strtolower( str_replace("Model", "", get_class($this)) );
 
-		if ( ! isset ($this->table) ) {
+		if ( isset ($this->table) ) {
+			$this->_table = $this->table;
+		} else {
 			$prefix = $CONFIG->getVal("database.prefix");
-			$this->table = $prefix . Inflection::pluralize($this->_name);
+			$this->_table = $prefix . Inflection::pluralize($this->_name);
 		}
 
-		$this->_columns = $DB->describe($this->table);
+		$this->_columns = $DB->describe($this->_table);
 	}
 
 
@@ -81,7 +59,7 @@ class BaseModel {
 	* @return string table name
 	*/
 	function table () {
-		return ($this->table);
+		return ($this->_table);
 	}
 
 
@@ -151,7 +129,7 @@ class BaseModel {
 			$this->_values["created_at"] = "DB:now()";
 		}
 
-		return( $DB->create($this->table, $this->_values, $log_query) );
+		return( $DB->create($this->_table, $this->_values, $log_query) );
 	}
 
 
@@ -170,7 +148,38 @@ class BaseModel {
 			Err::fatal("Unable to update record, primary key (column 'id') not set.");
 		}
 
-		return( $DB->update($this->table, $this->_values, "id", $log_query) );
+		return( $DB->update($this->_table, $this->_values, "id", $log_query) );
+	}
+
+
+	/**
+	* Load the model with the values from a specific record, search by column
+	* name=>value.
+	*
+	* @param string column name
+	* @param mixed column value
+	* @param bool log the query
+	*/
+	function load ($name, $value, $log_query = TRUE) {
+		$columns = preg_replace('/^(.*)$/', "$this->_name.$1", $this->_columns);
+		$search_col = $this->_name . '.' . $name;
+
+		Dbg::var_dump('this columns', $this->_columns);
+		Dbg::var_dump('columns', $columns);
+		Dbg::var_dump('search_col', $search_col);
+		
+		$search = new Search($this);
+		$search->select($columns);
+		$search->where( NULL, array( array($search_col, Search::op_eq, $value)) );
+		$results = $search->go();
+
+		if ( ($res_count = count($results)) != 1 ) {
+			global $ERROR;
+			$ERROR = "Search results found $res_count matches for '$search_col' = '$value'.";
+			return(FALSE);
+		}
+
+		return(TRUE);
 	}
 
 
