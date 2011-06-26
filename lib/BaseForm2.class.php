@@ -199,10 +199,10 @@ class BaseForm2 {
 	/**
 	* Output HTML that starts the form.
 	*
-	* @param string form method, i.e. 'get' or 'post'
 	* @param string the action URL
+	* @param string form method, default 'post'
 	*/
-	function html_start ($method, $action) {
+	function html_start ($action, $method = 'post') {
 		if ( ($method != 'post') AND ($method != 'get') ) {
 			Err::fatal(__FUNCTION__ . "() - invalid form method '$method'");
 		}
@@ -388,6 +388,7 @@ class BaseForm2 {
 		# specific
 		$tableclass = 'mvc_form_bitmask';
 		$inputclass = 'mvc_form_bitmask_field';
+		$labelclass = 'mvc_form_bitmask_field_label';
 		$choices = $options['choices'];
 		$columns = ( isset($options['columns']) AND ($options['columns'] > 0) AND ($options['columns'] < count($choices)) ) ?  $options['columns'] : 3;
 
@@ -417,7 +418,7 @@ class BaseForm2 {
 			}
 
 ?><input id="<?= $input_id ?>" name="<?= $fld_name ?>" class="<?= $inputclass ?>" value="checked" type="checkbox"<?= $checked ?><?= $disabled ?><?= $hidden ?>></input>
-<label id="<?= $label_id ?>" class="mvc_form_label" for="<?= $for ?>"><?= $label ?></label>
+<label id="<?= $label_id ?>" class="<?= $labelclass ?>" for="<?= $for ?>"><?= $label ?></label>
 <br />
 <?php
 
@@ -639,10 +640,15 @@ class BaseForm2 {
 	private function _check_field ($field_name) {
 		$type = $this->_fields[$field_name]['type'];
 		$value = $this->_fields[$field_name]['value'];
+		$options = $this->_fields[$field_name]['options'];
 		$checks = $this->_fields[$field_name]['checks'];
 
 		$this->_fields[$field_name]['valid'] = TRUE;
 		$this->_fields[$field_name]['error'] = '';
+
+		if ( $options['enabled'] != 'yes' ) {
+			return(TRUE);
+		}
 
 		if ( ($type == 'checkbox') AND $value AND ($value !== TRUE) ) {
 			$this->_fields[$field_name]['value'] = FALSE;
@@ -650,7 +656,7 @@ class BaseForm2 {
 		}
 
 		if ( $type == 'dropdown' ) {
-			$choices = $this->_fields[$field_name]['options']['choices'];
+			$choices = $options['choices'];
 
 			if ( $value AND (! in_array($value, $choices)) ) {
 				$this->_fields[$field_name]['valid'] = FALSE;
