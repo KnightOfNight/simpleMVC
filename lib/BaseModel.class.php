@@ -127,19 +127,17 @@ class BaseModel {
 
 		if ( ! isset ($DB) ) {
 			Err::fatal("Unable to create record, no database connection present.");
+		} elseif ( in_array('id', array_keys($this->_values)) ) {
+			Err::fatal("Unable to create record, primary key column 'id' is already set.");
 		}
 
 		$values = $this->_values;
-
-		if ( in_array('id', $values) ) {
-			unset($values['id']);
-		}
 
 		if ( in_array("created_at", $this->_columns) ) {
 			$values["created_at"] = "DB:now()";
 		}
 
-		if ( in_array("updated_at", $this->_values) ) {
+		if ( in_array("updated_at", array_keys($this->_values)) ) {
 			unset($values["updated_at"]);
 		}
 
@@ -158,8 +156,7 @@ class BaseModel {
 
 		if ( ! isset ($DB) ) {
 			Err::fatal("Unable to update record, no database connection present.");
-
-		} elseif ( (! in_array('id', $this->_values)) OR (! isset($this->_values["id"])) ) {
+		} elseif ( (! in_array('id', array_keys($this->_values))) OR (! isset($this->_values['id'])) ) {
 			Err::fatal("Unable to update record, primary key column 'id' is not set.");
 		}
 
@@ -186,21 +183,22 @@ class BaseModel {
 	* @param bool log the query
 	*/
 	function load ($column_name, $value, $log_query = TRUE) {
-		$search_col = $this->_model_name . '.' . $column_name;
-		$db_columns = preg_replace('/^(.*)$/', "$this->_model_name.$1", $this->_columns);
+		$where_col = $this->_model_name . '.' . $column_name;
+
+		$select_cols = preg_replace('/^(.*)$/', "$this->_model_name.$1", $this->_columns);
 
 #		Dbg::var_dump('this columns', $this->_columns);
-#		Dbg::var_dump('db_columns', $db_columns);
-#		Dbg::var_dump('search_col', $search_col);
+#		Dbg::var_dump('select_cols', $select_cols);
+#		Dbg::var_dump('where_col', $where_col);
 		
 		$search = new Search($this);
-		$search->select($db_columns);
-		$search->where( NULL, array( array($search_col, Search::op_eq, $value)) );
+		$search->select($select_cols);
+		$search->where( NULL, array( array($where_col, Search::op_eq, $value)) );
 		$results = $search->go();
 
 		if ( ($res_count = count($results)) != 1 ) {
 			global $ERROR;
-			$ERROR = "Search results found $res_count matches for '$search_col' = '$value'.";
+			$ERROR = "Search results found $res_count matches for '$where_col' = '$value'.";
 			return(FALSE);
 		}
 
@@ -208,9 +206,14 @@ class BaseModel {
 
 		$result = $results[0];
 
-		foreach ( $db_columns as $db_col ) {
-			$col = preg_replace("/^$this->_model_name\./", "", $db_col);
-			$this->_values[$col] = $result[$db_col];
+		foreach ( $select_cols as $select_col ) {
+			$model_col = preg_replace("/^$this->_model_name\./", "", $select_col);
+
+			if ( ! in_array($model_col, $this->_columns) ) {
+				Err::fatal("BaseModel::load() - unable to load search results.  Found unknown table column '$select_col'.");
+			}
+
+			$this->_values[$model_col] = $result[$select_col];
 		}
 
 		return(TRUE);
