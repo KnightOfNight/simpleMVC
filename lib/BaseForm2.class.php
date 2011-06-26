@@ -570,6 +570,11 @@ class BaseForm2 {
 
 			$form_field_name = $this->_form_name . '_' . $field_name;
 			$type = $this->_fields[$field_name]['type'];
+			$options = $this->_fields[$field_name]['options'];
+
+			if ( $options['enabled'] != 'yes' ) {
+				continue;
+			}
 
 			if ( $type == 'checkbox' ) {
 				if ( isset($sub[$form_field_name]) AND ($sub[$form_field_name] == 'checked') ) {
@@ -577,8 +582,6 @@ class BaseForm2 {
 				}
 
 			} elseif ( $type == 'bitmask' ) {
-#Dbg::msg('processing bitmask');
-#Dbg::var_dump('_POST', $_POST);
 				$choices = $this->_fields[$field_name]['options']['choices'];
 
 				$bitmask = 0;
