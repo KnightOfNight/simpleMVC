@@ -74,29 +74,31 @@ class Search {
 	/**
 	* Add one or more columns to be selected.
 	*
-	* @param string one or more names of columns to be selected
+	* @param mixed column names, strings or array
 	*/
-	function select () {
-		$columns = func_get_args();
-
-		if ( empty ($columns) ) {
-
-		} elseif ( $columns[0] === NULL ) {
+	function select ($column = NULL) {
+		if ( $column === NULL ) {
 			$this->_criteria["select"] = array();
-
-		} else {
-			$select = $this->_criteria["select"];
-
-			foreach ( $columns as $column ) {
-				if ( $this->_checkColumn($column) ) {
-					$select[$column] = $column;
-				} else {
-					Err::fatal("unable to add column '$column' to select clause; column not found");
-				}
-			}
-
-			$this->_criteria["select"] = $select;
+			return;
 		}
+
+		if ( is_array($column) ) {
+			$columns = $column;
+		} else {
+			$columns = func_get_args();
+		}
+
+		$select = $this->_criteria["select"];
+
+		foreach ( $columns as $column ) {
+			if ( $this->_check_column($column) ) {
+				$select[$column] = $column;
+			} else {
+				Err::fatal("Unable to add column '$column' to select clause, column not found.");
+			}
+		}
+
+		$this->_criteria["select"] = $select;
 
 		return;
 	}
@@ -116,10 +118,10 @@ class Search {
 	* ...concat(last, ", ", first) as lastcommafirst...
 	* </code>
 	*
-	* @param string expression to select.
-	* @param string column alias
+	* @param string expression
+	* @param string alias
 	*/
-	function selectExpression ($column, $alias) {
+	function select_expression ($column, $alias) {
 		$select = $this->_criteria["select"];
 		$select[$column] = $alias;
 		$this->_criteria["select"] = $select;
@@ -198,7 +200,7 @@ class Search {
 				$op = $item[1];
 				$val = $item[2];
 
-#				if ( ! $this->_checkColumn($col) ) {
+#				if ( ! $this->_check_column($col) ) {
 #					Err::fatal("invalid column '$col'");
 #				}
 
@@ -254,11 +256,11 @@ class Search {
 
 		$joins = $this->_criteria["leftjoins"];
 
-		if ( $this->_checkColumn($colA) AND $this->_checkColumn($colB) ) {
+		if ( $this->_check_column($colA) AND $this->_check_column($colB) ) {
 			array_push($joins, array($model->table(), $model->name(), $colA, $colB));
-		} elseif (! $this->_checkColumn($colA)) {
+		} elseif (! $this->_check_column($colA)) {
 			Err::fatal("unable to add left join; column A '$colA' is not valid");
-		} elseif (! $this->_checkColumn($colB)) {
+		} elseif (! $this->_check_column($colB)) {
 			Err::fatal("unable to add left join; column B '$colB' is not valid");
 		}
 
@@ -275,7 +277,7 @@ class Search {
 	function orderby ($col, $order = NULL) {
 		if ( is_null($col) ) {
 			Err::fatal("column name must be specified");
-		} elseif (! $this->_checkColumn($col)) {
+		} elseif (! $this->_check_column($col)) {
 			Err::fatal("invalid column '$col'");
 		}
 
@@ -352,8 +354,7 @@ class Search {
 	}
 
 
-	private function _checkColumn ($col) {
-#Dbg::var_dump("col", $col);
+	private function _check_column ($col) {
 		$col_parts = explode(".", $col);
 		$col_model = $col_parts[0];
 		$col_name = $col_parts[1];
