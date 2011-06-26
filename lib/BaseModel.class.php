@@ -196,10 +196,10 @@ class BaseModel {
 		$search->where( NULL, array( array($where_col, Search::op_eq, $value)) );
 		$results = $search->go();
 
-		if ( ($res_count = count($results)) != 1 ) {
-			global $ERROR;
-			$ERROR = "Search results found $res_count matches for '$where_col' = '$value'.";
-			return(FALSE);
+		if ( ($res_count = count($results)) > 1 ) {
+			Err::fatal("BaseModel::load() - unable to load search results.  Found MULTIPLE matches for '$where_col'='$value'.");
+		} elseif ( $res_count < 1 ) {
+			Err::fatal("BaseModel::load() - unable to load search results.  Found NO matches for '$where_col'='$value'.");
 		}
 
 #		Dbg::var_dump('results', $results);
