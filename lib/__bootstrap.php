@@ -76,6 +76,7 @@ $DB->connect($cfg['host'], $cfg['port'], $cfg['name'], $cfg['user'], $cfg['pass'
 
 Session::start();
 
+
 /**
 * Global variable: current session ID
 * @global string $SESSION_ID
@@ -105,13 +106,17 @@ if ( $CONFIG->getVal('application.development') !== FALSE ) {
 
 # Get the route
 #
-$route = isset($_GET['route']) ? $_GET['route'] : NULL;
-$L->msg(Log::INFO, "initial route = '" . $route . "'");
+/**
+* Global variable: initially requested route
+* @global string $ROUTE
+*/
+$ROUTE = isset($_GET['route']) ? $_GET['route'] : NULL;
+$L->msg(Log::INFO, "initial route = '" . $ROUTE . "'");
 
 
 # Dispatch the route.
 #
-Dispatch::go($route);
+Dispatch::go($ROUTE);
 
 
 # Close up.
