@@ -164,9 +164,9 @@ class BaseModel {
 		$columns = preg_replace('/^(.*)$/', "$this->_name.$1", $this->_columns);
 		$search_col = $this->_name . '.' . $name;
 
-		Dbg::var_dump('this columns', $this->_columns);
-		Dbg::var_dump('columns', $columns);
-		Dbg::var_dump('search_col', $search_col);
+#		Dbg::var_dump('this columns', $this->_columns);
+#		Dbg::var_dump('columns', $columns);
+#		Dbg::var_dump('search_col', $search_col);
 		
 		$search = new Search($this);
 		$search->select($columns);
