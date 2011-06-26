@@ -81,7 +81,7 @@ class Route {
 			$error = "Invalid application route: controller '$controller' not found in configuration.";
 
 			if ( $ERROR ) {
-				$error .= "\n\nAdditional Error\n" . $ERROR;
+				$error .= "\n\nAdditional Error...\n\n" . $ERROR;
 			}
 
 			return($error);
