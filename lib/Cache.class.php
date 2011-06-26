@@ -25,6 +25,10 @@ class Cache {
 	* @return mixed value of the cache entry
 	*/
 	static function value ($cache_entry, $cache_value = NULL) {
+
+		# temporarily turn off all caching.
+		return(null);
+
 		$cache_file = CACHEDIR . DS . sha1 ($cache_entry);
 
 		if ( $cache_value === NULL ) {
@@ -61,6 +65,9 @@ class Cache {
 	* @return mixed value of the entry
 	*/
 	static function get ($cache_entry) {
+		# temporarily turn off all caching.
+		return(null);
+
 		$cache_file = CACHEDIR . DS . sha1 ($cache_entry);
 
 		if (! file_exists ($cache_file)) {
@@ -83,6 +90,9 @@ class Cache {
 	* @param mixed value of the entry
 	*/
 	static function set ($cache_entry, $cache_data) {
+		# temporarily turn off all caching.
+		return(null);
+
 		$cache_file = CACHEDIR . DS . sha1 ($cache_entry);
 
 		if (File::ready (CACHEDIR, "w")) {
