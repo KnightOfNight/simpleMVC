@@ -34,14 +34,9 @@ class Route {
 		global $CONFIG;
 		global $ERROR;
 
-#		Dbg::var_dump("route", $route);
-
 		# Trim any leading slashes.
 		$route = preg_replace('/^\/+/', '', $route);
-#		Dbg::var_dump("route", $route);
 		$route = self::reroute($route);
-
-#		Dbg::var_dump("route", $route);
 
 		$controller = '';
 		$action = '';
@@ -74,16 +69,14 @@ class Route {
 
 		# Check the controller.
 		if ( (! $controller) AND (($controller = $CONFIG->getVal("dispatcher.controller.default")) === FALSE) ) {
-			return("Invalid application route: no route specified via URL and no default controller found.\n\n$ERROR");
+			$error = "Invalid application route: no route specified via URL and no default controller found.";
+			if ( $ERROR ) { $error .= "\n\nAdditional Error...\n\n" . $ERROR; }
+			return($error);
 		}
 
 		if ( (($controllers = $CONFIG->getVal("dispatcher.controller")) === FALSE) OR (! array_key_exists($controller, $controllers)) ) {
 			$error = "Invalid application route: controller '$controller' not found in configuration.";
-
-			if ( $ERROR ) {
-				$error .= "\n\nAdditional Error...\n\n" . $ERROR;
-			}
-
+			if ( $ERROR ) { $error .= "\n\nAdditional Error...\n\n" . $ERROR; }
 			return($error);
 		}
 
@@ -94,7 +87,9 @@ class Route {
 
 		# Check the action.
 		if ( (! $action) AND (($action = $CONFIG->getVal("dispatcher.controller." . $controller . ".default_action")) === FALSE) ) {
-			return("Invalid application route: no action specified via URL and no default action found for controller '$controller'.\n\n$ERROR");
+			$error = "Invalid application route: no action specified via URL and no default action found for controller '$controller'.";
+			if ( $ERROR ) { $error .= "\n\nAdditional Error...\n\n" . $ERROR; }
+			return($error);
 		}
 
 		if (! method_exists ($class, $action)) {
