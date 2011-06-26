@@ -263,8 +263,8 @@ class View {
 
 		# Find the body view corresponding to the controller and action.
 		#
-		if (! File::ready ($this->_render["body_file"] = VIEWDIR.DS.$this->_controller.DS.$this->_action.".php")) {
-			Err::fatal (sprintf ("unable to read page body '%s'", $this->_render["body_file"]));
+		if ( ! File::ready($this->_render["body_file"] = VIEWDIR.DS.$this->_controller.DS.$this->_action.".php") ) {
+			Err::fatal( "Unable to render view for route '/$this->_controller/$this->_action', page body '" . $this->_render["body_file"] . "' not found." );
 		}
 
 
@@ -274,7 +274,7 @@ class View {
 			if (File::ready ($this->_render["header_file"] = VIEWDIR.DS.$this->_controller.DS."header.php") ||
 					File::ready ($this->_render["header_file"] = VIEWDIR.DS."header.php")) {
 			} else {
-				Err::fatal (sprintf ("unable to find any page header"));
+				Err::fatal( "Unable to render view for route '/$this->_controller/$this->_action', no page header found.");
 			}
 		}
 
@@ -285,7 +285,7 @@ class View {
 			if (File::ready ($this->_render["footer_file"] = VIEWDIR.DS.$this->_controller.DS."footer.php") ||
 					File::ready ($this->_render["footer_file"] = VIEWDIR.DS."footer.php")) {
 			} else {
-				Err::fatal (sprintf ("unable to find any page footer"));
+				Err::fatal( "Unable to render view for route '/$this->_controller/$this->_action', no page footer found.");
 			}
 		}
 
