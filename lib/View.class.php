@@ -270,44 +270,46 @@ class View {
 
 		# Find the page header file if it is set to render in this view.
 		#
-		if ($this->_config["render_header"]) {
-			if (File::ready ($this->_render["header_file"] = VIEWDIR.DS.$this->_controller.DS."header.php") ||
-					File::ready ($this->_render["header_file"] = VIEWDIR.DS."header.php")) {
+		if ( $this->_config["render_header"] ) {
+			if ( File::ready($this->_render["header_file"] = VIEWDIR.DS.$this->_controller.DS."header.php") ||
+					File::ready($this->_render["header_file"] = VIEWDIR.DS."header.php") ) {
 			} else {
-				Err::fatal( "Unable to render view for route '/$this->_controller/$this->_action', no page header found.");
+				Err::fatal("Unable to render view for route '/$this->_controller/$this->_action', no page header found.");
 			}
 		}
 
 
 		# Find the page footer file if it is set to render in this view.
 		#
-		if ($this->_config["render_footer"]) {
-			if (File::ready ($this->_render["footer_file"] = VIEWDIR.DS.$this->_controller.DS."footer.php") ||
-					File::ready ($this->_render["footer_file"] = VIEWDIR.DS."footer.php")) {
+		if ( $this->_config["render_footer"] ) {
+			if (File::ready($this->_render["footer_file"] = VIEWDIR.DS.$this->_controller.DS."footer.php") ||
+					File::ready($this->_render["footer_file"] = VIEWDIR.DS."footer.php") ) {
 			} else {
-				Err::fatal( "Unable to render view for route '/$this->_controller/$this->_action', no page footer found.");
+				Err::fatal("Unable to render view for route '/$this->_controller/$this->_action', no page footer found.");
 			}
 		}
 
 
 		# Extract all the variables so that they are available to the view.
 		#
-		extract ($this->_config["variables"]);
+		extract($this->_config["variables"]);
 
 
 		# Run the PHP in the body view and capture the output.  This is run
 		# first so that the body can modify the overall page, such as adding
 		# CSS or JS files or by filling slots.
 		#
-		ob_start ();
-		include ($this->_render["body_file"]);
-		$this->_body_contents = ob_get_clean ();
+		ob_start();
+		include($this->_render["body_file"]);
+		$this->_body_contents = ob_get_clean();
 
 
 		# Display the page header.
 		#
 		if ( isset($this->_render["header_file"]) ) {
+			ob_start();
 			include($this->_render["header_file"]);
+			ob_end_flush();
 		}
 
 
@@ -319,7 +321,9 @@ class View {
 		# Display the page footer.
 		#
 		if ( isset($this->_render["footer_file"]) ) {
+			ob_start();
 			include($this->_render["footer_file"]);
+			ob_end_flush();
 		}
     }
 
