@@ -40,6 +40,10 @@ class Err {
 		$trace_info = debug_backtrace();
 
 		$ob_level = ob_get_level();
+		$ob_status = ob_get_status(TRUE);
+
+#		Dbg::msg("ob_level = '$ob_level'");
+#		Dbg::var_dump('ob_status', $ob_status);
 
 		if ( $ob_level > 2 ) {
 			ob_end_clean();
