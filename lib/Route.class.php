@@ -44,26 +44,34 @@ class Route {
 
 		if (! empty($route)) {
 
-			$route_parts = explode ("/", $route);
+			$route_parts = explode ('/', $route);
 
 			$controller = $route_parts[0];
-
 			array_shift ($route_parts);
 
 			if ( isset($route_parts[0]) AND (! empty($route_parts[0])) ) {
 				$action = $route_parts[0];
 			}
-
-			# Get the query, if any.
 			array_shift ($route_parts);
 
-			foreach ($route_parts as $route_part) {
-				$route_part = trim($route_part);
+			$route = implode('/', $route_parts);
 
-				if (! empty ($route_part)) {
-					array_push( $query, htmlentities($route_part) );
+			if ( ! empty($route) ) {
+				$query_string = $route;
+
+				$query_pairs = explode('&', $query_string);
+
+				foreach ($query_pairs as $keyvalue) {
+					$splitkeyvalue = explode('=', $keyvalue);
+
+					if ( count($splitkeyvalue) == 2 ) {
+						$key = $splitkeyvalue[0];
+						$value = $splitkeyvalue[1];
+						$query[$key] = $value;
+					}
 				}
 			}
+
 		}
 
 
