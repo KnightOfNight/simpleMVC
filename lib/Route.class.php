@@ -195,7 +195,7 @@ class Route {
 	*/
 	static function trim ($route = NULL) {
 		if ( ! $route ) {
-			return($ROUTE);
+			return($route);
 		}
 
 		$route = preg_replace('/^\/+/', '', $route);
