@@ -338,6 +338,8 @@ class View {
 			Err::fatal("no view passed");
 		}
 
+		# trim all leading slashes
+		$path = Route::trim($path);
 
 		$parts = explode('/', $path);
 
