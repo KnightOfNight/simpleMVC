@@ -244,7 +244,7 @@ class Database {
 	*/
 	function create ($table, $values, $log_query = TRUE) {
 		if ( empty($values) ) {
-			Err::fatal("No column values set.  Cannot update or create record.");
+			Err::fatal("No column values set.  Cannot create record.");
 		}
 
 	 	$query = "INSERT INTO " . $table . " SET " . $this->_makeset($values);
@@ -276,7 +276,7 @@ class Database {
 	*/
 	function update ($table, $values, $key, $log_query = TRUE) {
 		if ( empty($values) ) {
-			Err::fatal("No column values set.  Cannot update or create record.");
+			Err::fatal("No column values set.  Cannot update record.");
 		}
 
 		if ( ! isset ($values[$key]) ) {
@@ -334,19 +334,19 @@ class Database {
 	}
 
 
-	/**
-	* Perform any database select and return the results.
-	*
-	* @param string query to send to database
-	* @return mixed results
-	*/
-	function generic_select ($query) {
-		if ( ($results = $this->_dbh->query($query)) === FALSE ) {
-			Err::fatal($this->_last_error());
-		}
-
-		return($results->fetchAll());
-	}
+#	/**
+#	* Perform any database select and return the results.
+#	*
+#	* @param string query to send to database
+#	* @return mixed results
+#	*/
+#	function generic_select ($query) {
+#		if ( ($results = $this->_dbh->query($query)) === FALSE ) {
+#			Err::fatal($this->_last_error());
+#		}
+#
+#		return($results->fetchAll());
+#	}
 
 
 	/**
