@@ -34,8 +34,8 @@ class Route {
 		global $CONFIG;
 		global $ERROR;
 
-		# Trim any leading slashes.
-		$route = preg_replace('/^\/+/', '', $route);
+		# Trim any leading and trailing slashes.
+		$route = self::trim($route);
 		$route = self::reroute($route);
 
 		$controller = '';
@@ -46,31 +46,46 @@ class Route {
 
 			$route_parts = explode ('/', $route);
 
+#			Dbg::var_dump('route_parts', $route_parts);
+
 			$controller = $route_parts[0];
 			array_shift ($route_parts);
+#			Dbg::var_dump('route_parts', $route_parts);
 
 			if ( isset($route_parts[0]) AND (! empty($route_parts[0])) ) {
 				$action = $route_parts[0];
 			}
 			array_shift ($route_parts);
 
+#			Dbg::var_dump('route_parts', $route_parts);
+
 			$route = implode('/', $route_parts);
+			$route_parts = explode ('|', $route);
 
-			if ( ! empty($route) ) {
-				$query_string = $route;
+#			Dbg::var_dump('route', $route);
+#			Dbg::var_dump('route_parts', $route_parts);
 
-				$query_pairs = explode('&', $query_string);
+			# Build the $query array.
+			foreach ( $route_parts as $unsplit_pair ) {
+				$key_value = explode('=', $unsplit_pair);
 
-				foreach ($query_pairs as $keyvalue) {
-					$splitkeyvalue = explode('=', $keyvalue);
+#				Dbg::var_dump('key_value', $key_value);
 
-					if ( count($splitkeyvalue) == 2 ) {
-						$key = $splitkeyvalue[0];
-						$value = $splitkeyvalue[1];
-						$query[$key] = $value;
-					}
+				if ( count($key_value) == 2 ) {
+					$key = $key_value[0];
+					$value = $key_value[1];
+
+					$query[$key] = $value;
+
+#				} elseif ( count($key_value) == 1 ) {
+#					$key = $key_value[0];
+#					$query[$key] = TRUE;
 				}
 			}
+
+#			Dbg::var_dump('query', $query);
+
+#			exit;
 
 		}
 
@@ -158,11 +173,7 @@ class Route {
 
 		$url .= DS . $route;
 
-		if ($get) {
-			$url .= "?" . $get;
-		}
-
-		return ($url);
+		return ( htmlentities($url) );
 	}
 
 
@@ -173,7 +184,24 @@ class Route {
 	* @param string GET parameters
 	*/
 	static function redirect ($route = NULL, $get = NULL) {
-		header("Location: " . Route::toURL($route, $get));
+		header("Location: " . Route::toURL($route));
+	}
+
+
+	/**
+	* Trim all leading and trailing slashes from a route.
+	*
+	* @param string route
+	*/
+	static function trim ($route = NULL) {
+		if ( ! $route ) {
+			return($ROUTE);
+		}
+
+		$route = preg_replace('/^\/+/', '', $route);
+		$route = preg_replace('/\/+$/', '', $route);
+
+		return($route);
 	}
 
 
