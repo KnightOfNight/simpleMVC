@@ -39,11 +39,12 @@ class Session {
 
 		session_start();
 
-		# session_start doesn't resend the session cookie if the session has
-		# already started.
+		# session_start() doesn't resend the session cookie if the session has
+		# already been started, so if the session name is in the cookie, then
+		# we need to resend it.
 
 		if ( isset($_COOKIE[session_name()]) ) {
-			if (Login::remembered()) {
+			if ( Auth::remembered() ) {
 				$timeout = time() + 31536000;
 			} else {
 				$timeout = 0;
@@ -54,6 +55,7 @@ class Session {
 
 #Dbg::var_dump("application.base_path", $CONFIG->getVal("application.base_path"));
 #Dbg::var_dump("application.domain", $CONFIG->getVal("application.domain"));
+
 		}
 	}
 
