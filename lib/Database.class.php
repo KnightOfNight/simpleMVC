@@ -326,7 +326,7 @@ class Database {
 
 		$stmnt = $this->_dbh->prepare($query);
 
-		if ( $stmnt->execute($this->_getparams($values)) === FALSE ) {
+		if ( $stmnt->execute( array(':id' => $values[$key]) ) === FALSE ) {
 			Err::fatal( $this->_last_error($stmnt) );
 		}
 
