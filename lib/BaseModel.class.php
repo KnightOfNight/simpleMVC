@@ -30,19 +30,19 @@ class BaseModel {
 		global $DB;
 		global $CONFIG;
 
-		$this->_model_name = strtolower( str_replace("Model", "", get_class($this)) );
+		$this->_model_name = strtolower( str_replace('Model', '', get_class($this)) );
 
 		if ( isset ($this->table) ) {
 			$this->_table_name = $this->table;
 		} else {
-			$prefix = $CONFIG->getVal("database.prefix");
+			$prefix = $CONFIG->getVal('database.prefix');
 			$this->_table_name = $prefix . Inflection::pluralize($this->_model_name);
 		}
 
 		$this->_columns = $DB->describe($this->_table_name);
 
 		if ( ! in_array('id', $this->_columns) ) {
-			Err::fatal("Unablel to load database model.  Primary key column 'id' not found in table.");
+			Err::fatal("Unable to load database model.  Primary key column 'id' not found in table.");
 		}
 	}
 
@@ -86,7 +86,7 @@ class BaseModel {
 	*/
 	function value ($column, $value = FALSE) {
 		if (! in_array ($column, $this->_columns)) {
-			Err::fatal(sprintf ("Invalid column name '%s'.", $column));
+			Err::fatal("Invalid column name '$column'.");
 		}
 
 		if ($value === FALSE) {
@@ -133,12 +133,12 @@ class BaseModel {
 
 		$values = $this->_values;
 
-		if ( in_array("created_at", $this->_columns) ) {
-			$values["created_at"] = "DB:now()";
+		if ( in_array('created_at', $this->_columns) ) {
+			$values['created_at'] = 'DB:now()';
 		}
 
-		if ( in_array("updated_at", array_keys($this->_values)) ) {
-			unset($values["updated_at"]);
+		if ( in_array('updated_at', array_keys($this->_values)) ) {
+			unset($values['updated_at']);
 		}
 
 		return( $DB->create($this->_table_name, $values, $log_query) );
@@ -162,15 +162,36 @@ class BaseModel {
 
 		$values = $this->_values;
 
-		if ( in_array("created_at", $this->_columns) ) {
+		if ( in_array('created_at', $this->_columns) ) {
 			unset($values['created_at']);
 		}
 
-		if ( in_array("updated_at", $this->_columns) ) {
-			$values["updated_at"] = "DB:now()";
+		if ( in_array('updated_at', $this->_columns) ) {
+			$values['updated_at'] = 'DB:now()';
 		}
 
-		return( $DB->update($this->_table_name, $values, "id", $log_query) );
+		return( $DB->update($this->_table_name, $values, 'id', $log_query) );
+	}
+
+
+	/**
+	* Delete a database model object.
+	*
+	* @param bool log the query
+	* @return bool true or fatal error
+	*/
+	function delete ($log_query = TRUE) {
+		global $DB;
+
+		if ( ! isset ($DB) ) {
+			Err::fatal("Unable to update record, no database connection present.");
+		} elseif ( ! isset($this->_values['id']) ) {
+			Err::fatal("Unable to delete record, primary key column 'id' is not set.");
+		}
+
+		$values = $this->_values;
+
+		return( $DB->delete($this->_table_name, $values, 'id', $log_query) );
 	}
 
 
