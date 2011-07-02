@@ -200,12 +200,9 @@ class BaseForm2 {
 	* Output HTML that starts the form.
 	*
 	* @param string the action URL
-	* @param string form method, default 'post'
 	*/
-	function html_start ($action, $method = 'post') {
-		if ( ($method != 'post') AND ($method != 'get') ) {
-			Err::fatal(__FUNCTION__ . "() - invalid form method '$method'");
-		}
+	function html_start ($action) {
+		$method = 'post';
 
 		$id = $this->_form_name;
 
@@ -542,17 +539,9 @@ class BaseForm2 {
 	/**
 	* Check to see if the form has been submitted, populate field values.
 	* Does not check input.
-	*
-	* @param string form method, default 'post'
 	*/
-	function submitted ($method = 'post') {
-		if ( $method == 'post' ) {
-			$sub = $_POST;
-		} elseif ( $method == 'get' ) {
-			$sub = $_GET;
-		} else {
-			Err::fatal("invalid form method '$method'");
-		}
+	function submitted () {
+		$sub = $_POST;
 
 		if ( (! isset($sub['form_name'])) OR ($sub['form_name'] != $this->_form_name) ) {
 			return(FALSE);
