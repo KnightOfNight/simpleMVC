@@ -27,7 +27,7 @@ class Cache {
 	static function value ($cache_entry, $cache_value = NULL) {
 
 		# temporarily turn off all caching.
-		return(null);
+		return(NULL);
 
 		$cache_file = CACHEDIR . DS . sha1 ($cache_entry);
 
@@ -66,7 +66,7 @@ class Cache {
 	*/
 	static function get ($cache_entry) {
 		# temporarily turn off all caching.
-		return(null);
+		return(NULL);
 
 		$cache_file = CACHEDIR . DS . sha1 ($cache_entry);
 
@@ -91,7 +91,7 @@ class Cache {
 	*/
 	static function set ($cache_entry, $cache_data) {
 		# temporarily turn off all caching.
-		return(null);
+		return(NULL);
 
 		$cache_file = CACHEDIR . DS . sha1 ($cache_entry);
 
