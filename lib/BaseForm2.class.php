@@ -62,10 +62,10 @@ class BaseForm2 {
 
 		# Basic check on the fields array.
 		if ( ! isset($config['fields']) ) {
-            Err::fatal ("invalid form config: no fields configured");
+            Err::fatal ("Invalid form config: no fields configured");
 
 		} elseif ( (! is_array($config['fields'])) OR empty($config['fields']) ) {
-            Err::fatal ("invalid form config: 'fields' must be an array of one or more");
+            Err::fatal ("Invalid form config: 'fields' must be an array of one or more");
 
 		} else {
 			$this->_fields = $config['fields'];
@@ -76,7 +76,7 @@ class BaseForm2 {
 		if ( ! isset($config['options']) ) {
 			$this->_options = array();
 		} elseif ( ! is_array($config['options']) ) {
-           	Err::fatal ("invalid form config: 'options' must be an array");
+           	Err::fatal ("Invalid form config: 'options' must be an array");
 		} else {
 			$this->_options = $config['options'];
 		}
@@ -112,16 +112,16 @@ class BaseForm2 {
 
 		# type
 		if ( ! isset($this->_fields[$field_name]['type']) ) {
-			Err::fatal("invalid form config: field '$field_name' - no field type specified");
+			Err::fatal("Invalid form config: field '$field_name' - no field type specified");
 		}
 
 		if ( ! in_array($this->_fields[$field_name]['type'], $this->_field_types) ) {
-			Err::fatal("invalid form config: field '$field_name' - invalid field type '" . $this->_fields[$field_name]['type'] . "'");
+			Err::fatal("Invalid form config: field '$field_name' - invalid field type '" . $this->_fields[$field_name]['type'] . "'");
 		}
 
 		# label
 		if ( ! isset($this->_fields[$field_name]['label']) ) {
-			Err::fatal("invalid form config: field '$field_name' - field label is required");
+			Err::fatal("Invalid form config: field '$field_name' - field label is required");
 		}
 
 		# value
@@ -140,7 +140,7 @@ class BaseForm2 {
 			if ( ! isset($this->_fields[$field_name][$item]) ) {
 				$this->_fields[$field_name][$item] = array();
 			} elseif ( ! is_array($this->_fields[$field_name][$item]) ) {
-				Err::fatal("invalid form config: field '$field_name' - '$item' must be an array");
+				Err::fatal("Invalid form config: field '$field_name' - '$item' must be an array");
 			}
 		}
 
@@ -157,7 +157,7 @@ class BaseForm2 {
 		# option: choices
 		if ( in_array($this->_fields[$field_name]['type'], $this->_fields_with_choices) ) {
 			if ( ! isset($this->_fields[$field_name]['options']['choices']) ) {
-				Err::fatal("invalid form config: field '$field_name' is type '$this->_fields[$field_name]['type']' but no 'choices' found in 'options'");
+				Err::fatal("Invalid form config: field '$field_name' is type '$this->_fields[$field_name]['type']' but no 'choices' found in 'options'");
 			}
 
 			if ( ! is_array($this->_fields[$field_name]['options']['choices']) ) {
@@ -165,20 +165,20 @@ class BaseForm2 {
 				$parts = explode('.', $this->_fields[$field_name]['options']['choices']);
 
 				if ( count($parts) != 2 ) {
-					Err::fatal("invalid form config: field '$field_name' - 'choices' is invalid, should be array or 'class.method'");
+					Err::fatal("Invalid form config: field '$field_name' - option 'choices' is invalid, should be array or 'class.method'");
 				}
 
 				$class = $parts[0];
 				$method = $parts[1];
 
 				if ( ! method_exists($class, $method) ) {
-					Err::fatal("invalid form config: field '$field_name' - 'choices' is invalid, method not found");
+					Err::fatal("Invalid form config: field '$field_name' - option 'choices' is invalid, method not found");
 				}
 
 				$this->_fields[$field_name]['options']['choices'] = call_user_func( array($class, $method) );
 
 				if ( empty($this->_fields[$field_name]['options']['choices']) ) {
-					Err::fatal("invalid form config: field '$field_name' - 'choices' is invalid, method returned empty list");
+					Err::fatal("Invalid form config: field '$field_name' - option 'choices' is invalid, method returned empty list");
 				}
 
 			}
@@ -188,7 +188,7 @@ class BaseForm2 {
 		# checks
 		foreach ( $this->_fields[$field_name]['checks'] as $check_name => $check_errmsg ) {
 			if ( ! method_exists($this, $ckfunc = '_ck_' . $check_name) ) {
-				Err::fatal("invalid form config: field '$field_name' - check '$check_name' is invalid, method '$ckfunc' not found");
+				Err::fatal("Invalid form config: field '$field_name' - check '$check_name' is invalid, method '$ckfunc' not found");
 			}
 		}
 
@@ -292,8 +292,7 @@ class BaseForm2 {
 		$password = ( $hidden AND $password ) ? '' : $password;
 
 		# HTML
-?><input id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" value="<?= htmlentities($value) ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>" autocomplete="off"<?= $disabled ?><?= $password ?><?= $hidden ?>></input>
-<?php
+?><input id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" value="<?= htmlentities($value) ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>" autocomplete="off"<?= $disabled ?><?= $password ?><?= $hidden ?>></input><?php
 
 		$this->_html_field_error($field_name);
 
@@ -335,8 +334,7 @@ class BaseForm2 {
 <?php
 		}
 
-?></select>
-<?php
+?></select><?php
 
 		$this->_html_field_error($field_name);
 
@@ -363,8 +361,7 @@ class BaseForm2 {
 		$checked = ( $value === TRUE ) ? ' checked="checked"' : '';
 
 		# HTML
-?><input id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" value="checked" type="checkbox"<?= $checked ?><?= $disabled ?><?= $hidden ?>></input>
-<?php
+?><input id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" value="checked" type="checkbox"<?= $checked ?><?= $disabled ?><?= $hidden ?>></input><?php
 
 		$this->_html_field_error($field_name);
 
@@ -380,7 +377,7 @@ class BaseForm2 {
 
 		# common
 		$id = $name = $this->_form_name . '_' . $field_name;
-		$value = $this->_fields[$field_name]['value'];
+		$value = (int) $this->_fields[$field_name]['value'];
 		$options = $this->_fields[$field_name]['options'];
 		$disabled = ($options['enabled'] == 'no') ? ' disabled="disabled"' : '';
 		$hidden = ($options['hidden'] == 'yes') ? ' type="hidden"' : '';
@@ -446,14 +443,8 @@ class BaseForm2 {
 		$valid = $this->_fields[$field_name]['valid'];
 		$error = $this->_fields[$field_name]['error'];
 
-		if ( $type == 'text' ) {
-?><br/>
-<?php
-		}
-
 		if ( ! $valid ) {
-?><span class="mvc_form_error"><?= $error ?></span>
-<?php
+?><span class="mvc_form_error"><?= $error ?></span><?php
 		}
 	}
 
