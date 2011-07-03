@@ -14,6 +14,11 @@
 */
 
 
+# Stop the default output buffer immediately.  OB is controlled by the View class.
+#ob_end_clean();
+ob_start( 'ob_gzhandler' );
+
+
 /**
 * Global variable: script start time in decimal seconds.
 * @global float $START_TIME
@@ -48,12 +53,6 @@ require_once('__class_exists.php');
 
 # Load any libraries or configuration files that the autoloader won't catch
 require_once(CFGDIR.DS.'inflection.php');
-
-
-# Turn on output buffering, using gzip to compress output if supported by
-# browser
-#
-ob_start('ob_gzhandler');
 
 
 /**

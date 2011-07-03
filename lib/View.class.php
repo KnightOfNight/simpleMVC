@@ -261,13 +261,6 @@ class View {
 		global $CONFIG;
 
 
-		# Find the body view corresponding to the controller and action.
-		#
-		if ( ! File::ready($this->_render["body_file"] = VIEWDIR.DS.$this->_controller.DS.$this->_action.".php") ) {
-			Err::fatal( "Unable to render view for route '/$this->_controller/$this->_action', page body '" . $this->_render["body_file"] . "' not found." );
-		}
-
-
 		# Find the page header file if it is set to render in this view.
 		#
 		if ( $this->_config["render_header"] ) {
@@ -276,6 +269,13 @@ class View {
 			} else {
 				Err::fatal("Unable to render view for route '/$this->_controller/$this->_action', no page header found.");
 			}
+		}
+
+
+		# Find the body view corresponding to the controller and action.
+		#
+		if ( ! File::ready($this->_render["body_file"] = VIEWDIR.DS.$this->_controller.DS.$this->_action.".php") ) {
+			Err::fatal( "Unable to render view for route '/$this->_controller/$this->_action', page body '" . $this->_render["body_file"] . "' not found." );
 		}
 
 
@@ -297,7 +297,7 @@ class View {
 
 		# Run the PHP in the body view and capture the output.  This is run
 		# first so that the body can modify the overall page, such as adding
-		# CSS or JS files or by filling slots.
+		# CSS or JS files or filling slots.
 		#
 		ob_start();
 		include($this->_render["body_file"]);
