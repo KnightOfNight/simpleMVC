@@ -14,8 +14,8 @@
 */
 
 
-# Stop the default output buffer immediately.  OB is controlled by the View class.
-#ob_end_clean();
+# Stop the default output buffer and enable compression.
+ob_end_clean();
 ob_start( 'ob_gzhandler' );
 
 
