@@ -207,7 +207,7 @@ class BaseForm2 {
 		$id = $this->_form_name;
 
 ?><!-- start form HTML -->
-<form id="<?= $id ?>" method="<?= $method ?>" action="<?= $action ?>">
+<form id="<?= $id ?>" method="<?= $method ?>" action="<?= $action ?>" enctype="multipart/form-data">
 <div class="mvc_form">
 <input name="form_name" class="mvc_form_internal" value="<?= $this->_form_name ?>" type="hidden"></input>
 <?php
@@ -278,6 +278,8 @@ class BaseForm2 {
 		$hidden = ($options['hidden'] == 'yes') ? ' type="hidden"' : '';
 
 		# specific
+		$hide_error = ( isset($options['hide_error']) AND ($options['hide_error'] == 'yes' ) ) ?  TRUE : FALSE;
+
 		$inputclass = 'mvc_form_text_field';
 
 		$size = ( isset($options['size']) AND ($options['size'] > 0) ) ?  $options['size'] : 10;
@@ -286,12 +288,17 @@ class BaseForm2 {
 
 		$password = ( isset($options['password']) AND ($options['password'] == 'yes') ) ? ' type="password"' : '';
 
-		$password = ( $hidden AND $password ) ? '' : $password;
+		$file_upload = ( isset($options['file_upload']) AND ($options['file_upload'] == 'yes') ) ? ' type="file"' : '';
 
-		$hide_error = ( isset($options['hide_error']) AND ($options['hide_error'] == 'yes' ) ) ?  TRUE : FALSE;
+		# password and file-upload override hidden
+		$hidden = ( $password ) ? '' : $hidden;
+		$hidden = ( $file_upload ) ? '' : $hidden;
+
+		# password overrides file-upload
+		$file_upload = ( $password ) ? '' : $file_upload;
 
 		# HTML
-?><input id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" value="<?= htmlentities($value) ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>" autocomplete="off"<?= $disabled ?><?= $password ?><?= $hidden ?>></input><?php
+?><input id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" value="<?= htmlentities($value) ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>" autocomplete="off"<?= $disabled ?><?= $hidden ?><?= $password ?><?= $file_upload ?>></input><?php
 
 		if ( ! $hide_error ) {
 			$this->html_field_error($field_name);
