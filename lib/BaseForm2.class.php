@@ -288,10 +288,14 @@ class BaseForm2 {
 
 		$password = ( $hidden AND $password ) ? '' : $password;
 
+		$hide_error = ( isset($options['hide_error']) AND ($options['hide_error'] == 'yes' ) ) ?  TRUE : FALSE;
+
 		# HTML
 ?><input id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" value="<?= htmlentities($value) ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>" autocomplete="off"<?= $disabled ?><?= $password ?><?= $hidden ?>></input><?php
 
-		$this->_html_field_error($field_name);
+		if ( ! $hide_error ) {
+			$this->html_field_error($field_name);
+		}
 
 	}
 
@@ -333,7 +337,7 @@ class BaseForm2 {
 
 ?></select><?php
 
-		$this->_html_field_error($field_name);
+		$this->html_field_error($field_name);
 
 	}
 
@@ -360,7 +364,7 @@ class BaseForm2 {
 		# HTML
 ?><input id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" value="checked" type="checkbox"<?= $checked ?><?= $disabled ?><?= $hidden ?>></input><?php
 
-		$this->_html_field_error($field_name);
+		$this->html_field_error($field_name);
 
 	}
 
@@ -425,7 +429,7 @@ class BaseForm2 {
 </table>
 <?php
 
-		$this->_html_field_error($field_name);
+		$this->html_field_error($field_name);
 
 	}
 
@@ -435,7 +439,7 @@ class BaseForm2 {
 	*
 	* @param string field name
 	*/
-	private function _html_field_error ($field_name) {
+	function html_field_error ($field_name) {
 		$type = $this->_fields[$field_name]['type'];
 		$valid = $this->_fields[$field_name]['valid'];
 		$error = $this->_fields[$field_name]['error'];
