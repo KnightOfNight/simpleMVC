@@ -44,7 +44,7 @@ class Log {
 
 		$this->_level = ($level < 0) ? Log::NONE : ($level > $max_level) ? $max_level : $level;
 
-		$this->msg(Log::INFO, "MCSMVC starting");
+		$this->___msg(Log::INFO, Config::get('framework.version') . ' starting');
 	}
 
 
@@ -55,7 +55,23 @@ class Log {
 	* @param integer the level of the message being logged
 	* @param string the message to log
 	*/
-	function msg ($level, $message) {
+	static function msg ($level, $message) {
+		global $simpleMVC_LOG;
+
+		if ( isset($simpleMVC_LOG) ) {
+			$simpleMVC_LOG->___msg($level, $message);
+		}
+	}
+
+
+	/**
+	* Write out a log message if the message level is allowed by the selected
+	* log level.
+	*
+	* @param integer the level of the message being logged
+	* @param string the message to log
+	*/
+	function ___msg ($level, $message) {
 		if ( ($this->_level === Log::NONE) || (! ($level & $this->_level)) ) {
 			return;
 		}
@@ -78,7 +94,7 @@ class Log {
 	* Write a final message to the log and close it.
 	*/
 	function close () {
-		$this->msg (Log::INFO, sprintf ("MCSMVC finishing, %.6fs elapsed", microtime(TRUE) - $GLOBALS["START_TIME"]));
+		$this->msg(Log::INFO, Config::get('framework.version') . ' finishing, ' . sprintf ("%.6fs elapsed", microtime(TRUE) - $GLOBALS["START_TIME"]));
 	}
 
 
