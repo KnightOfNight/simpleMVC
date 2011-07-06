@@ -20,7 +20,7 @@ ob_start( 'ob_gzhandler' );
 
 
 /**
-* Global variable: script start time in decimal seconds.
+* Script start time.
 * @global float $START_TIME
 */
 $START_TIME = microtime(TRUE);
@@ -37,8 +37,8 @@ $LIBDIR = array(	ROOT.DS.'lib',
 					ROOT.DS.'app/lib',
 );
 /**
-* Global variable: library path.
-* @global float $LIBDIR
+* Application library path.
+* @global array $LIBDIR
 */
 $LIBDIR = implode(':', $LIBDIR);
 
@@ -56,13 +56,14 @@ require_once(CFGDIR.DS.'inflection.php');
 
 
 /**
-* @global object current application configuration
+* Current application configuration.
+* @global object $simpleMVC_CONFIG
 */
 $simpleMVC_CONFIG = new Config;
 
 
 /**
-* Global variable: database connection
+* Database connection.
 * @global Database $DB
 */
 $DB = new Database;
@@ -76,10 +77,10 @@ Session::start();
 
 
 /**
-* Global variable: log file handler
-* @global Log $L
+* Log file handler.
+* @global object $simpleMVC_LOG
 */
-$L = new Log((int) Config::get('framework.loglevel'));
+$simpleMVC_LOG = new Log( (int) Config::get('framework.loglevel') );
 
 
 # Setup error reporting
@@ -98,19 +99,19 @@ if ( Config::get('application.development') !== FALSE ) {
 # Get the route
 #
 /**
-* Global variable: initially requested route
-* @global string $ROUTE
+* Initially requested application route.
+* @global string $simpleMVC_ROUTE
 */
-$ROUTE = isset($_GET['route']) ? $_GET['route'] : NULL;
-$L->msg(Log::INFO, "initial route = '" . $ROUTE . "'");
+$simpleMVC_ROUTE = isset($_GET['route']) ? $_GET['route'] : NULL;
+Log::msg(Log::INFO, "initial route = '$simpleMVC_ROUTE'");
 
 
 # Dispatch the route.
 #
-Dispatch::go($ROUTE);
+Dispatch::go($simpleMVC_ROUTE);
 
 
 # Close up.
 #
-$L->close();
+$simpleMVC_LOG->close();
 unset($DB);
