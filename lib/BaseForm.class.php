@@ -13,7 +13,7 @@
 *
 * @package MCS_MVC_API
 */
-class BaseForm2 {
+class BaseForm {
 
 	private $_use_json;			# JSON file
 	private $_form_name;		# name of the form
