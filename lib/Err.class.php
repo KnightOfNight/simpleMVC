@@ -23,17 +23,14 @@ class Err {
 	* @param string error message
 	*/
 	static function fatal ($errmsg) {
-		global $CONFIG;
-
 		if ( is_null($errmsg) ) {
-			$errmsg = "undefined error message";
+			$errmsg = 'Unspecified error.';
 		}
 
-		if ( isset($CONFIG) ) {
-			$app_version = $CONFIG->getVal("framework.version");
-			$app_copyright = $CONFIG->getVal("framework.copyright");
-		} else {
+		if ( ($app_version = Config::get('framework.version')) === FALSE ) {
 			$app_version = "MCS MVC";
+		}
+		if ( ($app_copyright = Config::get('framework.copyright')) === FALSE ) {
 			$app_copyright = "&copy; MCS 'Net Productions";
 		}
 

@@ -28,14 +28,13 @@ class BaseModel {
 	*/
 	function __construct () {
 		global $DB;
-		global $CONFIG;
 
 		$this->_model_name = strtolower( str_replace('Model', '', get_class($this)) );
 
 		if ( isset ($this->table) ) {
 			$this->_table_name = $this->table;
 		} else {
-			$prefix = $CONFIG->getVal('database.prefix');
+			$prefix = Config::get('database.prefix');
 			$this->_table_name = $prefix . Inflection::pluralize($this->_model_name);
 		}
 

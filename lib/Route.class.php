@@ -31,7 +31,6 @@ class Route {
 	* @return mixed array verified application route OR string error message
 	*/
 	static function parse ($route) {
-		global $CONFIG;
 		global $ERROR;
 
 		# Trim any leading and trailing slashes.
@@ -91,13 +90,13 @@ class Route {
 
 
 		# Check the controller.
-		if ( (! $controller) AND (($controller = $CONFIG->getVal("dispatcher.controller.default")) === FALSE) ) {
+		if ( (! $controller) AND (($controller = Config::get("dispatcher.controller.default")) === FALSE) ) {
 			$error = "Invalid application route: no route specified via URL and no default controller found.";
 			if ( $ERROR ) { $error .= "\n\nAdditional Error...\n\n" . $ERROR; }
 			return($error);
 		}
 
-		if ( (($controllers = $CONFIG->getVal("dispatcher.controller")) === FALSE) OR (! array_key_exists($controller, $controllers)) ) {
+		if ( (($controllers = Config::get("dispatcher.controller")) === FALSE) OR (! array_key_exists($controller, $controllers)) ) {
 			$error = "Invalid application route: controller '$controller' not found in configuration.";
 			if ( $ERROR ) { $error .= "\n\nAdditional Error...\n\n" . $ERROR; }
 			return($error);
@@ -109,7 +108,7 @@ class Route {
 
 
 		# Check the action.
-		if ( (! $action) AND (($action = $CONFIG->getVal("dispatcher.controller." . $controller . ".default_action")) === FALSE) ) {
+		if ( (! $action) AND (($action = Config::get("dispatcher.controller." . $controller . ".default_action")) === FALSE) ) {
 			$error = "Invalid application route: no action specified via URL and no default action found for controller '$controller'.";
 			if ( $ERROR ) { $error .= "\n\nAdditional Error...\n\n" . $ERROR; }
 			return($error);
@@ -162,8 +161,7 @@ class Route {
 	* @return string URL to applicaton route
 	*/
 	static function toURL ($route, $get = NULL) {
-		global $CONFIG;
-		$url = $CONFIG->getVal("application.base_path");
+		$url = Config::get("application.base_path");
 
 		if ($route === NULL) {
 			$route = "";
@@ -209,9 +207,7 @@ class Route {
 	* Change a route by applying any matching reroute rules from the application configuration.
 	*/
 	private static function reroute ($route) {
-		global $CONFIG;
-
-		$routes = $CONFIG->getVal("routes");
+		$routes = Config::get("routes");
 
 		foreach ($routes as $pattern => $new_route) {
 			if ( preg_match($pattern, $route) ) {

@@ -169,10 +169,8 @@ class View {
 	* Otherwise you risk invalid HTML.
 	*/
 	protected function showCSS () {
-		global $CONFIG;
-
 		foreach ($this->_css_files as $file) {
-			$fullpath = $CONFIG->getVal("application.base_path") . "/css/" . $file;
+			$fullpath = Config::get("application.base_path") . "/css/" . $file;
 ?>
 <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $fullpath ?>" />
 <?php
@@ -202,10 +200,8 @@ class View {
 	* <head> section.  Otherwise you risk invalid HTML.
 	*/
 	protected function showJS () {
-		global $CONFIG;
-
 		foreach ($this->_js_files as $file) {
-			$fullpath = $CONFIG->getVal("application.base_path") . "/js/" . $file;
+			$fullpath = Config::get("application.base_path") . "/js/" . $file;
 
 ?>
 <script type="text/javascript" src="<?php echo $fullpath ?>"></script>
@@ -256,9 +252,6 @@ class View {
     function render () {
 		# All local variables in this function should actually be class
 		# variables so that they are not exposed to the view code.
-
-
-		global $CONFIG;
 
 
 		# Find the page header file if it is set to render in this view.
@@ -354,11 +347,6 @@ class View {
 				Err::fatal("unable to find view '$path'");
 			}
 		}
-
-
-		# Get the global variable for the application configuration.
-		#
-		global $CONFIG;
 
 
 		# Extract all the variables so that they are available to the view.

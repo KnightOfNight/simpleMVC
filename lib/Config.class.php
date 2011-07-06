@@ -35,11 +35,29 @@ class Config {
 
 
 	/**
+	* Get a configuration value by path.
+	*
+	* @param string path to the variable in the configuration tree
+	* @return mixed value
+	*/
+	static function get ($path) {
+		global $simpleMVC_CONFIG;
+
+		if ( ! isset($simpleMVC_CONFIG) ) {
+			return(FALSE);
+		}
+
+		return( $simpleMVC_CONFIG->get_value($path) );
+	}
+
+
+	/**
 	* Get a particular configuration setting.
+	*
 	* @param string path to configuration variable in the configuration tree
 	* @return mixed value of the variable
 	*/
-	function getVal ($path) {
+	function get_value ($path) {
 		$levels = explode (".", $path);
 
 		$values = $this->_values;
@@ -48,9 +66,7 @@ class Config {
 
 		foreach ($levels as $level) {
 			if (! isset ($values[$level])) {
-
-				$ERROR = "Config::getVal() - unable to find requested path '$path', failed on '$level'.";
-
+				$ERROR = "Config->get_value() - unable to find requested path '$path', failed on '$level'.";
 				return(FALSE);
 			}
 

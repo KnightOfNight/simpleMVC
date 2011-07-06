@@ -64,7 +64,7 @@ class Log {
 
 		$log = new LogModel();
 
-		$log->value("session", $GLOBALS["SESSION_ID"]);
+		$log->value("session", session_id());
 		$log->value("unixtime", $time[1]);
 		$log->value("unixtimeus", $time[0] * 1000000);
 		$log->value("level", $level);

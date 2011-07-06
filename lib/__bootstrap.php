@@ -56,10 +56,9 @@ require_once(CFGDIR.DS.'inflection.php');
 
 
 /**
-* Global variable: current application configuration
-* @global array $CONFIG
+* @global object current application configuration
 */
-$CONFIG = new Config;
+$simpleMVC_CONFIG = new Config;
 
 
 /**
@@ -67,27 +66,20 @@ $CONFIG = new Config;
 * @global Database $DB
 */
 $DB = new Database;
-if ( ($cfg = $CONFIG->getVal('database')) === FALSE ) {
+if ( Config::get('database') === FALSE ) {
 	Err::fatal("Unable to read database configuration.\n\n" . $ERROR);
 }
-$DB->connect($cfg['host'], $cfg['port'], $cfg['name'], $cfg['user'], $cfg['pass']);
+$DB->connect( Config::get('database') );
 
 
 Session::start();
 
 
 /**
-* Global variable: current session ID
-* @global string $SESSION_ID
-*/
-$SESSION_ID = session_id();
-
-
-/**
 * Global variable: log file handler
 * @global Log $L
 */
-$L = new Log((int) $CONFIG->getVal('framework.loglevel'));
+$L = new Log((int) Config::get('framework.loglevel'));
 
 
 # Setup error reporting
@@ -96,7 +88,7 @@ error_reporting(E_ALL | E_STRICT);
 ini_set('log_errors', 'ON');
 ini_set('error_log', LOGDIR.DS.'error.log');
 
-if ( $CONFIG->getVal('application.development') !== FALSE ) {
+if ( Config::get('application.development') !== FALSE ) {
 	ini_set('display_errors', 'ON');
 } else {
 	ini_set('display_errors', 'OFF');

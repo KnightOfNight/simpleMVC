@@ -25,8 +25,6 @@ class Session {
 	* Start a new session.
 	*/
 	static function start () {
-		global $CONFIG;
-
 		ini_set("session.gc_probability", 1);
 		ini_set("session.gc_divisor", 1000);
 		ini_set("session.gc_maxlifetime", 43200);
@@ -35,7 +33,7 @@ class Session {
 
 		session_name("session");
 
-		session_set_cookie_params(0, $CONFIG->getVal("application.base_path"), $CONFIG->getVal("application.domain"), TRUE, TRUE);
+		session_set_cookie_params(0, Config::get("application.base_path"), Config::get("application.domain"), TRUE, TRUE);
 
 		session_start();
 
@@ -50,12 +48,7 @@ class Session {
 				$timeout = 0;
 			}
 
-			setcookie( session_name(), session_id(), $timeout, $CONFIG->getVal("application.base_path"),
-				$CONFIG->getVal("application.domain"), TRUE, TRUE);
-
-#Dbg::var_dump("application.base_path", $CONFIG->getVal("application.base_path"));
-#Dbg::var_dump("application.domain", $CONFIG->getVal("application.domain"));
-
+			setcookie( session_name(), session_id(), $timeout, Config::get("application.base_path"), Config::get("application.domain"), TRUE, TRUE);
 		}
 	}
 
@@ -64,12 +57,9 @@ class Session {
 	* Stop the current session.
 	*/
 	static function stop () {
-		global $CONFIG;
-
 		$_SESSION = array();
 
-		setcookie( session_name(), "", time() - 86400,  $CONFIG->getVal("application.base_path"),
-			$CONFIG->getVal("application.domain"),  TRUE, TRUE);
+		setcookie( session_name(), "", time() - 86400,  Config::get("application.base_path"), Config::get("application.domain"),  TRUE, TRUE);
 
 		session_destroy();
 	}

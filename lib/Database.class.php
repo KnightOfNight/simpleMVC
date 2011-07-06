@@ -23,13 +23,15 @@ class Database {
 	/**
 	* Connect to a database.
 	*
-	* @param string host
-	* @param integer port number
-	* @param string database name
-	* @param string username
-	* @param string password
+	* @param array database config
 	*/
-	function connect ($host, $port, $name, $user, $pass) {
+	function connect ( $cfg ) {
+		$host = $cfg['host'];
+		$port = $cfg['port'];
+		$name = $cfg['name'];
+		$user = $cfg['user'];
+		$pass = $cfg['pass'];
+
 		$dsn = sprintf("%s:host=%s;port=%d;dbname=%s", "mysql", $host, $port, $name);
 
 		try {
