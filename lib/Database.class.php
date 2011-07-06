@@ -78,8 +78,6 @@ class Database {
 	* @return mixed query results
 	*/
 	function select ($criteria) {
-		global $L;
-
 		$query = "SELECT ";
 
 		# columns and expressions list
@@ -118,7 +116,7 @@ class Database {
 
 
 		# WHERE
-		$L->msg(Log::DEBUG, "Database::select() - parsing 'where' information");
+		Log::msg(Log::DEBUG, "Database::select() - parsing 'where' information");
 		$wheres = $criteria["where"];
 		$where_str = "";
 		$values = array();
@@ -126,8 +124,8 @@ class Database {
 			$operator = $where[0];
 			$clauses = $where[1];
 
-			$L->msg(Log::DEBUG, "operator = '" . $operator . "'");
-			$L->msg(Log::DEBUG, "clauses = '" . $clauses . "'");
+			Log::msg(Log::DEBUG, "operator = '" . $operator . "'");
+			Log::msg(Log::DEBUG, "clauses = '" . $clauses . "'");
 
 			if ($where_str) {
 				$where_str .= " " . $operator;
@@ -136,25 +134,25 @@ class Database {
 			}
 
 			$clause_str = "";
-			$L->msg(Log::DEBUG, "clause_str = '" . $clause_str . "'");
+			Log::msg(Log::DEBUG, "clause_str = '" . $clause_str . "'");
 
 			foreach ($clauses as $clause) {
-				$L->msg(Log::DEBUG, "found clause");
+				Log::msg(Log::DEBUG, "found clause");
 
 				if (! $clause_str) {
 					$clause_str = " (";
 				}
 
 				if (is_array ($clause)) {
-					$L->msg(Log::DEBUG, "clause is an array");
+					Log::msg(Log::DEBUG, "clause is an array");
 
 					$col = $clause[0];
 					$op = $clause[1];
 					$val = $clause[2];
 
-					$L->msg(Log::DEBUG, "col = '" . $col . "'");
-					$L->msg(Log::DEBUG, "op = '" . $op . "'");
-					$L->msg(Log::DEBUG, "val = '" . $val . "'");
+					Log::msg(Log::DEBUG, "col = '" . $col . "'");
+					Log::msg(Log::DEBUG, "op = '" . $op . "'");
+					Log::msg(Log::DEBUG, "val = '" . $val . "'");
 
 					if ( preg_match('/^DB:/', $val) ) {
 						$val = preg_replace('/^DB:/', "", $val);
@@ -164,7 +162,7 @@ class Database {
 						array_push ($values, $val);
 					}
 				} else {
-					$L->msg(Log::DEBUG, "clause is an operator");
+					Log::msg(Log::DEBUG, "clause is an operator");
 
 					$clause_str .= " " . $clause . " ";
 				}
@@ -226,7 +224,7 @@ class Database {
 			$index++;
 		}
 
-		$L->msg(Log::DEBUG, "Database::select() - database query = '$query'");
+		Log::msg(Log::DEBUG, "Database::select() - database query = '$query'");
 
 		if ($stmnt->execute() === FALSE) {
 			Err::fatal($this->_last_error($stmnt));
@@ -254,8 +252,7 @@ class Database {
 		$this->_last_query = $query;
 
 		if ( $log_query === TRUE ) {
-			global $L;
-			$L->msg(Log::DEBUG, "database query = '" . $query . "'");
+			Log::msg(Log::DEBUG, "database query = '" . $query . "'");
 		}
 
 		$stmnt = $this->_dbh->prepare($query);
@@ -290,8 +287,7 @@ class Database {
 		$this->_last_query = $query;
 
 		if ( $log_query === TRUE ) {
-			global $L;
-			$L->msg(Log::DEBUG, "database query = '" . $query . "'");
+			Log::msg(Log::DEBUG, "database query = '" . $query . "'");
 		}
 
 		$stmnt = $this->_dbh->prepare($query);
@@ -322,8 +318,7 @@ class Database {
 		$this->_last_query = $query;
 
 		if ( $log_query === TRUE ) {
-			global $L;
-			$L->msg(Log::DEBUG, "database query = '" . $query . "'");
+			Log::msg(Log::DEBUG, "database query = '" . $query . "'");
 		}
 
 		$stmnt = $this->_dbh->prepare($query);
