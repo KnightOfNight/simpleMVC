@@ -326,36 +326,36 @@ class View {
 	*
 	* @param string name of the view to include, formatted as <controller>/<view name> (.php is optional)
 	*/
-	private function include_view ($path = "") {
-		if ( empty($path) ) {
-			Err::fatal("no view passed");
-		}
-
-		# trim all leading slashes
-		$path = Route::trim($path);
-
-		$parts = explode('/', $path);
-
-		$controller = $parts[0];
-		$view = $parts[1];
-
-		$file = VIEWDIR.DS.$controller.DS.$view;
-
-		if ( ! File::Ready($file) ) {
-			$file .= ".php";
-			if ( ! File::Ready($file) ) {
-				Err::fatal("unable to find view '$path'");
-			}
-		}
-
-
-		# Extract all the variables so that they are available to the view.
-		#
-		extract ($this->_config["variables"]);
-
-
-		include($file);
-	}
+#	private function include_view ($path = "") {
+#		if ( empty($path) ) {
+#			Err::fatal("no view passed");
+#		}
+#
+#		# trim all leading slashes
+#		$path = Route::trim($path);
+#
+#		$parts = explode('/', $path);
+#
+#		$controller = $parts[0];
+#		$view = $parts[1];
+#
+#		$file = VIEWDIR.DS.$controller.DS.$view;
+#
+#		if ( ! File::Ready($file) ) {
+#			$file .= ".php";
+#			if ( ! File::Ready($file) ) {
+#				Err::fatal("unable to find view '$path'");
+#			}
+#		}
+#
+#
+#		# Extract all the variables so that they are available to the view.
+#		#
+#		extract ($this->_config["variables"]);
+#
+#
+#		include($file);
+#	}
 
 
 	function __destruct () {}
