@@ -23,9 +23,10 @@ define ( 'FORMDIR', ROOT.'/app/forms' );
 define ( 'CFGDIR', ROOT.'/app/cfg' );
 
 define ( 'TMPDIR', ROOT.'/tmp/tmp' );
-define ( 'LOGDIR', ROOT.'/tmp/logs' );
-define ( 'CACHEDIR', ROOT.'/tmp/cache' );
-define ( 'SESSIONDIR', ROOT.'/tmp/sessions' );
+
+define ( 'LOGDIR', TMPDIR.'/logs' );
+define ( 'CACHEDIR', TMPDIR.'/cache' );
+define ( 'SESSIONDIR', TMPDIR.'/sessions' );
 
 define ( 'IMGPATH', 'img' );
 define ( 'IMGDIR', ROOT.'/public/'.IMGPATH );
