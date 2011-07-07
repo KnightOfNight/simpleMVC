@@ -49,6 +49,7 @@ class Database {
 	* Describe a table and return the list of column names.
 	*
 	* @param string table name
+	*
 	* @return array column names
 	*/
 	static function describe ($table) {
@@ -66,6 +67,7 @@ class Database {
 	* Internal function to describe a table and return the list of column names.
 	*
 	* @param string table name
+	*
 	* @return array column names
 	*/
 	function ___describe ($table) {
@@ -77,7 +79,8 @@ class Database {
 			$this->_last_query = $query;
 
 			if ( ($results = $this->_dbh->query($query)) === FALSE ) {
-				Err::fatal($this->_last_error());
+				Err::set_last($this->_last_error());
+				return(FALSE);
 			}
 
 			while ( $result = $results->fetch() ) {
@@ -95,6 +98,7 @@ class Database {
 	* Perform a database select, building the query from the passed criteria.
 	*
 	* @param mixed hash of all search criteria
+	*
 	* @return mixed query results
 	*/
 	static function select ($criteria) {
@@ -112,6 +116,7 @@ class Database {
 	* Internal function to perform a database select.
 	*
 	* @param mixed hash of all search criteria
+	*
 	* @return mixed query results
 	*/
 	function ___select ($criteria) {
@@ -254,7 +259,8 @@ class Database {
 		$index = 0;
 		foreach ($values as $val) {
 			if ($stmnt->bindValue($index + 1, $val) === FALSE) {
-				Err::fatal( sprintf("unable to bind value '%s' to parameter %d", $val, $index + 1) );
+				Err::set_last( sprintf("Unable to bind value '%s' to parameter %d", $val, $index + 1) );
+				return(FALSE);
 			}
 			$index++;
 		}
@@ -262,7 +268,8 @@ class Database {
 		Log::msg(Log::DEBUG, "Database::select() - database query = '$query'");
 
 		if ($stmnt->execute() === FALSE) {
-			Err::fatal($this->_last_error($stmnt));
+			Err::set_last($this->_last_error($stmnt));
+			return(FALSE);
 		}
 
 		return ( $stmnt->fetchAll(PDO::FETCH_BOTH) );
@@ -275,7 +282,8 @@ class Database {
 	* @param string table name
 	* @param hash column name => value
 	* @param bool TRUE => log the query
-	* @return integer new record id
+	*
+	* @return integer new record id or FALSE on error
 	*/
 	static function create ($table, $values, $log_query = TRUE) {
 		global $simpleMVC;
@@ -294,11 +302,13 @@ class Database {
 	* @param string table name
 	* @param hash column name => value
 	* @param bool TRUE => log the query
-	* @return integer new record id
+	*
+	* @return integer new record id or FALSE on error
 	*/
 	function ___create ($table, $values, $log_query = TRUE) {
 		if ( empty($values) ) {
-			Err::fatal("No column values set.  Cannot create record.");
+			Err::set_last("No column values set.  Cannot create record.");
+			return(FALSE);
 		}
 
 	 	$query = "INSERT INTO " . $table . " SET " . $this->_makeset($values);
@@ -312,7 +322,8 @@ class Database {
 		$stmnt = $this->_dbh->prepare($query);
 
 		if ( $stmnt->execute($this->_getparams($values)) === FALSE ) {
-			Err::fatal($this->_last_error($stmnt));
+			Err::set_last($this->_last_error($stmnt));
+			return(FALSE);
 		}
 
 		return( $this->_dbh->lastInsertId() );
@@ -326,6 +337,8 @@ class Database {
 	* @param hash column name => value
 	* @param string primary key column name
 	* @param bool TRUE => log the query
+	*
+	* @return bool TRUE => update OK
 	*/
 	static function update ($table, $values, $key, $log_query = TRUE) {
 		global $simpleMVC;
@@ -344,15 +357,20 @@ class Database {
 	* @param string table name
 	* @param hash column name => value
 	* @param string primary key column name
+	*
 	* @param bool TRUE => log the query
+	*
+	* @return bool TRUE => update OK
 	*/
 	function ___update ($table, $values, $key, $log_query = TRUE) {
 		if ( empty($values) ) {
-			Err::fatal("No column values set.  Cannot update record.");
+			Err::set_last("No column values set.  Cannot update record.");
+			return(FALSE);
 		}
 
 		if ( ! isset ($values[$key]) ) {
-			Err::fatal( sprintf("No value set for primary key column '%s'.", $key) );
+			Err::set_last( sprintf("No value set for primary key column '%s'.", $key) );
+			return(FALSE);
 		}
 
 		$query = "UPDATE " . $table . " SET " . $this->_makeset($values) . " WHERE " . $key . " = :id";
@@ -366,7 +384,8 @@ class Database {
 		$stmnt = $this->_dbh->prepare($query);
 
 		if ( $stmnt->execute($this->_getparams($values)) === FALSE ) {
-			Err::fatal( $this->_last_error($stmnt) );
+			Err::set_last( $this->_last_error($stmnt) );
+			return(FALSE);
 		}
 
 		return (TRUE);
@@ -380,6 +399,8 @@ class Database {
 	* @param hash column name => value
 	* @param string primary key column name
 	* @param bool TRUE => log the query
+	*
+	* @return bool TRUE => OK
 	*/
 	static function delete ($table, $values, $key, $log_query = TRUE) {
 		global $simpleMVC;
@@ -399,10 +420,13 @@ class Database {
 	* @param hash column name => value
 	* @param string primary key column name
 	* @param bool TRUE => log the query
+	*
+	* @return bool TRUE => OK
 	*/
 	function ___delete ($table, $values, $key, $log_query = TRUE) {
 		if ( ! isset ($values[$key]) ) {
-			Err::fatal( sprintf("No value set for primary key column '%s'.", $key) );
+			Err::set_last( sprintf("No value set for primary key column '%s'.", $key) );
+			return(FALSE);
 		}
 
 		$query = "DELETE FROM " . $table . " WHERE " . $key . " = :id";
@@ -416,7 +440,8 @@ class Database {
 		$stmnt = $this->_dbh->prepare($query);
 
 		if ( $stmnt->execute( array(':id' => $values[$key]) ) === FALSE ) {
-			Err::fatal( $this->_last_error($stmnt) );
+			Err::set_last( $this->_last_error($stmnt) );
+			return(FALSE);
 		}
 
 		return (TRUE);

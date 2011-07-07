@@ -19,6 +19,7 @@ class Config {
 
 	/**
 	* Create a new Config object by loading in the application's configuration.
+	*
 	* @return Config a new Config object
 	*/
 	function __construct () {
@@ -38,13 +39,14 @@ class Config {
 	* Get a particular configuration setting.
 	*
 	* @param string path to configuration variable in the configuration tree
+	*
 	* @return mixed value of the variable
 	*/
 	static function get ($path) {
 		global $simpleMVC;
 
         if ( (! isset($simpleMVC['config'])) OR (! ($config = $simpleMVC['config']) instanceof Config) ) {
-            Err::fatal("Database::" . __function__ . "() called before configuration loaded.");
+            Err::fatal("Config::" . __function__ . "() called before configuration loaded.");
         }
 
 		return( $config->___get($path) );
@@ -55,6 +57,7 @@ class Config {
 	* Get a particular configuration setting.
 	*
 	* @param string path to configuration variable in the configuration tree
+	*
 	* @return mixed value of the variable
 	*/
 	function ___get ($path) {

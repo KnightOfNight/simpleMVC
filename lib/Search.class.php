@@ -337,7 +337,11 @@ class Search {
 			Err::fatal("you must select at least one column to be returned in the search results");
 		}
 
-		return( Database::select($this->_criteria) );
+		if ( ($results = Database::select($this->_criteria)) === FALSE ) {
+			Err::fatal("Unable to execute search.\n\n" . Err::last());
+		}
+
+		return($results);
 	}
 
 

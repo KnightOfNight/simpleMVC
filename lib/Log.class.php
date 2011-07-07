@@ -59,7 +59,7 @@ class Log {
 		global $simpleMVC;
 
         if ( (! isset($simpleMVC['log'])) OR (! ($log = $simpleMVC['log']) instanceof Log) ) {
-            Err::fatal("Database::" . __function__ . "() called before logging setup.");
+            Err::fatal("Log::" . __function__ . "() called before logging setup.");
         }
 
 		$log->___msg($level, $message);

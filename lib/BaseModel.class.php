@@ -36,7 +36,9 @@ class BaseModel {
 			$this->_table_name = $prefix . Inflection::pluralize($this->_model_name);
 		}
 
-		$this->_columns = Database::describe($this->_table_name);
+		if ( ($this->_columns = Database::describe($this->_table_name)) === FALSE ) {
+			Err::fatal("Unable to load database model, unable to describe table.\n\n" . Err::last());
+		}
 
 		if ( ! in_array('id', $this->_columns) ) {
 			Err::fatal("Unable to load database model.  Primary key column 'id' not found in table.");
@@ -134,7 +136,11 @@ class BaseModel {
 			unset($values['updated_at']);
 		}
 
-		return( Database::create($this->_table_name, $values, $log_query) );
+		if ( ($ret = Database::create($this->_table_name, $values, $log_query)) === FALSE ) {
+			Err::fatal("Unable to create database record.\n\n" . Err::last());
+		}
+
+		return($ret);
 	}
 
 
@@ -159,7 +165,11 @@ class BaseModel {
 			$values['updated_at'] = 'DB:now()';
 		}
 
-		return( Database::update($this->_table_name, $values, 'id', $log_query) );
+		if ( ($ret = Database::update($this->_table_name, $values, 'id', $log_query)) === FALSE ) {
+			Err::fatal("Unable to update database record.\n\n" . Err::last());
+		}
+
+		return($ret);
 	}
 
 
@@ -176,7 +186,11 @@ class BaseModel {
 
 		$values = $this->_values;
 
-		return( Database::delete($this->_table_name, $values, 'id', $log_query) );
+		if ( ($ret = Database::delete($this->_table_name, $values, 'id', $log_query)) === FALSE ) {
+			Err::fatal("Unable to delete database record.\n\n" . Err::last());
+		}
+
+		return($ret);
 	}
 
 
