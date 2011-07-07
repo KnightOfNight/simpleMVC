@@ -18,18 +18,18 @@
 define ('DS', DIRECTORY_SEPARATOR);
 define ('ROOT', dirname (dirname (__FILE__)));
 
-define ( 'VIEWDIR', ROOT.DS.'app'.DS.'views' );
-define ( 'FORMDIR', ROOT.DS.'app'.DS.'forms' );
-define ( 'CFGDIR', ROOT.DS.'app'.DS.'cfg' );
+define ( 'VIEWDIR', ROOT.'/app/views' );
+define ( 'FORMDIR', ROOT.'/app/forms' );
+define ( 'CFGDIR', ROOT.'/app/cfg' );
 
-define ( 'TMPDIR', ROOT.DS.'tmp'.DS.'tmp' );
-define ( 'LOGDIR', ROOT.DS.'tmp'.DS.'logs' );
-define ( 'CACHEDIR', ROOT.DS.'tmp'.DS.'cache' );
-define ( 'SESSIONDIR', ROOT.DS.'tmp'.DS.'sessions' );
+define ( 'TMPDIR', ROOT.'/tmp/tmp' );
+define ( 'LOGDIR', ROOT.'/tmp/logs' );
+define ( 'CACHEDIR', ROOT.'/tmp/cache' );
+define ( 'SESSIONDIR', ROOT.'/tmp/sessions' );
 
 define ( 'IMGPATH', 'img' );
-define ( 'IMGDIR', ROOT.DS.'public'.DS.IMGPATH );
+define ( 'IMGDIR', ROOT.'/public/'.IMGPATH );
 
-require_once(ROOT.DS.'lib'.DS.'__bootstrap.php');
+require_once(ROOT.'/lib/__bootstrap.php');
 
 

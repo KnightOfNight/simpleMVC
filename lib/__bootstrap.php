@@ -31,15 +31,15 @@ $simpleMVC['start_time'] = microtime(TRUE);
 
 # Setup the include path.
 #
-$LIBDIR = array(	ROOT.DS.'lib',
-					ROOT.DS.'lib/mvc/controllers',
-					ROOT.DS.'lib/mvc/models',
-					ROOT.DS.'lib/mvc/views',
-					ROOT.DS.'app/controllers',
-					ROOT.DS.'app/models',
+$LIBDIR = array(	ROOT.'/lib',
+					ROOT.'/lib/mvc/controllers',
+					ROOT.'/lib/mvc/models',
+					ROOT.'/lib/mvc/views',
+					ROOT.'/app/controllers',
+					ROOT.'/app/models',
 					VIEWDIR,
 					FORMDIR,
-					ROOT.DS.'app/lib',
+					ROOT.'/app/lib',
 );
 
 $LIBDIR = implode(':', $LIBDIR);
@@ -59,7 +59,7 @@ require_once('__class_exists.php');
 
 # Load any libraries or configuration files that the autoloader won't catch
 #
-require_once(CFGDIR.DS.'inflection.php');
+require_once(CFGDIR.'/inflection.php');
 
 
 # Load the framework and application configuration.
@@ -87,7 +87,7 @@ $simpleMVC['log'] = new Log( (int) Config::get('framework.loglevel') );
 #
 error_reporting(E_ALL | E_STRICT);
 ini_set('log_errors', 'ON');
-ini_set('error_log', LOGDIR.DS.'error.log');
+ini_set('error_log', LOGDIR.'/error.log');
 
 if ( Config::get('application.development') !== FALSE ) {
 	ini_set('display_errors', 'ON');
