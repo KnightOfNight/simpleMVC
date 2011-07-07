@@ -41,13 +41,13 @@ class Config {
 	* @return mixed value of the variable
 	*/
 	static function get ($path) {
-		global $simpleMVC_CONFIG;
+		global $simpleMVC;
 
-		if ( ! isset($simpleMVC_CONFIG) ) {
-			return(FALSE);
-		}
+        if ( (! isset($simpleMVC['config'])) OR (! ($config = $simpleMVC['config']) instanceof Config) ) {
+            Err::fatal("Database::" . __function__ . "() called before configuration loaded.");
+        }
 
-		return( $simpleMVC_CONFIG->___get($path) );
+		return( $config->___get($path) );
 	}
 
 
@@ -62,18 +62,17 @@ class Config {
 
 		$values = $this->_values;
 
-		global $ERROR;
-
 		foreach ($levels as $level) {
 			if (! isset ($values[$level])) {
-				$ERROR = "Config->___get() - unable to find requested path '$path', failed on '$level'.";
+				Err::set_last("Config->___get() - unable to find requested path '$path', failed on '$level'.");
+
 				return(FALSE);
 			}
 
 			$values = $values[$level];
 		}
 
-		$ERROR = '';
+		Err::set_last();
 
 		return ($values);
 	}

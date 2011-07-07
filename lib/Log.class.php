@@ -49,27 +49,28 @@ class Log {
 
 
 	/**
-	* Write out a log message if the message level is allowed by the selected
-	* log level.
+	* Write out a log message.  If the message level is not allowed by the
+	* current application log level, the message will not be written.
 	*
-	* @param integer the level of the message being logged
-	* @param string the message to log
+	* @param integer message level
+	* @param string message
 	*/
 	static function msg ($level, $message) {
-		global $simpleMVC_LOG;
+		global $simpleMVC;
 
-		if ( isset($simpleMVC_LOG) ) {
-			$simpleMVC_LOG->___msg($level, $message);
-		}
+        if ( (! isset($simpleMVC['log'])) OR (! ($log = $simpleMVC['log']) instanceof Log) ) {
+            Err::fatal("Database::" . __function__ . "() called before logging setup.");
+        }
+
+		$log->___msg($level, $message);
 	}
 
 
 	/**
-	* Write out a log message if the message level is allowed by the selected
-	* log level.
+	* Internal function to write out a log message.
 	*
-	* @param integer the level of the message being logged
-	* @param string the message to log
+	* @param integer message level
+	* @param string message
 	*/
 	function ___msg ($level, $message) {
 		if ( ($this->_level === Log::NONE) || (! ($level & $this->_level)) ) {
@@ -94,7 +95,11 @@ class Log {
 	* Write a final message to the log and close it.
 	*/
 	function close () {
-		$this->msg(Log::INFO, Config::get('framework.version') . ' finishing, ' . sprintf ("%.6fs elapsed", microtime(TRUE) - $GLOBALS["START_TIME"]));
+		global $simpleMVC;
+
+		$start_time = $simpleMVC['start_time'];
+
+		$this->msg(Log::INFO, Config::get('framework.version') . ' finishing, ' . sprintf ("%.6fs elapsed", microtime(TRUE) - $start_time));
 	}
 
 

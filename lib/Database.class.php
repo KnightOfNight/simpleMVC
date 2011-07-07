@@ -20,6 +20,9 @@ class Database {
 	private $_transaction;
 
 
+	function __construct () {}
+
+
 	/**
 	* Connect to a database.
 	*
@@ -48,7 +51,24 @@ class Database {
 	* @param string table name
 	* @return array column names
 	*/
-	function describe ($table) {
+	static function describe ($table) {
+		global $simpleMVC;
+
+		if ( (! isset($simpleMVC['database'])) OR (! ($db = $simpleMVC['database']) instanceof Database) ) {
+			Err::fatal("Database::" . __function__ . "() called before database connection setup.");
+		}
+
+		return( $db->___describe($table) );
+	}
+
+
+	/**
+	* Internal function to describe a table and return the list of column names.
+	*
+	* @param string table name
+	* @return array column names
+	*/
+	function ___describe ($table) {
 		if ( ! $columns = Cache::value($cache_name = "describe_" . $table) ) {
 			$columns = array();
 
@@ -70,14 +90,31 @@ class Database {
 		return($columns);
 	}
 
-
+	
 	/**
 	* Perform a database select, building the query from the passed criteria.
 	*
 	* @param mixed hash of all search criteria
 	* @return mixed query results
 	*/
-	function select ($criteria) {
+	static function select ($criteria) {
+		global $simpleMVC;
+
+		if ( (! isset($simpleMVC['database'])) OR (! ($db = $simpleMVC['database']) instanceof Database) ) {
+			Err::fatal("Database::" . __function__ . "() called before database connection setup.");
+		}
+
+		return( $db->___select($criteria) );
+	}
+
+
+	/**
+	* Internal function to perform a database select.
+	*
+	* @param mixed hash of all search criteria
+	* @return mixed query results
+	*/
+	function ___select ($criteria) {
 		$query = "SELECT ";
 
 		# columns and expressions list
@@ -212,8 +249,6 @@ class Database {
 
 		$this->_last_query = $query;
 
-# Dbg::var_dump ("query", $query);
-
 		$stmnt = $this->_dbh->prepare($query);
 
 		$index = 0;
@@ -242,7 +277,26 @@ class Database {
 	* @param bool TRUE => log the query
 	* @return integer new record id
 	*/
-	function create ($table, $values, $log_query = TRUE) {
+	static function create ($table, $values, $log_query = TRUE) {
+		global $simpleMVC;
+
+		if ( (! isset($simpleMVC['database'])) OR (! ($db = $simpleMVC['database']) instanceof Database) ) {
+			Err::fatal("Database::" . __function__ . "() called before database connection setup.");
+		}
+
+		return( $db->___create($table, $values, $log_query) );
+	}
+
+
+	/**
+	* Internal function to create a new database record.
+	*
+	* @param string table name
+	* @param hash column name => value
+	* @param bool TRUE => log the query
+	* @return integer new record id
+	*/
+	function ___create ($table, $values, $log_query = TRUE) {
 		if ( empty($values) ) {
 			Err::fatal("No column values set.  Cannot create record.");
 		}
@@ -273,7 +327,26 @@ class Database {
 	* @param string primary key column name
 	* @param bool TRUE => log the query
 	*/
-	function update ($table, $values, $key, $log_query = TRUE) {
+	static function update ($table, $values, $key, $log_query = TRUE) {
+		global $simpleMVC;
+
+		if ( (! isset($simpleMVC['database'])) OR (! ($db = $simpleMVC['database']) instanceof Database) ) {
+			Err::fatal("Database::" . __function__ . "() called before database connection setup.");
+		}
+
+		return($db->___update($table, $values, $key, $log_query));
+	}
+
+
+	/**
+	* Internal function to update a database record.
+	*
+	* @param string table name
+	* @param hash column name => value
+	* @param string primary key column name
+	* @param bool TRUE => log the query
+	*/
+	function ___update ($table, $values, $key, $log_query = TRUE) {
 		if ( empty($values) ) {
 			Err::fatal("No column values set.  Cannot update record.");
 		}
@@ -308,7 +381,26 @@ class Database {
 	* @param string primary key column name
 	* @param bool TRUE => log the query
 	*/
-	function delete ($table, $values, $key, $log_query = TRUE) {
+	static function delete ($table, $values, $key, $log_query = TRUE) {
+		global $simpleMVC;
+
+		if ( (! isset($simpleMVC['database'])) OR (! ($db = $simpleMVC['database']) instanceof Database) ) {
+			Err::fatal("Database::" . __function__ . "() called before database connection setup.");
+		}
+
+		return($db->___delete($table, $values, $key, $log_query));
+	}
+
+
+	/**
+	* Internal function to delete a database record.
+	*
+	* @param string table name
+	* @param hash column name => value
+	* @param string primary key column name
+	* @param bool TRUE => log the query
+	*/
+	function ___delete ($table, $values, $key, $log_query = TRUE) {
 		if ( ! isset ($values[$key]) ) {
 			Err::fatal( sprintf("No value set for primary key column '%s'.", $key) );
 		}
@@ -331,21 +423,6 @@ class Database {
 	}
 
 
-#	/**
-#	* Perform any database select and return the results.
-#	*
-#	* @param string query to send to database
-#	* @return mixed results
-#	*/
-#	function generic_select ($query) {
-#		if ( ($results = $this->_dbh->query($query)) === FALSE ) {
-#			Err::fatal($this->_last_error());
-#		}
-#
-#		return($results->fetchAll());
-#	}
-
-
 	/**
 	* Get the last database query that was executed.
 	*
@@ -358,9 +435,26 @@ class Database {
 
 	/**
 	* Begin a database transaction.
+	*
 	* @return mixed TRUE or error message
 	*/
-	function transaction_begin () {
+	static function transaction_begin () {
+		global $simpleMVC;
+
+		if ( (! isset($simpleMVC['database'])) OR (! ($db = $simpleMVC['database']) instanceof Database) ) {
+			Err::fatal("Database::" . __function__ . "() called before database connection setup.");
+		}
+
+		return( $db->___transaction_begin() );
+	}
+
+
+	/**
+	* Internal function to begin a database transaction.
+	*
+	* @return mixed TRUE or error message
+	*/
+	function ___transaction_begin () {
 		if ( $this->_transaction ) {
 			return('Database transaction already in progress.');
 		}
@@ -377,9 +471,25 @@ class Database {
 
 	/**
 	* Commit a database transaction.
+	*
 	* @return mixed TRUE or error message
 	*/
-	function transaction_commit () {
+	static function transaction_commit () {
+		global $simpleMVC;
+
+		if ( (! isset($simpleMVC['database'])) OR (! ($db = $simpleMVC['database']) instanceof Database) ) {
+			Err::fatal("Database::" . __function__ . "() called before database connection setup.");
+		}
+
+		return( $db->___transaction_commit() );
+	}
+
+	/**
+	* Internal function to commit a database transaction.
+	*
+	* @return mixed TRUE or error message
+	*/
+	function ___transaction_commit () {
 		if ( ! $this->_transaction ) {
 			return('No database transaction in progress.');
 		}
@@ -479,6 +589,9 @@ class Database {
 
 		return($params);
 	}
+
+
+	function __destruct () {}
 
 
 }

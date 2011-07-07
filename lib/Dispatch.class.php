@@ -27,9 +27,6 @@ class Dispatch {
 	* @return array optional data returned from the route processing
 	*/
 	static function go ($passed_route, $external = TRUE) {
-		global $DB;
-		global $ERROR;
-
 		$route = Route::parse($passed_route);
 
 		if ( ! is_array($route) ) {
@@ -47,8 +44,8 @@ class Dispatch {
 			if ( (! is_array($allowed_actions)) OR (! in_array($action, $allowed_actions)) ) {
 				$errmsg = "Dispatch error: route '$passed_route' cannot be accessed by an external request.";
 
-				if ( $ERROR ) {
-					$errmsg .= "\n\nAdditional Error...\n\n" . $ERROR;
+				if ( Err::last() ) {
+					$errmsg .= "\n\nAdditional Error...\n\n" . Err::last();
 				}
 
 				Err::fatal($errmsg);

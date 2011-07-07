@@ -22,13 +22,13 @@ class Err {
 	*
 	* @param string error message
 	*/
-	static function fatal ($errmsg) {
-		if ( is_null($errmsg) ) {
-			$errmsg = 'Unspecified error.';
+	static function fatal ($message) {
+		if ( is_null($message) ) {
+			$message = 'Unspecified error.';
 		}
 
 		if ( ($app_version = Config::get('framework.version')) === FALSE ) {
-			$app_version = "MCS MVC";
+			$app_version = "simpleMVC";
 		}
 		if ( ($app_copyright = Config::get('framework.copyright')) === FALSE ) {
 			$app_copyright = "&copy; MCS 'Net Productions";
@@ -43,6 +43,30 @@ class Err {
 		require("err_fatal.php");
 
 		exit(-1);
+	}
+
+
+	/**
+	* Set the last application error message.
+	*
+	* @param string error message
+	*/
+	static function set_last ($message = NULL) {
+		global $simpleMVC;
+
+		$simpleMVC['last_error'] = $message;
+	}
+
+
+	/**
+	* Get the last application error.
+	* 
+	* @return string error message
+	*/
+	static function last () {
+		global $simpleMVC;
+
+		return($simpleMVC['last_error']);
 	}
 
 

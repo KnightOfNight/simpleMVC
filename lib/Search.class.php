@@ -337,9 +337,7 @@ class Search {
 			Err::fatal("you must select at least one column to be returned in the search results");
 		}
 
-		global $DB;
-
-		return( $DB->select($this->_criteria) );
+		return( Database::select($this->_criteria) );
 	}
 
 

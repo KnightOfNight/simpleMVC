@@ -31,8 +31,6 @@ class Route {
 	* @return mixed array verified application route OR string error message
 	*/
 	static function parse ($route) {
-		global $ERROR;
-
 		# Trim any leading and trailing slashes.
 		$route = self::trim($route);
 		$route = self::reroute($route);
@@ -92,13 +90,13 @@ class Route {
 		# Check the controller.
 		if ( (! $controller) AND (($controller = Config::get("dispatcher.controller.default")) === FALSE) ) {
 			$error = "Invalid application route: no route specified via URL and no default controller found.";
-			if ( $ERROR ) { $error .= "\n\nAdditional Error...\n\n" . $ERROR; }
+			if ( Err::last() ) { $error .= "\n\nAdditional Error...\n\n" . Err::last(); }
 			return($error);
 		}
 
 		if ( (($controllers = Config::get("dispatcher.controller")) === FALSE) OR (! array_key_exists($controller, $controllers)) ) {
 			$error = "Invalid application route: controller '$controller' not found in configuration.";
-			if ( $ERROR ) { $error .= "\n\nAdditional Error...\n\n" . $ERROR; }
+			if ( Err::last() ) { $error .= "\n\nAdditional Error...\n\n" . Err::last(); }
 			return($error);
 		}
 
@@ -110,7 +108,7 @@ class Route {
 		# Check the action.
 		if ( (! $action) AND (($action = Config::get("dispatcher.controller." . $controller . ".default_action")) === FALSE) ) {
 			$error = "Invalid application route: no action specified via URL and no default action found for controller '$controller'.";
-			if ( $ERROR ) { $error .= "\n\nAdditional Error...\n\n" . $ERROR; }
+			if ( Err::last() ) { $error .= "\n\nAdditional Error...\n\n" . Err::last(); }
 			return($error);
 		}
 

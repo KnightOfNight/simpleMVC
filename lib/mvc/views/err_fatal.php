@@ -31,7 +31,7 @@ div.trace { }
 
 <div class="header">Framework Fatal Error</div>
 <div class="block errmsg">
-<?php echo nl2br ($errmsg) ?>
+<?php echo nl2br ($message) ?>
 </div>
 
 

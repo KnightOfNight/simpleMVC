@@ -16,12 +16,12 @@
 * @param string class name
 */
 function __class_exists ($class) {
-
-	global $LIBDIR;
+	global $simpleMVC;
+	$libdir = $simpleMVC['libdir'];
 
 	$class_file = $class.".class.php";
 
-	foreach (explode (":", $LIBDIR) as $dir) {
+	foreach (explode (":", $libdir) as $dir) {
 		$file = $dir.DS.$class_file;
 
 		if ( file_exists($file) AND is_readable($file) ) {
@@ -30,7 +30,5 @@ function __class_exists ($class) {
 	}
 
 	return(FALSE);
-
 }
-
 

@@ -27,8 +27,6 @@ class BaseModel {
 	* @return BaseModel a new BaseModel object
 	*/
 	function __construct () {
-		global $DB;
-
 		$this->_model_name = strtolower( str_replace('Model', '', get_class($this)) );
 
 		if ( isset ($this->table) ) {
@@ -38,7 +36,7 @@ class BaseModel {
 			$this->_table_name = $prefix . Inflection::pluralize($this->_model_name);
 		}
 
-		$this->_columns = $DB->describe($this->_table_name);
+		$this->_columns = Database::describe($this->_table_name);
 
 		if ( ! in_array('id', $this->_columns) ) {
 			Err::fatal("Unable to load database model.  Primary key column 'id' not found in table.");
@@ -122,11 +120,7 @@ class BaseModel {
 	* @return integer the new insert ID
 	*/
 	function create ($log_query = TRUE) {
-		global $DB;
-
-		if ( ! isset ($DB) ) {
-			Err::fatal("Unable to create record, no database connection present.");
-		} elseif ( in_array('id', array_keys($this->_values)) ) {
+		if ( in_array('id', array_keys($this->_values)) ) {
 			Err::fatal("Unable to create record, primary key column 'id' is already set.");
 		}
 
@@ -140,7 +134,7 @@ class BaseModel {
 			unset($values['updated_at']);
 		}
 
-		return( $DB->create($this->_table_name, $values, $log_query) );
+		return( Database::create($this->_table_name, $values, $log_query) );
 	}
 
 
@@ -151,11 +145,7 @@ class BaseModel {
 	* @return bool true or fatal error
 	*/
 	function update ($log_query = TRUE) {
-		global $DB;
-
-		if ( ! isset ($DB) ) {
-			Err::fatal("Unable to update record, no database connection present.");
-		} elseif ( (! in_array('id', array_keys($this->_values))) OR (! isset($this->_values['id'])) ) {
+		if ( (! in_array('id', array_keys($this->_values))) OR (! isset($this->_values['id'])) ) {
 			Err::fatal("Unable to update record, primary key column 'id' is not set.");
 		}
 
@@ -169,7 +159,7 @@ class BaseModel {
 			$values['updated_at'] = 'DB:now()';
 		}
 
-		return( $DB->update($this->_table_name, $values, 'id', $log_query) );
+		return( Database::update($this->_table_name, $values, 'id', $log_query) );
 	}
 
 
@@ -180,17 +170,13 @@ class BaseModel {
 	* @return bool true or fatal error
 	*/
 	function delete ($log_query = TRUE) {
-		global $DB;
-
-		if ( ! isset ($DB) ) {
-			Err::fatal("Unable to update record, no database connection present.");
-		} elseif ( ! isset($this->_values['id']) ) {
+		if ( ! isset($this->_values['id']) ) {
 			Err::fatal("Unable to delete record, primary key column 'id' is not set.");
 		}
 
 		$values = $this->_values;
 
-		return( $DB->delete($this->_table_name, $values, 'id', $log_query) );
+		return( Database::delete($this->_table_name, $values, 'id', $log_query) );
 	}
 
 
