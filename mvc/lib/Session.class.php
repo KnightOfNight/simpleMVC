@@ -4,8 +4,8 @@
 /**
 *
 * @author >X @ MCS 'Net Productions
-* @package MCS_MVC_API
-* @version 0.3.0
+* @package simpleMVC
+* @version 0.5.0
 *
 */
 
@@ -14,7 +14,7 @@
 *
 * Singleton class that contains various methods for handling a browsing session.
 *
-* @package MCS_MVC_API
+* @package simpleMVC
 *
 */
 class Session {

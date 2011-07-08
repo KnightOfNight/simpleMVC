@@ -4,8 +4,8 @@
 /**
 *
 * @author >X @ MCS 'Net Productions
-* @package MCS_MVC_API
-* @version 0.3.0
+* @package simpleMVC
+* @version 0.5.0
 *
 */
 
@@ -17,7 +17,7 @@
 * In this class, all column names are expected to be fully qualified, e.g.
 * <model>.<column>
 *
-* @package MCS_MVC_API
+* @package simpleMVC
 *
 */
 class Search {

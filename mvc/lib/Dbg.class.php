@@ -3,15 +3,15 @@
 
 /**
 * @author >X @ MCS 'Net Productions
-* @package MCS_MVC_API
-* @version 0.3.0
+* @package simpleMVC
+* @version 0.5.0
 */
 
 
 /**
 * Singleton class that provides acess to debugging tools.
 *
-* @package MCS_MVC_API
+* @package simpleMVC
 */
 class Dbg {
 	private function __construct () {}

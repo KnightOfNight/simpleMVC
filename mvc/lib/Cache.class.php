@@ -3,15 +3,15 @@
 
 /**
 * @author >X @ MCS 'Net Productions
-* @package MCS_MVC_API
-* @version 0.3.0
+* @package simpleMVC
+* @version 0.5.0
 */
 
 
 /**
 * Singleton class that provides access to filesystem-based cache.
 *
-* @package MCS_MVC_API
+* @package simpleMVC
 */
 class Cache {
 	private function __construct () {}

@@ -10,8 +10,8 @@
 * the "public" directory.
 *
 * @author >X @ MCS 'Net Productions
-* @package MCS_MVC_API
-* @version 0.3.0
+* @package simpleMVC
+* @version 0.5.0
 */
 
 

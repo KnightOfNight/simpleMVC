@@ -6,7 +6,7 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-<title>MCS MVC: Fatal Error</title>
+<title>simpleMVC Fatal Error</title>
 
 <style type="text/css">
 body { font-family: sans-serif; margin: 10px; padding: 0; font-size: 10pt; line-height: 125%; }

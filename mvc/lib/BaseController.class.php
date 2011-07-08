@@ -3,8 +3,8 @@
 
 /**
 * @author >X @ MCS 'Net Productions
-* @package MCS_MVC_API
-* @version 0.3.0
+* @package simpleMVC
+* @version 0.5.0
 */
 
 
@@ -12,7 +12,7 @@
 * Base Controller class - handle the lowest level functions of a controller
 * object.
 *
-* @package MCS_MVC_API
+* @package simpleMVC
 */
 class BaseController {
 	private $_name;

@@ -9,8 +9,8 @@
 * This code is loaded by index.php from the public folder.
 *
 * @author >X @ MCS 'Net Productions
-* @package MCS_MVC_API
-* @version 0.3.0
+* @package simpleMVC
+* @version 0.5.0
 */
 
 
