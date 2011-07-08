@@ -22,11 +22,12 @@ define ( 'VIEWDIR', ROOT.'/app/views' );
 define ( 'FORMDIR', ROOT.'/app/forms' );
 define ( 'CFGDIR', ROOT.'/app/cfg' );
 
-define ( 'TMPDIR', ROOT.'/tmp/tmp' );
+define ( 'TEMPDIR', ROOT.'/tmp' );
 
-define ( 'LOGDIR', TMPDIR.'/logs' );
-define ( 'CACHEDIR', TMPDIR.'/cache' );
-define ( 'SESSIONDIR', TMPDIR.'/sessions' );
+define ( 'TMPDIR', TEMPDIR.'/tmp' );
+define ( 'LOGDIR', TEMPDIR.'/logs' );
+define ( 'CACHEDIR', TEMPDIR.'/cache' );
+define ( 'SESSIONDIR', TEMPDIR.'/sessions' );
 
 define ( 'IMGPATH', 'img' );
 define ( 'IMGDIR', ROOT.'/public/'.IMGPATH );
