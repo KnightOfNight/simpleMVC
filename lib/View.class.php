@@ -27,7 +27,7 @@ class View {
 	* @var array list of reserved variables that the View automatically
 	* extracts and makes available to views.
 	*/
-	private $_reserved_vars = array("CONTROLLER", "ACTION", "QUERY");
+	private $_reserved_vars = array('CONTROLLER', 'ACTION', 'QUERY');
 
 	private $_controller;
 	private $_action;
@@ -53,16 +53,16 @@ class View {
 	* @param string query string
 	*/
 	function __construct ($controller, $action, $query) {
-		$this->_config["render_header"] = FALSE;
-		$this->_config["render_footer"] = FALSE;
-		$this->_config["variables"] = array();
-		$this->_config["slots"] = array();
-		$this->_config["css_files"] = array();
-		$this->_config["js_files"] = array();
+		$this->_config['render_header'] = FALSE;
+		$this->_config['render_footer'] = FALSE;
+		$this->_config['variables'] = array();
+		$this->_config['slots'] = array();
+		$this->_config['css_files'] = array();
+		$this->_config['js_files'] = array();
 
-		$this->_controller = $this->_config["variables"]["CONTROLLER"] = $controller;
-		$this->_action = $this->_config["variables"]["ACTION"] = $action;
-		$this->_query = $this->_config["variables"]["QUERY"] = $query;
+		$this->_controller = $this->_config['variables']['CONTROLLER'] = $controller;
+		$this->_action = $this->_config['variables']['ACTION'] = $action;
+		$this->_query = $this->_config['variables']['QUERY'] = $query;
 	}
 
 
@@ -72,12 +72,8 @@ class View {
 	* @param bool TRUE => render header and footer
 	*/
 	function render_headfoot ($value = TRUE) {
-		if (! is_bool($value)) {
-			Err::fatal("passed value must be a boolean");
-		}
-
-		$this->_config["render_header" ] = $value;
-		$this->_config["render_footer" ] = $value;
+		$this->_config['render_header' ] = $value;
+		$this->_config['render_footer' ] = $value;
 	}
 
 
@@ -87,11 +83,7 @@ class View {
 	* @param bool TRUE => render header
 	*/
 	function render_header ($value = TRUE) {
-		if (! is_bool($value)) {
-			Err::fatal("passed value must be a boolean");
-		}
-
-		$this->_config["render_header" ] = $value;
+		$this->_config['render_header' ] = $value;
 	}
 
 
@@ -101,11 +93,7 @@ class View {
 	* @param bool TRUE => render footer
 	*/
 	function render_footer ($value = TRUE) {
-		if (! is_bool($value)) {
-			Err::fatal("passed value must be a boolean");
-		}
-
-		$this->_config["render_footer" ] = $value;
+		$this->_config['render_footer' ] = $value;
 	}
 
 
@@ -115,10 +103,10 @@ class View {
 	*
 	* From inside an action method in a Controller object...
 	* <code>
-	* $view->variable("somevar", "some string");
+	* $view->variable('somevar', 'some string');
 	* </code>
 	* ...and when writing the action's view, you will have access to a variable
-	* called $somevar set to the value "some string".
+	* called $somevar set to the value 'some string'.
 	*
 	* Variable names must be unique, and can store any type of data.
 	*
@@ -130,7 +118,7 @@ class View {
 			Err::fatal("variable name cannot be a reserved name");
 		}
 
-		$this->_config["variables"][$name] = $value;
+		$this->_config['variables'][$name] = $value;
 	}
 
 
@@ -170,7 +158,7 @@ class View {
 	*/
 	protected function showCSS () {
 		foreach ($this->_css_files as $file) {
-			$fullpath = Config::get("application.base_path") . "/css/" . $file;
+			$fullpath = Config::get('application.base_path') . "/css/$file";
 ?>
 <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $fullpath ?>" />
 <?php
@@ -201,7 +189,7 @@ class View {
 	*/
 	protected function showJS () {
 		foreach ($this->_js_files as $file) {
-			$fullpath = Config::get("application.base_path") . "/js/" . $file;
+			$fullpath = Config::get('application.base_path') . "/js/$file";
 
 ?>
 <script type="text/javascript" src="<?php echo $fullpath ?>"></script>
@@ -217,14 +205,14 @@ class View {
 	* Can only be called from within a View.
 	*
 	* <code>
-	* <title><?php $this->slot("page_title") ?></title>
+	* <title><?php $this->slot('page_title') ?></title>
 	* </code>
 	*
 	* @param string name of the slot
 	*/
 	protected function slot ($slot_name) {
-		if (isset ($this->_config["slots"][$slot_name])) {
-			echo $this->_config["slots"][$slot_name];
+		if (isset ($this->_config['slots'][$slot_name])) {
+			echo $this->_config['slots'][$slot_name];
 		}
 	}
 
@@ -235,14 +223,14 @@ class View {
 	* Can only be called from within a View.
 	*
 	* <code>
-	* $this->fillslot("page_title", "This Page's Title");
+	* $this->fillslot('page_title', 'This Page's Title');
 	* </code>
 	*
 	* @param string name of the slot
 	* @param string value of the slot
 	*/
 	protected function fillslot ($slot_name, $slot_value) {
-		$this->_config["slots"][$slot_name] = $slot_value;
+		$this->_config['slots'][$slot_name] = $slot_value;
 	}
 
 
@@ -256,9 +244,9 @@ class View {
 
 		# Find the page header file if it is set to render in this view.
 		#
-		if ( $this->_config["render_header"] ) {
-			if ( File::ready($this->_render["header_file"] = VIEWDIR.DS.$this->_controller.DS."header.php") ||
-					File::ready($this->_render["header_file"] = VIEWDIR.DS."header.php") ) {
+		if ( $this->_config['render_header'] ) {
+			if ( File::ready($this->_render['header_file'] = VIEWDIR.DS.$this->_controller.'/header.php') ||
+					File::ready($this->_render['header_file'] = VIEWDIR.'/header.php') ) {
 			} else {
 				Err::fatal("Unable to render view for route '/$this->_controller/$this->_action', no page header found.");
 			}
@@ -267,16 +255,16 @@ class View {
 
 		# Find the body view corresponding to the controller and action.
 		#
-		if ( ! File::ready($this->_render["body_file"] = VIEWDIR.DS.$this->_controller.DS.$this->_action.".php") ) {
-			Err::fatal( "Unable to render view for route '/$this->_controller/$this->_action', page body '" . $this->_render["body_file"] . "' not found." );
+		if ( ! File::ready($this->_render['body_file'] = VIEWDIR.DS.$this->_controller.DS.$this->_action.'.php') ) {
+			Err::fatal( "Unable to render view for route '/$this->_controller/$this->_action', page body '" . $this->_render['body_file'] . "' not found." );
 		}
 
 
 		# Find the page footer file if it is set to render in this view.
 		#
-		if ( $this->_config["render_footer"] ) {
-			if (File::ready($this->_render["footer_file"] = VIEWDIR.DS.$this->_controller.DS."footer.php") ||
-					File::ready($this->_render["footer_file"] = VIEWDIR.DS."footer.php") ) {
+		if ( $this->_config['render_footer'] ) {
+			if (File::ready($this->_render['footer_file'] = VIEWDIR.DS.$this->_controller.'/footer.php') ||
+					File::ready($this->_render['footer_file'] = VIEWDIR.'/footer.php') ) {
 			} else {
 				Err::fatal("Unable to render view for route '/$this->_controller/$this->_action', no page footer found.");
 			}
@@ -285,7 +273,7 @@ class View {
 
 		# Extract all the variables so that they are available to the view.
 		#
-		extract($this->_config["variables"]);
+		extract($this->_config['variables']);
 
 
 		# Run the PHP in the body view and capture the output.  This is run
@@ -293,15 +281,15 @@ class View {
 		# CSS or JS files or filling slots.
 		#
 		ob_start();
-		include($this->_render["body_file"]);
+		include($this->_render['body_file']);
 		$this->_body_contents = ob_get_clean();
 
 
 		# Display the page header.
 		#
-		if ( isset($this->_render["header_file"]) ) {
+		if ( isset($this->_render['header_file']) ) {
 			ob_start();
-			include($this->_render["header_file"]);
+			include($this->_render['header_file']);
 			ob_end_flush();
 		}
 
@@ -313,9 +301,9 @@ class View {
 
 		# Display the page footer.
 		#
-		if ( isset($this->_render["footer_file"]) ) {
+		if ( isset($this->_render['footer_file']) ) {
 			ob_start();
-			include($this->_render["footer_file"]);
+			include($this->_render['footer_file']);
 			ob_end_flush();
 		}
     }
