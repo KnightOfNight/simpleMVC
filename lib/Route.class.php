@@ -167,7 +167,7 @@ class Route {
 
 		$route = preg_replace('/^\/+/', "", $route);
 
-		$url .= DS . $route;
+		$url .= "/$route";
 
 		return ( htmlentities($url) );
 	}
