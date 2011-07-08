@@ -40,7 +40,7 @@ class Err {
 			ob_end_clean();
 		}
 
-		require("err_fatal.php");
+		include("err_fatal.php");
 
 		exit(-1);
 	}
