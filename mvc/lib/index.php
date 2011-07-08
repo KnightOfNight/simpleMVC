@@ -2,9 +2,7 @@
 
 
 /**
-* The first code to run when the application starts up.  This sets the
-* application's root directory and the oft-used "DS" (directory separator
-* character for this system), and then loads the bootstrap code.  
+* This is the first code to run when the application starts up.
 *
 * This file is stored in the "lib" directory but it is executed from a copy in
 * the "public" directory.
@@ -15,8 +13,11 @@
 */
 
 
+/**
+*
+*/
 define ('DS', DIRECTORY_SEPARATOR);
-define ('ROOT', dirname (dirname (__FILE__)));
+define ('ROOT', dirname( dirname( dirname(__FILE__) ) ) );
 
 define ( 'VIEWDIR', ROOT.'/app/views' );
 define ( 'FORMDIR', ROOT.'/app/forms' );
@@ -33,5 +34,4 @@ define ( 'IMGPATH', 'img' );
 define ( 'IMGDIR', ROOT.'/public/'.IMGPATH );
 
 require_once(ROOT.'/lib/__bootstrap.php');
-
 
