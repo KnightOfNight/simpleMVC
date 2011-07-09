@@ -17,26 +17,26 @@
 *
 */
 define ('DS', DIRECTORY_SEPARATOR);
-define ('ROOT', dirname( dirname(__FILE__) ) );
+define ('ROOTDIR', dirname( dirname(__FILE__) ) );
 
-define ( 'MVC_LIBDIR',		ROOT.'/mvc/lib' );
-define ( 'MVC_MODELDIR',	ROOT.'/mvc/models' );
-define ( 'MVC_VIEWDIR',		ROOT.'/mvc/views' );
-define ( 'MVC_LOGDIR',		ROOT.'/tmp/logs' );
-define ( 'MVC_CACHEDIR',	ROOT.'/tmp/cache' );
-define ( 'MVC_SESSIONDIR',	ROOT.'/tmp/sessions' );
+define ( 'MVC_LIBDIR',		ROOTDIR.'/mvc/lib' );
+define ( 'MVC_MODELDIR',	ROOTDIR.'/mvc/models' );
+define ( 'MVC_VIEWDIR',		ROOTDIR.'/mvc/views' );
+define ( 'MVC_LOGDIR',		ROOTDIR.'/tmp/logs' );
+define ( 'MVC_CACHEDIR',	ROOTDIR.'/tmp/cache' );
+define ( 'MVC_SESSIONDIR',	ROOTDIR.'/tmp/sessions' );
 
-define ( 'APP_LIBDIR',		ROOT.'/app/lib' );
-define ( 'APP_MODELDIR',	ROOT.'/app/models' );
-define ( 'APP_VIEWDIR',		ROOT.'/app/views' );
-define ( 'APP_CONTDIR',		ROOT.'/app/controllers' );
-define ( 'APP_FORMDIR',		ROOT.'/app/forms' );
-define ( 'APP_CFGDIR',		ROOT.'/app/cfg' );
+define ( 'APP_LIBDIR',		ROOTDIR.'/app/lib' );
+define ( 'APP_MODELDIR',	ROOTDIR.'/app/models' );
+define ( 'APP_VIEWDIR',		ROOTDIR.'/app/views' );
+define ( 'APP_CONTDIR',		ROOTDIR.'/app/controllers' );
+define ( 'APP_FORMDIR',		ROOTDIR.'/app/forms' );
+define ( 'APP_CFGDIR',		ROOTDIR.'/app/cfg' );
 
-define ( 'TMPDIR',			ROOT.'/tmp/tmp' );
+define ( 'TMPDIR',			ROOTDIR.'/tmp/tmp' );
 
 define ( 'IMGPATH', 'img' );
-define ( 'IMGDIR', ROOT.'/public/'.IMGPATH );
+define ( 'IMGDIR', ROOTDIR.'/public/'.IMGPATH );
 
 
 require_once(MVC_LIBDIR.'/__bootstrap.php');
