@@ -173,8 +173,27 @@ class View {
 	*
 	* @param string JS file
 	*/
-	protected function useJS ($js_file) {
-		array_push ($this->_js_files, $js_file);
+	protected function useJS ($passed_file) {
+		array_push ($this->_js_files, $passed_file);
+
+		# if parsed version exists and is newer, use it
+		# else generate it and use it
+
+		$dir = APP_PUBDIR . "/js";
+		$js_file = $dir . "/$passed_file";
+		$pp_js_file = $dir . "/pp/$passed_file";
+
+		if ( (! file_exists($pp_js_file)) OR (filemtime($js_file) > filemtime($pp_js_file)) ) {
+			if ( ($js = file_get_contents($js_file)) === FALSE ) {
+				Err::fatal("View::useJS() - unable to get contents of file '$js_file'.");
+			}
+
+			$js = preg_replace('/ROOTPATH/', Config::get('application.base_path'), $js);
+
+			if ( file_put_contents($pp_js_file, $js) === FALSE ) {
+				Err::fatal("View::useJS() - unable to write processed file '$pp_js_file'.");
+			}
+		}
 	}
 
 
@@ -189,7 +208,7 @@ class View {
 	*/
 	protected function showJS () {
 		foreach ($this->_js_files as $file) {
-			$fullpath = Config::get('application.base_path') . "/js/$file";
+			$fullpath = Config::get('application.base_path') . "/js/pp/$file";
 
 ?>
 <script type="text/javascript" src="<?php echo $fullpath ?>"></script>

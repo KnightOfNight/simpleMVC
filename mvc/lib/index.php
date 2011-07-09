@@ -32,6 +32,7 @@ define ( 'APP_VIEWDIR',		ROOTDIR.'/app/views' );
 define ( 'APP_CONTDIR',		ROOTDIR.'/app/controllers' );
 define ( 'APP_FORMDIR',		ROOTDIR.'/app/forms' );
 define ( 'APP_CFGDIR',		ROOTDIR.'/app/cfg' );
+define ( 'APP_PUBDIR',		ROOTDIR.'/public' );
 
 define ( 'TMPDIR',			ROOTDIR.'/tmp/tmp' );
 
