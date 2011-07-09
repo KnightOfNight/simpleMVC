@@ -29,7 +29,7 @@ class Session {
 		ini_set("session.gc_divisor", 1000);
 		ini_set("session.gc_maxlifetime", 43200);
 
-		session_save_path(SESSIONDIR);
+		session_save_path(MVC_SESSIONDIR);
 
 		session_name("session");
 

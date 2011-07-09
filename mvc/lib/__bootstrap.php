@@ -62,7 +62,7 @@ require_once('__class_exists.php');
 
 # Load any libraries or configuration files that the autoloader won't catch
 #
-require_once(CFGDIR.'/inflection.php');
+require_once(APP_CFGDIR.'/inflection.php');
 
 
 # Load the framework and application configuration.
@@ -90,7 +90,7 @@ $simpleMVC['log'] = new Log( (int) Config::get('framework.loglevel') );
 #
 error_reporting(E_ALL | E_STRICT);
 ini_set('log_errors', 'ON');
-ini_set('error_log', LOGDIR.'/error.log');
+ini_set('error_log', MVC_LOGDIR.'/error.log');
 
 if ( Config::get('application.development') !== FALSE ) {
 	ini_set('display_errors', 'ON');

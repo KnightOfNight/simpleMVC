@@ -29,7 +29,7 @@ class Cache {
 		# temporarily turn off all caching.
 		return(NULL);
 
-		$cache_file = CACHEDIR . DS . sha1 ($cache_entry);
+		$cache_file = MVC_CACHEDIR . DS . sha1 ($cache_entry);
 
 		if ( $cache_value === NULL ) {
 			if ( ! file_exists($cache_file) ) {
@@ -46,7 +46,7 @@ class Cache {
 		} else {
 			$cache_value_enc = base64_encode(serialize($cache_value));
 
-			if ( File::ready(CACHEDIR, "w") ) {
+			if ( File::ready(MVC_CACHEDIR, "w") ) {
 				if ( file_put_contents($cache_file, $cache_value_enc) === FALSE ) {
 					Err::fatal( sprintf("Unable to write cache file '%s'.", $cache_file) );
 				}
@@ -68,7 +68,7 @@ class Cache {
 		# temporarily turn off all caching.
 		return(NULL);
 
-		$cache_file = CACHEDIR . DS . sha1 ($cache_entry);
+		$cache_file = MVC_CACHEDIR . DS . sha1 ($cache_entry);
 
 		if (! file_exists ($cache_file)) {
 			return (NULL);
@@ -93,14 +93,14 @@ class Cache {
 		# temporarily turn off all caching.
 		return(NULL);
 
-		$cache_file = CACHEDIR . DS . sha1 ($cache_entry);
+		$cache_file = MVC_CACHEDIR . DS . sha1 ($cache_entry);
 
-		if (File::ready (CACHEDIR, "w")) {
+		if (File::ready (MVC_CACHEDIR, "w")) {
 			if (file_put_contents ($cache_file, base64_encode (serialize ($cache_data))) === FALSE) {
 				Err::fatal (sprintf ("unable to write cache file '%s'", $cache_file));
 			}
 		} else {
-			Err::fatal (sprintf ("cache directory '%s' is not writable", CACHEDIR));
+			Err::fatal (sprintf ("cache directory '%s' is not writable", MVC_CACHEDIR));
 		}
 	}
 

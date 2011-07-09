@@ -23,7 +23,7 @@ class Config {
 	* @return Config a new Config object
 	*/
 	function __construct () {
-		$cfg_file = CFGDIR.DS."config.json";
+		$cfg_file = APP_CFGDIR.DS."config.json";
 
 		if ( (! File::ready($cfg_file)) OR ( ($cfg_data = file_get_contents($cfg_file)) === FALSE ) ) {
 			Err::fatal("Unable to read application configuration file '$cfg_file'.");
