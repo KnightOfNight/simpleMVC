@@ -17,10 +17,22 @@
 *
 */
 define ('DS', DIRECTORY_SEPARATOR);
-define ('ROOT', dirname( dirname( dirname(__FILE__) ) ) );
+define ('ROOT', dirname( dirname(__FILE__) ) );
 
-define ( 'VIEWDIR', ROOT.'/app/views' );
-define ( 'FORMDIR', ROOT.'/app/forms' );
+
+define ( 'MVC_LIBDIR', ROOT.'/mvc/lib' );
+define ( 'MVC_MODELDIR', ROOT.'/mvc/models' );
+define ( 'MVC_VIEWDIR', ROOT.'/mvc/views' );
+
+define ( 'APP_LIBDIR', ROOT.'/app/lib' );
+define ( 'APP_MODELDIR', ROOT.'/app/models' );
+define ( 'APP_VIEWDIR', ROOT.'/app/views' );
+
+define ( 'APP_CONTDIR', ROOT.'/app/controllers' );
+
+define ( 'APP_FORMDIR', ROOT.'/app/forms' );
+
+
 define ( 'CFGDIR', ROOT.'/app/cfg' );
 
 define ( 'TEMPDIR', ROOT.'/tmp' );
@@ -33,5 +45,6 @@ define ( 'SESSIONDIR', TEMPDIR.'/sessions' );
 define ( 'IMGPATH', 'img' );
 define ( 'IMGDIR', ROOT.'/public/'.IMGPATH );
 
-require_once(ROOT.'/lib/__bootstrap.php');
+
+require_once(MVC_LIBDIR.'/__bootstrap.php');
 

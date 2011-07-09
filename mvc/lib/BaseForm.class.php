@@ -49,7 +49,7 @@ class BaseForm {
 		}
 
 		# Load the config.
-		$cfg_file = FORMDIR.'/json/'.$this->_use_json;
+		$cfg_file = APP_FORMDIR."/json/$this->_use_json";
 
 		if ( (! File::ready ($cfg_file)) OR ( ($cfg_data = file_get_contents ($cfg_file)) === FALSE ) ) {
 			Err::fatal (sprintf ("unable to read configuration file '%s'", $cfg_file));

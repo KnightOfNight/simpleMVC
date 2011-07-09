@@ -31,18 +31,18 @@ $simpleMVC['start_time'] = microtime(TRUE);
 
 # Setup the include path.
 #
-$LIBDIR = array(	ROOT.'/mvc/lib',
-					ROOT.'/app/lib',
+$LIBDIR = array(	MVC_LIBDIR,
+					APP_LIBDIR,
 
-					ROOT.'/app/controllers',
+					APP_MODELDIR,
+					MVC_MODELDIR,
 
-					ROOT.'/app/models',
-					ROOT.'/mvc/models',
+					APP_VIEWDIR,
+					MVC_VIEWDIR,
 
-					VIEWDIR,
-					ROOT.'/mvc/views',
+					APP_CONTDIR,
 
-					FORMDIR,
+					APP_FORMDIR,
 );
 
 $LIBDIR = implode(':', $LIBDIR);
