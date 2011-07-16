@@ -90,11 +90,11 @@ class Pager {
 	*/
 	function range () {
 
-		$offset = 4;
+		$offset = 2;
 
 		$low_end = max(1, ($this->_page_num - $offset));
 
-		$offset = 4;
+		$offset = 2;
 
 		$high_end = min($this->_page_count, ($this->_page_num + $offset));
 

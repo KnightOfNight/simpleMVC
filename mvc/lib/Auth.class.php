@@ -22,8 +22,10 @@ class Auth {
 		}
 	}
 
-	static function logout ($username, $password) {
-		Session::stop();
+	static function logout () {
+		$_SESSION['username'] = NULL;
+		$_SESSION['remember'] = FALSE;
+		# Session::stop();
 	}
 
 	static function remember () {
