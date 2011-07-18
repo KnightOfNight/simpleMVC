@@ -208,7 +208,7 @@ class BaseForm {
 
 ?><!-- start form HTML -->
 <form id="<?= $id ?>" method="<?= $method ?>" action="<?= $action ?>" enctype="multipart/form-data">
-<div class="mvc_form">
+<fieldset class="mvc_form">
 <input name="form_name" class="mvc_form_internal" value="<?= $this->_form_name ?>" type="hidden"></input>
 <?php
 	}
@@ -218,7 +218,8 @@ class BaseForm {
 	* Output HTML that finishes the form.
 	*/
 	function html_finish () {
-?></div>
+?>
+</fieldset>
 </form>
 <!-- end of form HTML -->
 <?php
