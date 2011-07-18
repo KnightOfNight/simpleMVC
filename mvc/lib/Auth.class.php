@@ -14,11 +14,12 @@
 class Auth {
 
 	static function login ($username, $password) {
-		if ( $username == 'ctg' AND $password == 'smeg' ) {
+		if ( ($username == 'ctg' AND $password == 'smeg') OR ($username == 'ras' AND $password == 'ugh4269') ) {
 			$_SESSION['username'] = $username;
 			return(TRUE);
+
 		} else {
-			return(FALSE);
+			return('Invalid credentials specified.');
 		}
 	}
 
