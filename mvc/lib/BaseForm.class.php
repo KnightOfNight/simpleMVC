@@ -299,7 +299,8 @@ class BaseForm {
 		$file_upload = ( $password ) ? '' : $file_upload;
 
 		# HTML
-?><input id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" value="<?= htmlentities($value) ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>" autocomplete="off"<?= $disabled ?><?= $hidden ?><?= $password ?><?= $file_upload ?>></input><?php
+?><input id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" value="<?= htmlentities($value) ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>" autocomplete="off"<?= $disabled ?><?= $hidden ?><?= $password ?><?= $file_upload ?>></input>
+<?php
 
 		if ( ! $hide_error ) {
 			$this->html_field_error($field_name);
@@ -331,9 +332,11 @@ class BaseForm {
 		$cols = ( isset($options['cols']) AND ($options['cols'] > 0) ) ?  $options['cols'] : 40;
 
 		# HTML
-?><textarea id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" rows="<?= $rows ?>" cols="<?= $cols ?>"<?= $disabled ?>><?php echo htmlentities($value); ?></textarea><?php
+?><textarea id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" rows="<?= $rows ?>" cols="<?= $cols ?>"<?= $disabled ?>><?php echo htmlentities($value); ?></textarea>
+<?php
 
 		if ( ! $hide_error ) {
+			?> <?php
 			$this->html_field_error($field_name);
 		}
 
@@ -375,7 +378,8 @@ class BaseForm {
 <?php
 		}
 
-?></select><?php
+?></select>
+<?php
 
 		$this->html_field_error($field_name);
 
