@@ -122,19 +122,6 @@ class View {
 	}
 
 
-#	function pager ($pager = NULL) {
-#		if (is_null ($pager)) {
-#			if ($this->_pager->pageCount() > 1) {
-#				return ($this->_pager);
-#			} else {
-#				return (NULL);
-#			}
-#		} else {
-#			$this->_pager = $pager;
-#		}
-#	}
-
-
 	/**
 	* Add a CSS file to the list of files to be included in the page.
 	*
@@ -150,19 +137,28 @@ class View {
 	/**
 	* Display HTML code to include all CSS files for a page.
 	*
-	* Can only be called from the view for a particular action.
-	*
-	* As this outputs HTML that is only valid in place on a page, it is highly
-	* recommended that you call this from within a page's <head> section.
-	* Otherwise you risk invalid HTML.
+	* This is usually called from a page header, preferably * in the
+	* <head></head> section.
 	*/
 	protected function showCSS () {
 		foreach ($this->_css_files as $file) {
 			$fullpath = Config::get('application.base_path') . "/css/$file";
-?>
-<link rel="stylesheet" type="text/css" media="screen" href="<?php echo $fullpath ?>" />
+?><link rel="stylesheet" type="text/css" media="screen" href="<?php echo $fullpath ?>" />
 <?php
 		}
+	}
+
+
+	/**
+	* Display HTML code to include a specific CSS file.
+	*
+	* This is usually called from a page header, preferably * in the
+	* <head></head> section.
+	*/
+	protected function CSS ($css_file) {
+		$fullpath = Config::get('application.base_path') . "/css/$css_file";
+?><link rel="stylesheet" type="text/css" media="screen" href="<?php echo $fullpath ?>" />
+<?php
 	}
 
 
@@ -176,9 +172,42 @@ class View {
 	protected function useJS ($passed_file) {
 		array_push ($this->_js_files, $passed_file);
 
-		# if parsed version exists and is newer, use it
-		# else generate it and use it
+		$this->_pp_js($passed_file);
+	}
 
+
+	/**
+	* Display HTML code to include all JS files for a page.
+	*
+	* This is usually called from a page header, preferably * in the
+	* <head></head> section.
+	*/
+	protected function showJS () {
+		foreach ($this->_js_files as $file) {
+			$fullpath = Config::get('application.base_path') . "/js/pp/$file";
+?><script type="text/javascript" src="<?php echo $fullpath ?>"></script>
+<?php
+		}
+	}
+
+
+	/**
+	* Display HTML code to include a specific JS file.
+	*
+	* This is usually called from a page header, preferably * in the
+	* <head></head> section.
+	*/
+	protected function JS ($js_file) {
+		$fullpath = Config::get('application.base_path') . "/js/pp/$js_file";
+?><script type="text/javascript" src="<?php echo $fullpath ?>"></script>
+<?php
+	}
+
+
+	/**
+	* Private function to pre-process javascript files looking for some MVC macros.
+	*/
+	private function _pp_js ($passed_file) {
 		$dir = APP_PUBDIR . "/js";
 		$js_file = $dir . "/$passed_file";
 		$pp_js_file = $dir . "/pp/$passed_file";
@@ -193,26 +222,6 @@ class View {
 			if ( file_put_contents($pp_js_file, $js) === FALSE ) {
 				Err::fatal("View::useJS() - unable to write processed file '$pp_js_file'.");
 			}
-		}
-	}
-
-
-	/**
-	* Display HTML code to include all JS files for a page.
-	*
-	* Can only be called from the view for a particular action.
-	*
-	* As this outputs HTML that is only valid in place on a page, it is highly
-	* recommended that you call this from a page header, preferably in the
-	* <head> section.  Otherwise you risk invalid HTML.
-	*/
-	protected function showJS () {
-		foreach ($this->_js_files as $file) {
-			$fullpath = Config::get('application.base_path') . "/js/pp/$file";
-
-?>
-<script type="text/javascript" src="<?php echo $fullpath ?>"></script>
-<?php
 		}
 	}
 
@@ -326,43 +335,6 @@ class View {
 			ob_end_flush();
 		}
     }
-
-
-	/**
-	* Include a view in the current view.
-	*
-	* @param string name of the view to include, formatted as <controller>/<view name> (.php is optional)
-	*/
-#	private function include_view ($path = "") {
-#		if ( empty($path) ) {
-#			Err::fatal("no view passed");
-#		}
-#
-#		# trim all leading slashes
-#		$path = Route::trim($path);
-#
-#		$parts = explode('/', $path);
-#
-#		$controller = $parts[0];
-#		$view = $parts[1];
-#
-#		$file = VIEWDIR.DS.$controller.DS.$view;
-#
-#		if ( ! File::Ready($file) ) {
-#			$file .= ".php";
-#			if ( ! File::Ready($file) ) {
-#				Err::fatal("unable to find view '$path'");
-#			}
-#		}
-#
-#
-#		# Extract all the variables so that they are available to the view.
-#		#
-#		extract ($this->_config["variables"]);
-#
-#
-#		include($file);
-#	}
 
 
 	function __destruct () {}
