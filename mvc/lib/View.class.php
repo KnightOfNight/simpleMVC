@@ -199,6 +199,9 @@ class View {
 	*/
 	protected function JS ($js_file) {
 		$fullpath = Config::get('application.base_path') . "/js/pp/$js_file";
+
+		$this->_pp_js($js_file);
+
 ?><script type="text/javascript" src="<?php echo $fullpath ?>"></script>
 <?php
 	}
