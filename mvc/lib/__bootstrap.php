@@ -92,7 +92,7 @@ error_reporting(E_ALL | E_STRICT);
 ini_set('log_errors', 'ON');
 ini_set('error_log', MVC_LOGDIR.'/error.log');
 
-if ( Config::get('application.development') !== FALSE ) {
+if ( Config::get('application.development') == 1 ) {
 	ini_set('display_errors', 'ON');
 } else {
 	ini_set('display_errors', 'OFF');
