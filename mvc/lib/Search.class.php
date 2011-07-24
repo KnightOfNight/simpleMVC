@@ -334,7 +334,7 @@ class Search {
 	*/
 	function go () {
 		if ( empty($this->_criteria["select"]) ) {
-			Err::fatal("you must select at least one column to be returned in the search results");
+			Err::fatal("Unable to execute search.\n\nNo columns selected to be returned.");
 		}
 
 		if ( ($results = Database::select($this->_criteria)) === FALSE ) {
