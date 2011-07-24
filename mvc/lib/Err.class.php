@@ -27,6 +27,8 @@ class Err {
 			$message = 'Unspecified error.';
 		}
 
+		Log::msg(Log::ERROR, $message);
+
 		if ( ($app_version = Config::get('framework.version')) === FALSE ) {
 			$app_version = "simpleMVC";
 		}
