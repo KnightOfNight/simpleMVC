@@ -552,9 +552,9 @@ class BaseForm {
 	* Mark a field as invalid and set a custom error message.
 	*
 	* @param string field name
-	* @param string custom error message
+	* @param string optional custom error message
 	*/
-	function field_invalidate ($field_name, $error_message) {
+	function field_invalidate ($field_name, $error_message = '') {
 		$this->_check_field_name($field_name, __FUNCTION__);
 
 		$this->_fields[$field_name]['valid'] = FALSE;
@@ -563,7 +563,29 @@ class BaseForm {
 
 
 	/**
-	* Add an impromptu field to the form.
+	* Return the error message for the specified field.
+	*
+	* @param string field name
+	* @return string error message
+	*/
+	function field_error ($field_name) {
+		$this->_check_field_name($field_name, __FUNCTION__);
+
+		return($this->_fields[$field_name]['error']);
+	}
+
+
+	/**
+	* Add an impromptu field to the form.  All information passed to this
+	* method should be similar to that found in a form JSON config file.  Using
+	* this method allows a base form as specified in a config file to be
+	* expanded for other uses.
+	*
+	* @param string field name
+	* @param string field type
+	* @param string field label
+	* @param array field options
+	* @param array field checks
 	*/
 	protected function field_add ($field_name, $field_type, $field_label, $field_options = array(), $field_checks = array()) {
 		if ( isset($this->_fields[$field_name]) ) {
