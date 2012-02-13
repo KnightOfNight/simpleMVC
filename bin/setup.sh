@@ -1,7 +1,10 @@
 #!/bin/bash
 
 
+
 reqdirs="app bin doc mvc public setup tmp"
+conf_files=".htaccess public/.htaccess app/cfg/config.json"
+
 
 
 #
@@ -12,17 +15,17 @@ fi
 
 for dir in $reqdirs; do
 	if [ ! -d $dir ]; then
-		echo "Required directory '$dir' not found."
+		echo
+		echo "ERROR: required directory '$dir' not found."
+		echo
 		exit -1
 	fi
 done
 
-echo "Directory check: passed"
-
 
 
 #
-# setup the config and htaccess files
+# get the config values
 MVC_URL=""
 MVC_PROTOCOL=""
 MVC_DOMAIN=""
@@ -31,9 +34,10 @@ MVC_PATH=""
 [ -s .simpleMVC_config ] && . .simpleMVC_config
 
 while true; do
+	echo
+
 	while [ -z "$MVC_PROTOCOL" ]; do
-		echo
-		echo -n "Enter protocol: "; read MVC_PROTOCOL
+		echo -n "Enter protocol <http or https>: "; read MVC_PROTOCOL
 
 		if [ "$MVC_PROTOCOL" != "http" -a "$MVC_PROTOCOL" != "https" ]; then
 			echo "Invalid protocol.  Must be 'http' or 'https'."
@@ -42,13 +46,11 @@ while true; do
 	done
 
 	while [ -z "$MVC_DOMAIN" ]; do
-		echo
-		echo -n "Enter domain name: "; read MVC_DOMAIN
+		echo -n "Enter domain name <www.somedomain.com>: "; read MVC_DOMAIN
 	done
 
 	while [ -z "$MVC_PATH" ]; do
-		echo
-		echo -n "Enter path: "; read MVC_PATH
+		echo -n "Enter path </some/web/path>: "; read MVC_PATH
 	done
 
 	MVC_URL="$MVC_PROTOCOL://$MVC_DOMAIN$MVC_PATH"
@@ -61,53 +63,80 @@ while true; do
 	if [ "$yesno" = "" -o "$yesno" = "y" ]; then
 		break
 	else
+		MVC_URL=""
 		MVC_PROTOCOL=""
 		MVC_DOMAIN=""
 		MVC_PATH=""
 	fi
 done
-echo
 
 
+#
+# save config values
 cp /dev/null .simpleMVC_config
+echo "MVC_URL=\"$MVC_URL\"" >> .simpleMVC_config
 echo "MVC_PROTOCOL=\"$MVC_PROTOCOL\"" >> .simpleMVC_config
 echo "MVC_DOMAIN=\"$MVC_DOMAIN\"" >> .simpleMVC_config
 echo "MVC_PATH=\"$MVC_PATH\"" >> .simpleMVC_config
 
+export MVC_URL
 export MVC_PROTOCOL
 export MVC_DOMAIN
 export MVC_PATH
 
 
+#
+# function to write a setup file - declared here to make sure it
+# gets the exports of the variables
 function setup_file () {
-	file="$1"
-	if [ -z "$file" ]; then
-		echo "usage: setup_file(<file>)"
+	src="$1"
+	dest="$2"
+
+	if [ -z "$src" -o -z "$dest" ]; then
+		echo "usage: setup_file(<src>,<dest>)"
 		exit -1
 	fi
-	tmpfile=$(mktemp /tmp/XXXXX)
-	cat $file | sed -e "s,MVC_URL,$MVC_URL,g" | sed -e "s,MVC_DOMAIN,$MVC_DOMAIN,g" -e "s,MVC_PATH,$MVC_PATH,g" >  $tmpfile
-	mv $tmpfile $file
-	chmod 644 "$file"
+
+	cat $src | sed -e "s,MVC_URL,$MVC_URL,g" -e "s,MVC_DOMAIN,$MVC_DOMAIN,g" -e "s,MVC_PATH,$MVC_PATH,g" > $dest
+
+	chmod 644 "$dest"
 }
 
 
-setup_file .htaccess
-setup_file public/.htaccess
-setup_file app/cfg/config.json
+#
+# setup all of the config files
+echo
 
+setup_file	 setup/files/htaccess-01-top		.htaccess
+setup_file	 setup/files/htaccess-02-public		public/.htaccess
+setup_file	 setup/files/config.json			app/cfg/config.json
+
+cp -a mvc/lib/index.php public/
+
+echo "Configuration files written."
+
+
+#
+# setup perms
+echo
+
+chmod 755 .
 
 for dir in app mvc public tmp; do 
 	find $dir -type f -exec chmod a+r {} \;
 	find $dir -type d -exec chmod a+rx {} \;
 done
 
-
-chmod 755 tmp
 find tmp -mindepth 1 -type d -exec chmod a+rwx {} \;
 
+echo "All permissions verified."
 
-cp -a mvc/lib/index.php public/
+
+echo
 
 
-chmod 755 .
+### EOF
+
+
+
+
