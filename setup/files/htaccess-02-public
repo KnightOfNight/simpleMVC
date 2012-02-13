@@ -1,0 +1,15 @@
+Options +FollowSymLinks
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+RewriteCond		%{HTTPS}	^off$
+RewriteRule		^.*$		https://MVC_DOMAIN%{REQUEST_URI} [L,R=301]
+
+RewriteBase MVC_PATH
+ 
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+ 
+RewriteRule ^(.*)$ index.php?route=$1 [L,QSA]
+</IfModule>
