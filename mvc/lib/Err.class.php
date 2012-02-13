@@ -18,17 +18,39 @@ class Err {
 
 
 	/**
-	* Report a fatal application error to the browser and exit.
+	* Report a fatal application error to the browser and the application log
+	* and exit.
 	*
 	* @param string error message
 	*/
-	static function fatal ($message) {
-		if ( is_null($message) ) {
-			$message = 'Unspecified error.';
-		}
+	static function fatal ($message = "Unspecified error") {
 
 		Log::msg(Log::ERROR, $message);
 
+		self::___printexit("err_fatal.php", $message);
+	}
+
+
+	/**
+	* Report a critical application error that is so bad it can't even be
+	* logged, usually called very early and/or very low in the framework.
+	*
+	* @param string error message
+	*/
+	static function critical ($message = "Unspecified error") {
+
+		self::___printexit("err_fatal.php", $message);
+	}
+
+
+	/**
+	* Print the passed error message and exit.  Only used internally by the
+	* class.
+	*
+	* @param string view file
+	* @param string message
+	*/
+	static function ___printexit ($view, $message) {
 		if ( ($app_version = Config::get('framework.version')) === FALSE ) {
 			$app_version = "simpleMVC";
 		}
@@ -42,7 +64,7 @@ class Err {
 			ob_end_clean();
 		}
 
-		include("err_fatal.php");
+		include($view);
 
 		exit(-1);
 	}
