@@ -40,7 +40,7 @@ class Database {
 		try {
 			$this->_dbh = new PDO($dsn, $user, $pass);
 		} catch (PDOException $e) {
-			Err::fatal($e->getMessage());
+			Err::critical($e->getMessage());
 		}
 	}
 
@@ -56,7 +56,7 @@ class Database {
 		global $simpleMVC;
 
 		if ( (! isset($simpleMVC['database'])) OR (! ($db = $simpleMVC['database']) instanceof Database) ) {
-			Err::fatal("Database::" . __function__ . "() called before database connection setup.");
+			Err::critical("Database::" . __function__ . "() called before database connection setup.");
 		}
 
 		return( $db->___describe($table) );
@@ -105,7 +105,7 @@ class Database {
 		global $simpleMVC;
 
 		if ( (! isset($simpleMVC['database'])) OR (! ($db = $simpleMVC['database']) instanceof Database) ) {
-			Err::fatal("Database::" . __function__ . "() called before database connection setup.");
+			Err::critical("Database::" . __function__ . "() called before database connection setup.");
 		}
 
 		return( $db->___select($criteria) );
@@ -289,7 +289,7 @@ class Database {
 		global $simpleMVC;
 
 		if ( (! isset($simpleMVC['database'])) OR (! ($db = $simpleMVC['database']) instanceof Database) ) {
-			Err::fatal("Database::" . __function__ . "() called before database connection setup.");
+			Err::critical("Database::" . __function__ . "() called before database connection setup.");
 		}
 
 		return( $db->___create($table, $values, $log_query) );
@@ -344,7 +344,7 @@ class Database {
 		global $simpleMVC;
 
 		if ( (! isset($simpleMVC['database'])) OR (! ($db = $simpleMVC['database']) instanceof Database) ) {
-			Err::fatal("Database::" . __function__ . "() called before database connection setup.");
+			Err::critical("Database::" . __function__ . "() called before database connection setup.");
 		}
 
 		return($db->___update($table, $values, $key, $log_query));
@@ -406,7 +406,7 @@ class Database {
 		global $simpleMVC;
 
 		if ( (! isset($simpleMVC['database'])) OR (! ($db = $simpleMVC['database']) instanceof Database) ) {
-			Err::fatal("Database::" . __function__ . "() called before database connection setup.");
+			Err::critical("Database::" . __function__ . "() called before database connection setup.");
 		}
 
 		return($db->___delete($table, $values, $key, $log_query));
@@ -467,7 +467,7 @@ class Database {
 		global $simpleMVC;
 
 		if ( (! isset($simpleMVC['database'])) OR (! ($db = $simpleMVC['database']) instanceof Database) ) {
-			Err::fatal("Database::" . __function__ . "() called before database connection setup.");
+			Err::critical("Database::" . __function__ . "() called before database connection setup.");
 		}
 
 		return( $db->___transaction_begin() );
@@ -503,7 +503,7 @@ class Database {
 		global $simpleMVC;
 
 		if ( (! isset($simpleMVC['database'])) OR (! ($db = $simpleMVC['database']) instanceof Database) ) {
-			Err::fatal("Database::" . __function__ . "() called before database connection setup.");
+			Err::critical("Database::" . __function__ . "() called before database connection setup.");
 		}
 
 		return( $db->___transaction_commit() );
