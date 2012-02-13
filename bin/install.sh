@@ -82,7 +82,7 @@ mv $tmpfile $file
 chmod 644 "$file"
 
 
-for dir in app cfg lib public tmp; do 
+for dir in app cfg mvc public tmp; do 
 	find $dir -type f -exec chmod a+r {} \;
 	find $dir -type d -exec chmod a+rx {} \;
 done
