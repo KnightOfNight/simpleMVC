@@ -10,7 +10,7 @@
 		"controller" : {
 			"default" : "welcome",
 
-			"sample" : {
+			"welcome" : {
 				"external_actions" : [ "hello" ],
 				"default_action"   : "hello"
 			}
