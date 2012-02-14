@@ -1,14 +1,17 @@
 #!/bin/bash
 
 
+echo
+echo "Setting up simpleMVC..."
 
+
+export reqdirs="app bin doc mvc public setup tmp"
+export conf_vars="MVC_URL MVC_PROTOCOL MVC_DOMAIN MVC_PATH DB_HOST DB_PORT DB_NAME DB_USER DB_PASS"
 
 
 
 #
 # check for required directories
-reqdirs="app bin doc mvc public setup tmp"
-
 if [ $(basename "$PWD") == "bin" ]; then
 	cd ..
 fi
@@ -23,21 +26,18 @@ for dir in $reqdirs; do
 done
 
 
-
 #
 # get the config values
-MVC_URL=""
-MVC_PROTOCOL=""
-MVC_DOMAIN=""
-MVC_PATH=""
+for var in $conf_vars; do
+	eval $var=""
+done
 
-[ -s .simpleMVC_config ] && . .simpleMVC_config
+[ -s setup/simpleMVC_config ] && . setup/simpleMVC_config
 
 while true; do
-	echo
 
 	while [ -z "$MVC_PROTOCOL" ]; do
-		echo -n "Enter protocol <http or https>: "; read MVC_PROTOCOL
+		echo -n "Enter web protocol <http or https>: "; read MVC_PROTOCOL
 
 		if [ "$MVC_PROTOCOL" != "http" -a "$MVC_PROTOCOL" != "https" ]; then
 			echo "Invalid protocol.  Must be 'http' or 'https'."
@@ -53,36 +53,53 @@ while true; do
 		echo -n "Enter path </some/web/path>: "; read MVC_PATH
 	done
 
+	while [ -z "$DB_HOST" ]; do
+		echo -n "Enter database host name: "; read DB_HOST
+	done
+
+	while [ -z "$DB_PORT" ]; do
+		echo -n "Enter database port number: "; read DB_PORT
+	done
+
+	while [ -z "$DB_NAME" ]; do
+		echo -n "Enter database name: "; read DB_NAME
+	done
+
+	while [ -z "$DB_USER" ]; do
+		echo -n "Enter database user name: "; read DB_USER
+	done
+
+	while [ -z "$DB_PASS" ]; do
+		echo -n "Enter database password: "; read DB_PASS
+	done
+
 	MVC_URL="$MVC_PROTOCOL://$MVC_DOMAIN$MVC_PATH"
 	
 	echo
 	echo "URL: $MVC_URL"
+	echo "Database: $DB_HOST:$DB_PORT to $DB_NAME as $DB_USER/$DB_PASS"
 	
 	echo
 	echo -n "Is this correct? (y)/n "; read yesno
 	if [ "$yesno" = "" -o "$yesno" = "y" ]; then
 		break
 	else
-		MVC_URL=""
-		MVC_PROTOCOL=""
-		MVC_DOMAIN=""
-		MVC_PATH=""
+		for var in $conf_vars; do
+			eval $var=""
+		done
 	fi
 done
 
 
 #
 # save config values
-cp /dev/null .simpleMVC_config
-echo "MVC_URL=\"$MVC_URL\"" >> .simpleMVC_config
-echo "MVC_PROTOCOL=\"$MVC_PROTOCOL\"" >> .simpleMVC_config
-echo "MVC_DOMAIN=\"$MVC_DOMAIN\"" >> .simpleMVC_config
-echo "MVC_PATH=\"$MVC_PATH\"" >> .simpleMVC_config
+cp /dev/null setup/simpleMVC_config
 
-export MVC_URL
-export MVC_PROTOCOL
-export MVC_DOMAIN
-export MVC_PATH
+for var in $conf_vars; do
+	echo "$var=\"${!var}\"" >> setup/simpleMVC_config
+
+	export $var
+done
 
 
 #
@@ -97,7 +114,16 @@ function setup_file () {
 		exit -1
 	fi
 
-	cat $src | sed -e "s,MVC_URL,$MVC_URL,g" -e "s,MVC_DOMAIN,$MVC_DOMAIN,g" -e "s,MVC_PATH,$MVC_PATH,g" > $dest
+	tmp=$(mktemp /tmp/XXXXXXXXXX)
+
+	cp "$src" $tmp
+	
+	for var in $conf_vars; do
+		value="${!var}"
+		sed -i -e "s,$var,$value,g" $tmp
+	done
+
+	mv $tmp "$dest"
 
 	chmod 644 "$dest"
 }
