@@ -70,22 +70,6 @@ require_once(APP_CFGDIR.'/inflection.php');
 $simpleMVC['config'] = new Config;
 
 
-# Setup the database connection.
-#
-$simpleMVC['database'] = new Database;
-if ( Config::get('database') === FALSE ) {
-	Err::fatal("Unable to read database configuration.\n\n" . Err::last());
-}
-$simpleMVC['database']->connect( Config::get('database') );
-
-
-Session::start();
-
-# Setup the logging.
-#
-$simpleMVC['log'] = new Log( (int) Config::get('framework.loglevel') );
-
-
 # Setup error reporting.
 #
 error_reporting(E_ALL | E_STRICT);
@@ -97,6 +81,25 @@ if ( Config::get('application.development') == 1 ) {
 } else {
 	ini_set('display_errors', 'OFF');
 }
+
+
+# Setup the database connection.
+#
+$simpleMVC['database'] = new Database;
+if ( Config::get('database') === FALSE ) {
+	Err::fatal("Unable to read database configuration.\n\n" . Err::last());
+}
+$simpleMVC['database']->connect( Config::get('database') );
+
+
+# Setup the logging.
+#
+$simpleMVC['log'] = new Log( (int) Config::get('framework.loglevel') );
+
+
+# Start the session.
+#
+Session::start();
 
 
 # Get the route
