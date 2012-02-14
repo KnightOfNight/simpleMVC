@@ -540,7 +540,7 @@ class Database {
 		$error = '';
 
 		if ( $this->_last_query ) {
-			$error .= "Unable to execute database query.\n\n$this->_last_query\n\n";
+			$error .= "Unable to execute database query '$this->_last_query'.\n\n";
 		}
 
 		$dbh_info = $this->_dbh->errorInfo();
