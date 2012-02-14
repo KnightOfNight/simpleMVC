@@ -92,14 +92,14 @@ if ( Config::get('database') === FALSE ) {
 $simpleMVC['database']->connect( Config::get('database') );
 
 
-# Setup the logging.
-#
-$simpleMVC['log'] = new Log( (int) Config::get('framework.loglevel') );
-
-
 # Start the session.
 #
 Session::start();
+
+
+# Setup the logging.
+#
+$simpleMVC['log'] = new Log( (int) Config::get('framework.loglevel') );
 
 
 # Get the route
