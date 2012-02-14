@@ -37,11 +37,11 @@ class BaseModel {
 		}
 
 		if ( ($this->_columns = Database::describe($this->_table_name)) === FALSE ) {
-			Err::fatal("Unable to load database model, unable to describe table.\n\n" . Err::last());
+			Err::critical("Unable to load database model '$this->_model_name', unable to describe table.\n\n" . Err::last());
 		}
 
 		if ( ! in_array('id', $this->_columns) ) {
-			Err::fatal("Unable to load database model.  Primary key column 'id' not found in table.");
+			Err::critical("Unable to load database model '$this->_model_name', primary key column 'id' not found in table.");
 		}
 	}
 
@@ -85,7 +85,7 @@ class BaseModel {
 	*/
 	function value ($column, $value = FALSE) {
 		if (! in_array ($column, $this->_columns)) {
-			Err::fatal("Invalid column name '$column'.");
+			Err::critical("Invalid column name '$column'.");
 		}
 
 		if ($value === FALSE) {
@@ -123,7 +123,7 @@ class BaseModel {
 	*/
 	function create ($log_query = TRUE) {
 		if ( in_array('id', array_keys($this->_values)) ) {
-			Err::fatal("Unable to create record, primary key column 'id' is already set.");
+			Err::critical("Unable to create record, primary key column 'id' is already set.");
 		}
 
 		$values = $this->_values;
@@ -137,7 +137,7 @@ class BaseModel {
 		}
 
 		if ( ($ret = Database::create($this->_table_name, $values, $log_query)) === FALSE ) {
-			Err::fatal("Unable to create database record.\n\n" . Err::last());
+			Err::critical("Unable to create database record.\n\n" . Err::last());
 		}
 
 		return($ret);
@@ -152,7 +152,7 @@ class BaseModel {
 	*/
 	function update ($log_query = TRUE) {
 		if ( (! in_array('id', array_keys($this->_values))) OR (! isset($this->_values['id'])) ) {
-			Err::fatal("Unable to update record, primary key column 'id' is not set.");
+			Err::critical("Unable to update record, primary key column 'id' is not set.");
 		}
 
 		$values = $this->_values;
@@ -166,7 +166,7 @@ class BaseModel {
 		}
 
 		if ( ($ret = Database::update($this->_table_name, $values, 'id', $log_query)) === FALSE ) {
-			Err::fatal("Unable to update database record.\n\n" . Err::last());
+			Err::critical("Unable to update database record.\n\n" . Err::last());
 		}
 
 		return($ret);
@@ -181,13 +181,13 @@ class BaseModel {
 	*/
 	function delete ($log_query = TRUE) {
 		if ( ! isset($this->_values['id']) ) {
-			Err::fatal("Unable to delete record, primary key column 'id' is not set.");
+			Err::critical("Unable to delete record, primary key column 'id' is not set.");
 		}
 
 		$values = $this->_values;
 
 		if ( ($ret = Database::delete($this->_table_name, $values, 'id', $log_query)) === FALSE ) {
-			Err::fatal("Unable to delete database record.\n\n" . Err::last());
+			Err::critical("Unable to delete database record.\n\n" . Err::last());
 		}
 
 		return($ret);
@@ -217,9 +217,9 @@ class BaseModel {
 		$results = $search->go();
 
 		if ( ($res_count = count($results)) > 1 ) {
-			Err::fatal("BaseModel::load() - unable to load search results.  Found MULTIPLE matches for '$where_col'='$value'.");
+			Err::critical("BaseModel::load() - unable to load search results.  Found MULTIPLE matches for '$where_col'='$value'.");
 		} elseif ( $res_count < 1 ) {
-			Err::fatal("BaseModel::load() - unable to load search results.  Found NO matches for '$where_col'='$value'.");
+			Err::critical("BaseModel::load() - unable to load search results.  Found NO matches for '$where_col'='$value'.");
 		}
 
 #		Dbg::var_dump('results', $results);
@@ -230,7 +230,7 @@ class BaseModel {
 			$model_col = preg_replace("/^$this->_model_name\./", "", $select_col);
 
 			if ( ! in_array($model_col, $this->_columns) ) {
-				Err::fatal("BaseModel::load() - unable to load search results.  Found unknown table column '$select_col'.");
+				Err::critical("BaseModel::load() - unable to load search results.  Found unknown table column '$select_col'.");
 			}
 
 			$this->_values[$model_col] = $result[$select_col];
