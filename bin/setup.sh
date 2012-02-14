@@ -37,6 +37,7 @@ done
 while true; do
 
 	while [ -z "$MVC_PROTOCOL" ]; do
+		echo
 		echo -n "Enter web protocol <http or https>: "; read MVC_PROTOCOL
 
 		if [ "$MVC_PROTOCOL" != "http" -a "$MVC_PROTOCOL" != "https" ]; then
@@ -46,30 +47,37 @@ while true; do
 	done
 
 	while [ -z "$MVC_DOMAIN" ]; do
+		echo
 		echo -n "Enter domain name <www.somedomain.com>: "; read MVC_DOMAIN
 	done
 
 	while [ -z "$MVC_PATH" ]; do
+		echo
 		echo -n "Enter path </some/web/path>: "; read MVC_PATH
 	done
 
 	while [ -z "$DB_HOST" ]; do
+		echo
 		echo -n "Enter database host name: "; read DB_HOST
 	done
 
 	while [ -z "$DB_PORT" ]; do
+		echo
 		echo -n "Enter database port number: "; read DB_PORT
 	done
 
 	while [ -z "$DB_NAME" ]; do
+		echo
 		echo -n "Enter database name: "; read DB_NAME
 	done
 
 	while [ -z "$DB_USER" ]; do
+		echo
 		echo -n "Enter database user name: "; read DB_USER
 	done
 
 	while [ -z "$DB_PASS" ]; do
+		echo
 		echo -n "Enter database password: "; read DB_PASS
 	done
 
