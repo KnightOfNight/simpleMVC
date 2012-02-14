@@ -8,18 +8,16 @@
 
 	"dispatcher" : {
 		"controller" : {
-			"default" : "sample",
+			"default" : "welcome",
 
 			"sample" : {
-				"external_actions" : [ "action" ],
-				"internal_actions" : [ ],
-				"default_action"   : "action"
+				"external_actions" : [ "hello" ],
+				"default_action"   : "hello"
 			}
 		}
 	},
 
 	"routes" : {
-		"/^s/" : "sample/action"
 	},
 
 	"database" : {
