@@ -44,6 +44,8 @@ class Log {
 
 		$this->_level = ($level < 0) ? Log::NONE : ($level > $max_level) ? $max_level : $level;
 
+		$log = new LogModel();
+
 		$this->___msg(Log::INFO, Config::get('framework.version') . ' starting');
 	}
 
@@ -58,8 +60,9 @@ class Log {
 	static function msg ($level, $message) {
 		global $simpleMVC;
 
+
         if ( (! isset($simpleMVC['log'])) OR (! ($log = $simpleMVC['log']) instanceof Log) ) {
-            Err::fatal("Log::" . __function__ . "() called before logging setup.");
+            Err::critical("Log::msg() called before logging setup.");
         }
 
 		$log->___msg($level, $message);
