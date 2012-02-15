@@ -76,9 +76,8 @@ class Database {
 
 			$query = "describe " . $table;
 
-			$this->_last_query = $query;
-
 			if ( ($results = $this->_dbh->query($query)) === FALSE ) {
+				$this->_last_query = $query;
 				Err::set_last($this->_last_error());
 				return(FALSE);
 			}
@@ -252,13 +251,13 @@ class Database {
 		}
 
 
-		$this->_last_query = $query;
-
+		# GO!
 		$stmnt = $this->_dbh->prepare($query);
 
 		$index = 0;
 		foreach ($values as $val) {
 			if ($stmnt->bindValue($index + 1, $val) === FALSE) {
+				$this->_last_query = $query;
 				Err::set_last( sprintf("Unable to bind value '%s' to parameter %d", $val, $index + 1) );
 				return(FALSE);
 			}
@@ -268,6 +267,7 @@ class Database {
 		Log::msg(Log::DEBUG, "Database::select() - database query = '$query'");
 
 		if ($stmnt->execute() === FALSE) {
+			$this->_last_query = $query;
 			Err::set_last($this->_last_error($stmnt));
 			return(FALSE);
 		}
