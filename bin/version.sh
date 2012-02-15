@@ -4,8 +4,8 @@
 # Set the @package and @version in all source files.
 
 
-package=$(cat "PACKAGE" 2> /dev/null)
-version=$(cat "VERSION" 2> /dev/null)
+package=$(cat "doc/PACKAGE" 2> /dev/null)
+version=$(cat "doc/VERSION" 2> /dev/null)
 
 
 if [ -z "$version" ]; then
@@ -34,7 +34,7 @@ elif [ "$version" == "$newversion" ]; then
 	echo
 	exit -1
 fi
-echo $newversion > VERSION
+echo $newversion > doc/VERSION
 version="$newversion"
 
 echo
