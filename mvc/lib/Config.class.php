@@ -26,11 +26,11 @@ class Config {
 		$cfg_file = APP_CFGDIR.DS."config.json";
 
 		if ( (! File::ready($cfg_file)) OR ( ($cfg_data = file_get_contents($cfg_file)) === FALSE ) ) {
-			Err::fatal("Unable to read application configuration file '$cfg_file'.");
+			Err::critical("Unable to read application configuration file '$cfg_file'.");
 		}
 
 		if ( ($this->_values = json_decode($cfg_data, TRUE)) === NULL ) {
-			Err::fatal("Unable to parse application configuration, invalid JSON found.");
+			Err::critical("Unable to parse application configuration, invalid JSON found.");
 		}
 	}
 
@@ -46,7 +46,7 @@ class Config {
 		global $simpleMVC;
 
         if ( (! isset($simpleMVC['config'])) OR (! ($config = $simpleMVC['config']) instanceof Config) ) {
-            Err::fatal("Config::" . __function__ . "() called before configuration loaded.");
+            Err::critical("Config::" . __function__ . "() called before configuration loaded.");
         }
 
 		return( $config->___get($path) );
