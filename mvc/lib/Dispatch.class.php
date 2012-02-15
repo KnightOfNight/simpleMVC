@@ -79,7 +79,7 @@ class Dispatch {
 
 
 	/**
-	* Dispatch a route that returns data.  Usually called from a controller
+	* Dispatch an internal route that returns data.  Usually called from a controller
 	* action, e.g. to reuse code that gets a list of records that are needed by
 	* various actions.
 	*
