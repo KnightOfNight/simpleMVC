@@ -25,7 +25,7 @@ class Err {
 	*/
 	static function fatal ($message = "Unspecified error") {
 
-		Log::msg(Log::ERROR, $message);
+	#	Log::msg(Log::ERROR, $message);
 
 		self::___printexit("err_fatal.php", $message);
 	}
