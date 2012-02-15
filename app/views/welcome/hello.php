@@ -14,13 +14,6 @@ Usage of this framework assumes beginning to intermediate skill in PHP
 programming; those proficient in that language should have no trouble using and
 extending its capabilities.
 
-<h4>Getting Started</h4>
-<ol>
-<li><a href="<?=Route::toURL('/tutorial/gs/section=models')?>">Models</a>
-<li>Controllers
-<li>Views
-</ol>
+<h4><a href="<?= Route::toURL('/tutorial/gs') ?>">Getting Started</a></h4>
 
 </div>
-
-<br />

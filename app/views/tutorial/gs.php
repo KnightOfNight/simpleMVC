@@ -1,5 +1,11 @@
 <h3>Getting Started</h3>
 
-<div><a href="<?= Route::toURL('/tutorial/gs/section=models') ?>">Models</a></div>
+<ol>
+<li><a href="<?= Route::toURL('/tutorial/gs/section=models') ?>">Models</a>
+<li><a href="<?= Route::toURL('/tutorial/gs/section=views') ?>">Views</a>
+<li><a href="<?= Route::toURL('/tutorial/gs/section=controllers') ?>">Controllers</a>
+</ol>
 
-<br/>
+<div><a href="<?= Route::toURL('/welcome') ?>">Welcome</a></div>
+
+<br />
