@@ -157,28 +157,39 @@ echo
 chmod 755 .
 
 for dir in app mvc public tmp; do 
-	find $dir -type f -exec chmod a+r {} \;
-	find $dir -type d -exec chmod a+rx {} \;
+	find $dir -type f -exec chmod a+r {} \; 2> /dev/null
+	find $dir -type d -exec chmod a+rx {} \; 2> /dev/null
 done
 
 find tmp -mindepth 1 -type d -exec chmod a+rwx {} \;
 
+for dir in doc setup ; do 
+	find $dir -type f -exec chmod 600 {} \;
+	find $dir -type d -exec chmod 700 {} \;
+done
+
+chmod 700 bin
+chmod 700 bin/*
+chmod 600 bin/.htaccess
+
+
 echo "All permissions verified."
 
 
+#
+# setup database
 echo
 
 cmd="mysql --user=$DB_USER --password=$DB_PASS --host=$DB_HOST --port=$DB_PORT $DB_NAME"
 err=$(mktemp /tmp/XXXXXXXXXX)
 if echo "show tables" | $cmd > /dev/null 2> $err; then
 	echo "Successfully tested database permissions."
+	echo
 
 	if cat setup/sql/mvc_logs.sql | $cmd 2> $err; then
 		echo "Successfully setup logs table."
 	else
-		echo
 		echo "ERROR: unable to setup logs table."
-
 		echo
 		echo "MySQL error follows..."
 		cat $err
@@ -188,9 +199,7 @@ if echo "show tables" | $cmd > /dev/null 2> $err; then
 		exit -1
 	fi
 else
-	echo
 	echo "ERROR: unable to connect to database."
-
 	echo
 	echo "MySQL error follows..."
 	cat $err
@@ -199,6 +208,7 @@ else
 	echo
 	exit -1
 fi
+
 
 
 
