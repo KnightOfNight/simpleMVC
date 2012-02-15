@@ -166,13 +166,6 @@ find tmp -mindepth 1 -type d -exec chmod a+rwx {} \;
 echo "All permissions verified."
 
 
-#
-# finish up
-echo
-echo "You must now edit 'app/cfg/config.json' with your database permissions."
-
-
-
 echo
 
 ### EOF
