@@ -240,5 +240,32 @@ class BaseModel {
 	}
 
 
+	/**
+	* Check for the existence of a row matching the specified criteria
+	* column_name=>value.
+	*
+	* @param string column name
+	* @param mixed column value
+	* @param bool log the query
+	* @return int number of rows found
+	*/
+	function exists ($column_name, $value, $log_query = TRUE) {
+		$where_col = $this->_model_name . '.' . $column_name;
+
+		$select_cols = preg_replace('/^(.*)$/', "$this->_model_name.$1", $this->_columns);
+
+#		Dbg::var_dump('this columns', $this->_columns);
+#		Dbg::var_dump('select_cols', $select_cols);
+#		Dbg::var_dump('where_col', $where_col);
+		
+		$search = new Search($this);
+		$search->select($select_cols);
+		$search->where( NULL, array( array($where_col, Search::op_eq, $value)) );
+		$results = $search->go();
+
+		return( count($results) );
+	}
+
+
 	function __destruct () {}
 }
