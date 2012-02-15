@@ -4,9 +4,9 @@
 
 <div style="width:50%">
 Model refers to a database table and the means by which it is accessed.  A
-simpleMVC model class provides basic CRUD functionality for a given table, but
-can be extended with additional methods as needed.  simpleMVC supports the
-database server MySQL.
+simpleMVC model class provides basic CRUD for a given table, but can be
+extended with additional methods as needed.  simpleMVC supports the database
+server MySQL.
 <h4>Table Requirements</h4>
 <b>Name:</b> prefix + plural name of contents, e.g. app_titles, app_authors*
 <br /> <br />

@@ -11,6 +11,8 @@ class tutorial_controller extends BaseController {
 			$view = 'gs_controllers';
 		} elseif ( isset($query['section']) AND ($query['section'] == 'views') ) {
 			$view = 'gs_views';
+		} elseif ( isset($query['section']) AND ($query['section'] == 'routes') ) {
+			$view = 'gs_routes';
 		} else {
 			$view = 'gs';
 		}
