@@ -6,6 +6,7 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php $this->slot("page_title") ?></title>
+<?php $this->CSS('simplemvc.css') ?>
 <?php $this->showCSS() ?>
 <?php $this->showJS() ?>
 

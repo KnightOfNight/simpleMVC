@@ -1,0 +1,32 @@
+
+body { font-family: helvetica, arial, sans-serif; font-size: 11pt; line-height: 120%; }
+
+body,form,fieldset,input,select,h1,h2,h3,h4,h5,h6,hr,table,tr,td { margin: 0; padding: 0; }
+/* ul,ol { margin: 0; padding: 0; } */
+ul,ol { margin: 0; padding: 0 0 0 2em; }
+
+form,fieldset,input,select { display: inline; }
+
+table { border-collapse: collapse; }
+div,table,td { border-style: solid; border-width: 0px; border-color: #F00; }
+fieldset,div,table,td { border-width: 0px; }
+
+em, h1, h2, h3, h4, h5, h6 { font-style: normal; font-weight: 900; }
+h1 { font-size: 160%; line-height: 200%; }
+h2 { font-size: 140%; line-height: 200%; }
+h3 { font-size: 120%; line-height: 200%; }
+h4 { font-size: 100%; line-height: 200%; }
+h5 { font-size: 80%; line-height: 200%; }
+
+.hidden { display: none; }
+
+.textleft { text-align: left; }
+.textcenter { text-align: center; }
+.textright { text-align: right; }
+
+.texttop { vertical-align: top; }
+.textmiddle { vertical-align: middle; }
+.textbottom { vertical-align: bottom; }
+
+.minwidth { width: 1%; }
+
