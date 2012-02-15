@@ -313,8 +313,6 @@ class Database {
 
 	 	$query = "INSERT INTO " . $table . " SET " . $this->_makeset($values);
 
-		$this->_last_query = $query;
-
 		if ( $log_query === TRUE ) {
 			Log::msg(Log::DEBUG, "database query = '" . $query . "'");
 		}
@@ -322,6 +320,7 @@ class Database {
 		$stmnt = $this->_dbh->prepare($query);
 
 		if ( $stmnt->execute($this->_getparams($values)) === FALSE ) {
+			$this->_last_query = $query;
 			Err::set_last($this->_last_error($stmnt));
 			return(FALSE);
 		}
@@ -375,8 +374,6 @@ class Database {
 
 		$query = "UPDATE " . $table . " SET " . $this->_makeset($values) . " WHERE " . $key . " = :id";
 
-		$this->_last_query = $query;
-
 		if ( $log_query === TRUE ) {
 			Log::msg(Log::DEBUG, "database query = '" . $query . "'");
 		}
@@ -384,6 +381,7 @@ class Database {
 		$stmnt = $this->_dbh->prepare($query);
 
 		if ( $stmnt->execute($this->_getparams($values)) === FALSE ) {
+			$this->_last_query = $query;
 			Err::set_last( $this->_last_error($stmnt) );
 			return(FALSE);
 		}
@@ -431,8 +429,6 @@ class Database {
 
 		$query = "DELETE FROM " . $table . " WHERE " . $key . " = :id";
 
-		$this->_last_query = $query;
-
 		if ( $log_query === TRUE ) {
 			Log::msg(Log::DEBUG, "database query = '" . $query . "'");
 		}
@@ -440,6 +436,7 @@ class Database {
 		$stmnt = $this->_dbh->prepare($query);
 
 		if ( $stmnt->execute( array(':id' => $values[$key]) ) === FALSE ) {
+			$this->_last_query = $query;
 			Err::set_last( $this->_last_error($stmnt) );
 			return(FALSE);
 		}
