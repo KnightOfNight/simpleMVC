@@ -10,6 +10,11 @@
 		"controller" : {
 			"default" : "welcome",
 
+			"tutorial" : {
+				"external_actions" : [ "gs" ],
+				"default_action"   : "gs"
+			},
+
 			"welcome" : {
 				"external_actions" : [ "hello" ],
 				"default_action"   : "hello"
