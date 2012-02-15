@@ -1,5 +1,9 @@
 <?php $this->fillslot('page_title', 'Getting Started: Views'); ?>
 
+<h5><a href="<?= Route::toURL('/welcome') ?>">Welcome</a></h5>
+
+<h5><a href="<?= Route::toURL('/gs') ?>">Getting Started</a></h5>
+
 <h3>Getting Started With Views</h3>
 
 <div style="width:50%">
@@ -27,6 +31,3 @@ an 'href'.
 
 <br />
 
-<div><a href="<?= Route::toURL('/gs') ?>">Getting Started</a></div>
-
-<br />

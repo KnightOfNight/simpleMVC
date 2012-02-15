@@ -1,5 +1,9 @@
 <?php $this->fillslot('page_title', 'Getting Started: Models'); ?>
 
+<h5><a href="<?= Route::toURL('/welcome') ?>">Welcome</a></h5>
+
+<h5><a href="<?= Route::toURL('/gs') ?>">Getting Started</a></h5>
+
 <h3>Getting Started With Models</h3>
 
 <div style="width:50%">
@@ -26,6 +30,3 @@ PRIMARY KEY  (`id`),
 
 <br />
 
-<div><a href="<?= Route::toURL('/gs') ?>">Getting Started</a></div>
-
-<br />
