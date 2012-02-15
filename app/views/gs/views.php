@@ -20,5 +20,5 @@ in an AJAX query.
 The main body of the view is where all real content will likely be placed, and
 will usually consist of HTML with some embedded PHP.  simpleMVC has several
 helper functions for writing views to simplify things like getting an URL for
-an 'href'.
+an 'href' or adding a CSS or JS file to a page.
 </div>
