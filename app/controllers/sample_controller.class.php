@@ -10,7 +10,7 @@ class sample_controller extends BaseController {
 
 	/**
 	* Define actions by writing methods of the same name. All action
-	* methods get one argument, the query string.
+	* methods get one argument, the query part of the route, as a hash.
 	*/
 	function action ($query) {
 		$view = new View($this->name(), __FUNCTION__, $query);
