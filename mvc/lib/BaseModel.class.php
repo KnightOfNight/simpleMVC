@@ -249,7 +249,7 @@ class BaseModel {
 	* @param bool log the query
 	* @return int number of rows found
 	*/
-	function exists ($column_name, $value, $log_query = TRUE) {
+	static function exists ($column_name, $value, $log_query = TRUE) {
 		$where_col = $this->_model_name . '.' . $column_name;
 
 		$select_cols = preg_replace('/^(.*)$/', "$this->_model_name.$1", $this->_columns);
