@@ -22,7 +22,7 @@ function __autoload ($class) {
 		$file = $class.".class.php";
 		require_once($file);
 	} else {
-		Err::fatal("Autoload error: unable to load class '$class'.");
+		Err::critical("Autoload error: unable to load class '$class'.");
 	}
 
 }
