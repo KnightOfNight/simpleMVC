@@ -15,5 +15,6 @@ programming; those proficient in that language should have no trouble using and
 extending its capabilities.
 
 <h5><a href="<?= Route::toURL('/gs') ?>">Getting Started</a></h5>
+<h5><a href="http://www.magrathea.com/~ctg/mvcdocs">PHP Docs for simpleMVC</a></h5>
 
 </div>
