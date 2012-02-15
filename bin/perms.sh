@@ -17,3 +17,5 @@ done
 chmod 700 bin
 chmod 700 bin/*
 chmod 600 bin/.htaccess
+
+chmod 777 public/js/pp
