@@ -4,7 +4,7 @@
 
 <h5><a href="<?= Route::toURL('/gs') ?>">Getting Started</a></h5>
 
-<h3>Getting Started With Models</h3>
+<h3>Models</h3>
 
 <div style="width:50%">
 Model refers to a database table and the means by which it is accessed.  A

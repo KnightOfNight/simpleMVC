@@ -4,7 +4,7 @@
 
 <h5><a href="<?= Route::toURL('/gs') ?>">Getting Started</a></h5>
 
-<h3>Getting Started With Controllers</h3>
+<h3>Controllers</h3>
 
 <div style="width:50%">
 Controller refers to a PHP class and the methods therein.  These classes

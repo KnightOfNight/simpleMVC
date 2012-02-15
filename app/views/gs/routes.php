@@ -4,7 +4,7 @@
 
 <h5><a href="<?= Route::toURL('/gs') ?>">Getting Started</a></h5>
 
-<h3>Getting Started With Routes</h3>
+<h3>Routes</h3>
 
 <div style="width:50%">
 Route refers to a specific path through the application framework.  A route is

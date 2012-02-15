@@ -4,7 +4,7 @@
 
 <h5><a href="<?= Route::toURL('/gs') ?>">Getting Started</a></h5>
 
-<h3>Getting Started With Views</h3>
+<h3>Views</h3>
 
 <div style="width:50%">
 View refers to the PHP files that make up a particular view for a specific
