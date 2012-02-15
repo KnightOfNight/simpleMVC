@@ -44,6 +44,7 @@ div.trace { }
 <div class="block trace"><!-- trace output -->
 
 <?php $trace = array_shift($trace_info); ?>
+<?php $trace = array_shift($trace_info); ?>
 <?php $line_count = -1; ?>
 
 <div>
