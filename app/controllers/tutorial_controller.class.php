@@ -8,7 +8,7 @@ class tutorial_controller extends BaseController {
 		if ( isset($query['section']) AND ($query['section'] == 'models') ) {
 			$view = 'gs_models';
 		} else {
-			Err::fatal("No section specified.");
+			$view = 'gs';
 		}
 		
 		$view = new View($this->name(), $view, $query);
