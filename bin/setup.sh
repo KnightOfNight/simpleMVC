@@ -168,6 +168,44 @@ echo "All permissions verified."
 
 echo
 
+cmd="mysql --user=$DB_USER --password=$DB_PASS --host=$DB_HOST --port=$DB_PORT $DB_NAME"
+err=$(mktemp /tmp/XXXXXXXXXX)
+if echo "show tables" | $cmd > /dev/null 2> $err; then
+	echo "Successfully tested database permissions."
+
+	if cat setup/sql/mvc_logs.sql | $cmd 2> $err; then
+		echo "Successfully setup logs table."
+	else
+		echo
+		echo "ERROR: unable to setup logs table."
+
+		echo
+		echo "MySQL error follows..."
+		cat $err
+		rm $err
+
+		echo
+		exit -1
+	fi
+else
+	echo
+	echo "ERROR: unable to connect to database."
+
+	echo
+	echo "MySQL error follows..."
+	cat $err
+	rm $err
+
+	echo
+	exit -1
+fi
+
+
+
+
+
+echo
+
 ### EOF
 
 

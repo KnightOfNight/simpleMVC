@@ -10,9 +10,9 @@
 		"controller" : {
 			"default" : "welcome",
 
-			"tutorial" : {
-				"external_actions" : [ "gs" ],
-				"default_action"   : "gs"
+			"gs" : {
+				"external_actions" : [ "index", "models", "views", "controllers", "routes" ],
+				"default_action"   : "index"
 			},
 
 			"welcome" : {
