@@ -51,12 +51,8 @@ class Err {
 	* @param string message
 	*/
 	static function ___printexit ($view, $message) {
-		if ( ($app_version = Config::get('framework.version')) === FALSE ) {
-			$app_version = "simpleMVC";
-		}
-		if ( ($app_copyright = Config::get('framework.copyright')) === FALSE ) {
-			$app_copyright = "&copy; MCS 'Net Productions";
-		}
+		$app_version = "simpleMVC";
+		$app_copyright = "&copy; MCS 'Net Productions";
 
 		$trace_info = debug_backtrace();
 
