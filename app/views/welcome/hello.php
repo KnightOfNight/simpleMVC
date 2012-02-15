@@ -14,6 +14,6 @@ Usage of this framework assumes beginning to intermediate skill in PHP
 programming; those proficient in that language should have no trouble using and
 extending its capabilities.
 
-<h4><a href="<?= Route::toURL('/tutorial/gs') ?>">Getting Started</a></h4>
+<h4><a href="<?= Route::toURL('/gs') ?>">Getting Started</a></h4>
 
 </div>

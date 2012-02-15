@@ -25,6 +25,6 @@ PCRE.
 
 <br />
 
-<div><a href="<?= Route::toURL('/tutorial/gs') ?>">Getting Started</a></div>
+<div><a href="<?= Route::toURL('/gs') ?>">Getting Started</a></div>
 
 <br />
