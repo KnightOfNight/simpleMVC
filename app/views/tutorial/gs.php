@@ -1,3 +1,5 @@
+<?php $this->fillslot('page_title', 'Getting Started'); ?>
+
 <h3>Getting Started</h3>
 
 <ol>
