@@ -30,11 +30,11 @@ class File {
 	*/
 	static function ready ($file, $mode = "r") {
 		if ($mode === "r") {
-			return ( file_exists ($file) AND is_readable ($file) );
+			return( file_exists ($file) AND is_readable ($file) );
 		} elseif ($mode === "w") {
-			return ( file_exists ($file) AND is_writable ($file) );
+			return( file_exists ($file) AND is_writable ($file) );
 		} else {
-			Err::fatal (sprintf ("invalid mode '%s'", $mode));
+			Err::critical(sprintf ("invalid mode '%s'", $mode));
 		}
 	}
 

@@ -87,7 +87,7 @@ if ( Config::get('application.development') == 1 ) {
 #
 $simpleMVC['database'] = new Database;
 if ( Config::get('database') === FALSE ) {
-	Err::fatal("Unable to read database configuration.\n\n" . Err::last());
+	Err::critical("Unable to read database configuration.\n\n" . Err::last());
 }
 $simpleMVC['database']->connect( Config::get('database') );
 

@@ -24,8 +24,7 @@ class Err {
 	* @param string error message
 	*/
 	static function fatal ($message = "Unspecified error") {
-
-	#	Log::msg(Log::ERROR, $message);
+		Log::msg(Log::ERROR, $message);
 
 		self::___printexit("err_fatal.php", $message);
 	}
@@ -38,7 +37,6 @@ class Err {
 	* @param string error message
 	*/
 	static function critical ($message = "Unspecified error") {
-
 		self::___printexit("err_fatal.php", $message);
 	}
 
