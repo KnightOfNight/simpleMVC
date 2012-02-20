@@ -54,6 +54,32 @@ class Session {
 
 
 	/**
+	* Get a session variable.
+	*
+	* @param string variable name
+	* @return mixed variable value
+	*/
+	static function get ($name) {
+		if ( isset($_SESSION[$name]) ) {
+			return($_SESSION[$name]);
+		} else {
+			return(NULL);
+		}
+	}
+
+
+	/**
+	* Set a session variable.
+	*
+	* @param string variable name
+	* @param mixed variable value
+	*/
+	static function set ($name, $value) {
+		return( $_SESSION[$name] = $value );
+	}
+
+
+	/**
 	* Stop the current session.
 	*/
 	static function stop () {
