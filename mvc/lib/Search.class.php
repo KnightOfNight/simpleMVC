@@ -32,6 +32,7 @@ class Search {
 	const op_eq = "=";
 	const op_le = "<=";
 	const op_lt = "<";
+	const op_ne = "!=";
 	const op_like = "LIKE";
 	const op_notlike = "LIKE";
 	const op_is = "IS";
@@ -385,6 +386,7 @@ class Search {
 					($op === Search::op_eq)	OR
 					($op === Search::op_le)	OR
 					($op === Search::op_lt)	OR
+					($op === Search::op_ne)	OR
 					($op === Search::op_like)	OR
 					($op === Search::op_notlike)	OR
 					($op === Search::op_is)	OR
