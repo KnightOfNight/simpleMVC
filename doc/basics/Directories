@@ -15,8 +15,8 @@ lib		- framework library files
 public	- Internet facing files
 	css			- CSS files
 	js			- JavaScript files
+	js/pp		- JavaScript files (post-processed)
 	img			- image files
-	media		- misc. media files
 
 tmp		- temporary files
 	cache		- cache files
