@@ -24,5 +24,21 @@ class AJAX {
 		}
 	}
 
+	/**
+	* Print a JSON blob containing an error message.
+	*/
+	static function error ($message) {
+		$results = array( 'error' => $message );
+		printf("%s", json_encode($results));
+	}
+
+	/**
+	* Print a JSON blob containing a success message.
+	*/
+	static function success ($message) {
+		$results = array( 'success' => $message );
+		printf("%s", json_encode($results));
+	}
+
 	function __destruct () {}
 }
