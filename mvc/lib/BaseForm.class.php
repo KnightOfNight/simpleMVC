@@ -82,7 +82,7 @@ class BaseForm {
 		}
 
 
-		# Run the parent class seteup script, if any.
+		# Run the parent class setup script, if any.
 		if ( method_exists($this, 'setup') ) {
 			$this->setup();
 		}
@@ -201,15 +201,15 @@ class BaseForm {
 	*
 	* @param string the action URL
 	*/
-	function html_start ($action) {
+	function html_start ($action, $form_class="") {
 		$method = 'post';
 
 		$id = $this->_form_name;
 
 ?><!-- start form HTML -->
-<form id="<?= $id ?>" method="<?= $method ?>" action="<?= $action ?>" enctype="multipart/form-data">
-<fieldset class="mvc_form">
-<input name="form_name" class="mvc_form_internal" value="<?= $this->_form_name ?>" type="hidden"></input>
+<form id="<?= $id ?>" class="<?= $form_class ?>" method="<?= $method ?>" action="<?= $action ?>" enctype="multipart/form-data">
+
+<input name="form_name" value="<?= $this->_form_name ?>" type="hidden" />
 <?php
 	}
 
@@ -219,7 +219,6 @@ class BaseForm {
 	*/
 	function html_finish () {
 ?>
-</fieldset>
 </form>
 <!-- end of form HTML -->
 <?php
@@ -231,16 +230,22 @@ class BaseForm {
 	*
 	* @param string field name
 	*/
-	function html_label ($field_name) {
+	function html_label ($field_name, $label_class="") {
 		$this->_check_field_name($field_name, __FUNCTION__);
 
 		$field_info = $this->_fields[$field_name];
 
-		$id = $this->_form_name . '_l_' . $field_name;
+		$id = $this->_form_name . '_label_' . $field_name;
 		$for = $this->_form_name . '_' . $field_name;
 		$label = $field_info['label'];
 
-?><label id="<?= $id ?>" class="mvc_form_label" for="<?= $for ?>"><?= $label ?></label>
+		$class = "mvc_form_label";
+
+		if ( $label_class ) {
+			$class = $label_class;
+		}
+
+?><label id="<?= $id ?>" class="<?= $class ?>" for="<?= $for ?>"><?= $label ?></label>
 <?php
 	}
 
@@ -250,7 +255,7 @@ class BaseForm {
 	*
 	* @param string field name
 	*/
-	function html_field ($field_name) {
+	function html_field ($field_name, $field_class="") {
 		$this->_check_field_name($field_name, __FUNCTION__);
 
 		$field_info = $this->_fields[$field_name];
@@ -259,7 +264,7 @@ class BaseForm {
 
 		$func = '_html_' . $type;
 
-		$this->$func($field_name);
+		$this->$func($field_name, $field_class);
 	}
 
 
@@ -268,7 +273,7 @@ class BaseForm {
 	*
 	* @param string field name
 	*/
-	private function _html_text ($field_name) {
+	private function _html_text ($field_name, $field_class) {
 
 		# common
 		$id = $name = $this->_form_name . '_' . $field_name;
@@ -282,8 +287,12 @@ class BaseForm {
 
 		# specific
 		$inputclass = 'mvc_form_text_field';
+		if ( $field_class ) {
+			$inputclass = $field_class;
+		}
 
-		$size = ( isset($options['size']) AND ($options['size'] > 0) ) ?  $options['size'] : 10;
+		# size now unused, use style to size the input
+		# $size = ( isset($options['size']) AND ($options['size'] > 0) ) ?  $options['size'] : 10;
 
 		$maxlength = ( isset($options['maxlength']) AND ($options['maxlength'] > 0) ) ?  $options['maxlength'] : 80;
 
@@ -299,7 +308,7 @@ class BaseForm {
 		$file_upload = ( $password ) ? '' : $file_upload;
 
 		# HTML
-?><input id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" value="<?= htmlentities($value) ?>" size="<?= $size ?>" maxlength="<?= $maxlength ?>" autocomplete="off"<?= $disabled ?><?= $hidden ?><?= $password ?><?= $file_upload ?>></input>
+?><input id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" value="<?= htmlentities($value) ?>" maxlength="<?= $maxlength ?>" autocomplete="off"<?= $disabled ?><?= $hidden ?><?= $password ?><?= $file_upload ?> />
 <?php
 
 		if ( ! $hide_error ) {
@@ -313,7 +322,7 @@ class BaseForm {
 	*
 	* @param string field name
 	*/
-	private function _html_textarea ($field_name) {
+	private function _html_textarea ($field_name, $field_class) {
 
 		# common
 		$id = $name = $this->_form_name . '_' . $field_name;
@@ -328,11 +337,15 @@ class BaseForm {
 
 		# specific
 		$inputclass = 'mvc_form_textarea_field';
+		if ( $field_class ) {
+			$inputclass = $field_class;
+		}
 		$rows = ( isset($options['rows']) AND ($options['rows'] > 0) ) ?  $options['rows'] : 10;
-		$cols = ( isset($options['cols']) AND ($options['cols'] > 0) ) ?  $options['cols'] : 40;
+		# size now unused, use style to size the input
+		# $cols = ( isset($options['cols']) AND ($options['cols'] > 0) ) ?  $options['cols'] : 40;
 
 		# HTML
-?><textarea id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" rows="<?= $rows ?>" cols="<?= $cols ?>"<?= $disabled ?>><?php echo htmlentities($value); ?></textarea>
+?><textarea id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" rows="<?= $rows ?>"<?= $disabled ?>><?php echo htmlentities($value); ?></textarea>
 <?php
 
 		if ( ! $hide_error ) {
@@ -347,7 +360,7 @@ class BaseForm {
 	*
 	* @param string field name
 	*/
-	private function _html_dropdown ($field_name) {
+	private function _html_dropdown ($field_name, $field_class) {
 
 		# common
 		$id = $name = $this->_form_name . '_' . $field_name;
@@ -359,6 +372,10 @@ class BaseForm {
 
 		# specific
 		$inputclass = 'mvc_form_dropdown_field';
+		if ( $field_class ) {
+			$inputclass = $field_class;
+		}
+
 		$choices = $options['choices'];
 		$forcechoice = ( isset($options['forcechoice']) AND ($options['forcechoice'] == 'yes') ) ? TRUE : FALSE;
 
@@ -406,7 +423,8 @@ class BaseForm {
 		$checked = ( $value === TRUE ) ? ' checked="checked"' : '';
 
 		# HTML
-?><input id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" value="checked" type="checkbox"<?= $checked ?><?= $disabled ?><?= $hidden ?>></input><?php
+?><input id="<?= $id ?>" name="<?= $name ?>" class="<?= $inputclass ?>" value="checked" type="checkbox"<?= $checked ?><?= $disabled ?><?= $hidden ?> />
+<?php
 
 		$this->html_field_error($field_name);
 
@@ -418,7 +436,7 @@ class BaseForm {
 	*
 	* @param string field name
 	*/
-	private function _html_bitmask ($field_name) {
+	private function _html_bitmask ($field_name, $field_class) {
 
 		# common
 		$id = $name = $this->_form_name . '_' . $field_name;
@@ -434,10 +452,15 @@ class BaseForm {
 		$choices = $options['choices'];
 		$columns = ( isset($options['columns']) AND ($options['columns'] > 0) AND ($options['columns'] < count($choices)) ) ?  $options['columns'] : 3;
 
+		if ( is_array($field_class) AND isset($field_class['tableclass']) ) {
+			$tableclass = $field_class['tableclass'];
+		}
+
+
 		# HTML
-?>
-<table id="<?= $id ?>" class="<?= $tableclass ?>">
-<tr> <td>
+?><table id="<?= $id ?>" class="<?= $tableclass ?>">
+<tr>
+<td>
 <?php
 
 		$count = 0;
@@ -454,22 +477,21 @@ class BaseForm {
 
 			if ( $count >= $per_column ) {
 				$count = 0;
-?>
-</td> <td>
+?></td>
+<td>
 <?php
 			}
 
-?><input id="<?= $input_id ?>" name="<?= $fld_name ?>" class="<?= $inputclass ?>" value="checked" type="checkbox"<?= $checked ?><?= $disabled ?><?= $hidden ?>></input>
+?><input id="<?= $input_id ?>" name="<?= $fld_name ?>" class="<?= $inputclass ?>" value="checked" type="checkbox"<?= $checked ?><?= $disabled ?><?= $hidden ?> />
 <label id="<?= $label_id ?>" class="<?= $labelclass ?>" for="<?= $for ?>"><?= $label ?></label>
-<br />
 <?php
 
 			$count++;
 
 		}
 
-?>
-</td> </tr>
+?></td>
+</tr>
 </table>
 <?php
 
@@ -489,7 +511,8 @@ class BaseForm {
 		$error = $this->_fields[$field_name]['error'];
 
 		if ( ! $valid ) {
-?><span class="mvc_form_error"><?= $error ?></span><?php
+?><div class="mvc_form_error"><?= $error ?></div>
+<?php
 		}
 	}
 
@@ -524,7 +547,7 @@ class BaseForm {
 		if ( $value === NULL ) {
 			return($this->_fields[$field_name]['value']);
 		} else {
-			$this->_fields[$field_name]['value'] = $value;
+			return($this->_fields[$field_name]['value'] = $value);
 		}
 	}
 
@@ -755,7 +778,7 @@ class BaseForm {
 
 		$checks = $this->_fields[$field_name]['checks'];
 
-		if ( array_keys($checks, $check, TRUE) ) {
+		if ( array_key_exists($check, $checks) ) {
 			return;
 		}
 
@@ -764,6 +787,26 @@ class BaseForm {
 		}
 
 		$this->_fields[$field_name]['checks'][$check] = $error;
+	}
+
+
+	/**
+	* Remove a check from the list of checks for a field.
+	*
+	* @param string field name
+	* @param string check name
+	*/
+	function remove_check ($field_name, $check) {
+		$this->_check_field_name($field_name, __FUNCTION__);
+
+		$checks = $this->_fields[$field_name]['checks'];
+
+		if ( ! array_key_exists($check, $checks) ) {
+			return;
+		}
+
+		unset($this->_fields[$field_name]['checks'][$check]);
+		$checks = $this->_fields[$field_name]['checks'];
 	}
 
 
