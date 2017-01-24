@@ -169,10 +169,15 @@ class View {
 	*
 	* @param string JS file
 	*/
-	protected function useJS ($passed_file) {
-		array_push ($this->_js_files, $passed_file);
+	protected function useJS ($passed_file, $pp = TRUE) {
+        if ($pp) {
+		    $fullpath = Config::get('application.base_path') . "/js/pp/$passed_file";
+		    $this->_pp_js($passed_file);
+        } else {
+		    $fullpath = Config::get('application.base_path') . "/js/$passed_file";
+        }
 
-		$this->_pp_js($passed_file);
+		array_push ($this->_js_files, $fullpath);
 	}
 
 
@@ -184,7 +189,7 @@ class View {
 	*/
 	protected function showJS () {
 		foreach ($this->_js_files as $file) {
-			$fullpath = Config::get('application.base_path') . "/js/pp/$file";
+			$fullpath = Config::get('application.base_path') . "$file";
 ?><script type="text/javascript" src="<?php echo $fullpath ?>"></script>
 <?php
 		}
@@ -197,10 +202,13 @@ class View {
 	* This is usually called from a page header, preferably * in the
 	* <head></head> section.
 	*/
-	protected function JS ($js_file) {
-		$fullpath = Config::get('application.base_path') . "/js/pp/$js_file";
-
-		$this->_pp_js($js_file);
+	protected function JS ($passed_file, $pp = TRUE) {
+        if ($pp) {
+		    $fullpath = Config::get('application.base_path') . "/js/pp/$passed_file";
+		    $this->_pp_js($passed_file);
+        } else {
+		    $fullpath = Config::get('application.base_path') . "/js/$passed_file";
+        }
 
 ?><script type="text/javascript" src="<?php echo $fullpath ?>"></script>
 <?php
