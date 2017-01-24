@@ -14,13 +14,13 @@
 class Auth {
 
 	static function login ($username, $password) {
-		if ( ($username == 'ctg' AND $password == 'smeg') OR ($username == 'ras' AND $password == 'ugh4269') ) {
-			$_SESSION['username'] = $username;
-			return(TRUE);
-
-		} else {
+#		if ( LOOKUP USERNAME AND PASSWORD ) {
+#			$_SESSION['username'] = $username;
+#			return(TRUE);
+#
+#		} else {
 			return('Invalid credentials specified.');
-		}
+#		}
 	}
 
 	static function logout () {
